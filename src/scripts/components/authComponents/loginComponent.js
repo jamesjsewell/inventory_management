@@ -18,8 +18,8 @@ import {
     minLength,
     alphaNumeric,
     email
-} from "../helpers/formValidation.js"
-import { FormField } from "../helpers/formFields.js"
+} from "../formHelpers/formValidation.js"
+import { FormField } from "../formHelpers/formFields.js"
 
 class Login extends Component {
     constructor(props) {

@@ -7,16 +7,15 @@ const passport = require("passport")
 const renderFile = require("ejs").renderFile
 const morgan = require("morgan")
 const fallback = require("express-history-api-fallback")
-const appMiddleWare = require("./server/config/middleware.js")
-const appSecrets = require("./server/config/secrets.js")
-const connectToDB = require("./server/config/db-setup.js").connectToDB
+const appMiddleWare = require("./config/middleware.js")
+const connectToDB = require("./config/db-setup.js").connectToDB
+const path = require("path")
 
-const setVars = require("./setEnvironmentVars.js")
+const setVars = require("../setEnvironmentVars.js")
 setVars.setEnvironmentVariables()
 
 // Import Routers
-let indexRouter = require("./server/routes/indexRouter.js")
-let router = require("./server/routes/router.js")
+let router = require("./routes/router.js")
 
 // =========
 // RUN APP
@@ -40,7 +39,7 @@ connectToDB(PROJECT_NAME)
 // =========
 // APPLICATION MIDDLEWARE
 // =========
-app.use(express.static(__dirname + "/dist/assets"))
+app.use(express.static(process.env.ROOT_DIR + "/assets"))
 app.use(bodyParser.json())
 app.use(morgan("dev"))
 app.use(passport.initialize())
@@ -63,10 +62,7 @@ app.listen(PORT, function() {
 
 app.get("*", function(req, res, next) {
 	if (!req.url.includes("api")) {
-		app.use(fallback(__dirname + "/dist/views/index.html"))
+		app.use(fallback(process.env.ROOT_DIR + "/views/index.html"))
 	}
 	return next()
 })
-
-
-

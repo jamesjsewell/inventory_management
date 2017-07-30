@@ -4,7 +4,6 @@ const User = require("../db/userSchema.js")
 // const mailchimp = require('../config/mailchimp');
 const setUserInfo = require("../config/helpers").setUserInfo
 const getRole = require("../config/helpers").getRole
-const config = require("../config/secrets")
 const nodemailer = require("nodemailer")
 
 // Generate JWT
@@ -15,9 +14,7 @@ function generateToken(user) {
     })
 }
 
-//= =======================================
 // Login Route
-//= =======================================
 exports.login = function(req, res, next) {
     const userInfo = setUserInfo(req.user)
 
@@ -27,9 +24,7 @@ exports.login = function(req, res, next) {
     })
 }
 
-//= =======================================
 // Registration Route
-//= =======================================
 exports.register = function(req, res, next) {
     // Check for registration errors
     const email = req.body.email
@@ -135,9 +130,7 @@ exports.aSyncValidation = function(req, res, next) {
     }
 }
 
-//= =======================================
 // Authorization Middleware
-//= =======================================
 
 // Role authorization check
 exports.roleAuthorization = function(requiredRole) {
@@ -162,10 +155,7 @@ exports.roleAuthorization = function(requiredRole) {
     }
 }
 
-//= =======================================
 // Forgot Password Route
-//= =======================================
-
 exports.forgotPassword = function(req, res, next) {
     const email = req.body.email
 
@@ -244,10 +234,7 @@ exports.forgotPassword = function(req, res, next) {
     })
 }
 
-//= =======================================
 // Reset Password Route
-//= =======================================
-
 exports.verifyToken = function(req, res, next) {
     User.findOne(
         {

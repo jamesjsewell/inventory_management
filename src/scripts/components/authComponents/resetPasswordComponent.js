@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form"
 import { resetPassword } from "../../actions/authActions.js"
 import { Button, Grid, Segment, Input, Form, Message } from "semantic-ui-react"
 import { Link } from "react-router-dom"
-import { FormField } from "../helpers/formFields.js"
+import { FormField } from "../formHelpers/formFields.js"
 import {
     required,
     maxLength,
@@ -13,7 +13,7 @@ import {
     email,
     shouldAsyncValidate,
     asyncValidate
-} from "../helpers/formValidation.js"
+} from "../formHelpers/formValidation.js"
 
 const form = reduxForm({
     form: "resetPassword",
@@ -66,7 +66,6 @@ class ResetPassword extends Component {
     }
 
     render() {
-       
         const { handleSubmit } = this.props
 
         return (
@@ -103,9 +102,14 @@ class ResetPassword extends Component {
                     content={this.props.stateOfReset}
                 />
 
-                {this.props.didReset ? <Link to="/login">login</Link> : <Button type="submit" loading={this.state.dispatchedReset}>
-                    reset password
-                </Button> }
+                {this.props.didReset
+                    ? <Link to="/login">login</Link>
+                    : <Button
+                          type="submit"
+                          loading={this.state.dispatchedReset}
+                      >
+                          reset password
+                      </Button>}
 
             </Form>
         )

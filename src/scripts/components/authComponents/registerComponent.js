@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import { Field, reduxForm } from "redux-form"
 import { registerUser } from "../../actions/authActions.js"
 import { Button, Grid, Segment, Input, Form } from "semantic-ui-react"
-import { FormField } from "../helpers/formFields.js"
+import { FormField } from "../formHelpers/formFields.js"
 import {
     required,
     maxLength,
@@ -12,7 +12,7 @@ import {
     email,
     shouldAsyncValidate,
     asyncValidate
-} from "../helpers/formValidation.js"
+} from "../formHelpers/formValidation.js"
 
 const form = reduxForm({
     form: "register",

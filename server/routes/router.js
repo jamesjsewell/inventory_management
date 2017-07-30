@@ -1,5 +1,5 @@
 const AuthenticationController = require('../controllers/authentication.js');
-const UserController = require('../controllers/user.js');
+const UserProfileController = require('../controllers/userProfile.js');
 const express = require('express');
 const passport = require('passport');
 const ROLE_MEMBER = require('../config/constants').ROLE_MEMBER;
@@ -12,15 +12,11 @@ const passportService = require('../config/passport');
 const requireAuth = passport.authenticate('jwt', { session: false });
 const requireLogin = passport.authenticate('local', { session: false });
 
-
-// Initializing route groups
 const apiRoutes = express.Router(),
-  authRoutes = express.Router(),
-  userRoutes = express.Router()
+authRoutes = express.Router(),
+userProfileRoutes = express.Router()
 
-//= ========================
 // Auth Routes
-//= ========================
 
 // Set auth routes as subgroup/middleware to apiRoutes
 apiRoutes.use('/auth', authRoutes);
@@ -43,17 +39,15 @@ authRoutes.post('/reset-password/:token', AuthenticationController.verifyToken);
 authRoutes.post('/request-api-key', AuthenticationController.fetchAPIkeys);
 
 
-//= ========================
 // User Routes
-//= ========================
 
 // Set user routes as a subgroup/middleware to apiRoutes
-apiRoutes.use('/user', userRoutes);
+apiRoutes.use('/user', userProfileRoutes);
 
 // View user profile route
-userRoutes.get('/:userId', requireAuth, UserController.viewProfile);
+userProfileRoutes.get('/:userId', requireAuth, UserProfileController.viewProfile);
 
-userRoutes.put('/:userId', requireAuth, UserController.updateProfile);
+userProfileRoutes.put('/:userId', requireAuth, UserProfileController.updateProfile);
 
 // Test protected route
 apiRoutes.get('/protected', requireAuth, (req, res) => {

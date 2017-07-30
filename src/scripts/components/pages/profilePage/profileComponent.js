@@ -30,7 +30,7 @@ import {
     number,
     asyncValidate,
     shouldAsyncValidate
-} from "../../helpers/formValidation.js"
+} from "../../formHelpers/formValidation.js"
 
 import _ from "underscore"
 

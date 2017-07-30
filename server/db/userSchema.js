@@ -55,9 +55,7 @@ const UserSchema = new Schema(
     }
 )
 
-//= ===============================
-// User ORM Methods
-//= ===============================
+//ORM methods
 
 // Pre-save of user to database, hash password if password is modified or new
 UserSchema.pre("save", function(next) {

@@ -7,15 +7,12 @@ import { protectedTest } from "../../actions/authActions"
 import { withRouter } from "react-router"
 
 const cookies = new Cookies()
-// var token = cookies.get("token")
-// var user = cookies.get("user")
 
 class Authentication extends Component {
     componentWillMount() {
         var token = cookies.get("token")
         var user = cookies.get("user")
         if (token) {
-
             if (!this.props.authenticated) {
                 this.props.protectedTest(user)
             }
@@ -29,33 +26,33 @@ class Authentication extends Component {
         var user = cookies.get("user")
 
         if (token) {
-
             if (nextProps.authenticated) {
-                if(this.props.location.pathname.includes(this.props.routes.login)){
-                    this.props.history.push('/'+this.props.routes.home)
+                if (
+                    this.props.location.pathname.includes(
+                        this.props.routes.login
+                    )
+                ) {
+                    this.props.history.push("/" + this.props.routes.home)
                 }
+            } else {
+                this.props.protectedTest(user)
             }
-            else{
-                this.props.protectedTest(user) 
-            }
-
         }
     }
 
     render() {
-   
-        return (
-            <div>
-                
-            </div>
-        )
+        return <div />
     }
 }
 
 function mapStateToProps(state) {
-    return { authenticated: state.auth.authenticated,
+    return {
+        authenticated: state.auth.authenticated,
         user: state.auth.user,
-    routes: state.nav.routes }
+        routes: state.nav.routes
+    }
 }
 
-export default withRouter(connect(mapStateToProps, { protectedTest })(Authentication))
+export default withRouter(
+    connect(mapStateToProps, { protectedTest })(Authentication)
+)

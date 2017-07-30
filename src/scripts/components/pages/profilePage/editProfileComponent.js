@@ -35,8 +35,8 @@ import {
     number,
     asyncValidate,
     shouldAsyncValidate
-} from "../../helpers/formValidation.js"
-import { FormField } from "../../helpers/formFields.js"
+} from "../../formHelpers/formValidation.js"
+import { FormField } from "../../formHelpers/formFields.js"
 import _ from "underscore"
 
 class EditProfile extends Component {
