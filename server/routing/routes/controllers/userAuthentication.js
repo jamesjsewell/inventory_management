@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
-const User = require("../db/userSchema.js")
+const User = require("../../../db/userSchema.js")
 // const mailchimp = require('../config/mailchimp');
-const setUserInfo = require("../config/helpers").setUserInfo
-const getRole = require("../config/helpers").getRole
+const setUserInfo = require("../../../config/helpers").setUserInfo
+const getRole = require("../../../config/helpers").getRole
 const nodemailer = require("nodemailer")
 
 // Generate JWT
@@ -280,6 +280,3 @@ exports.verifyToken = function(req, res, next) {
     )
 }
 
-exports.fetchAPIkeys = function(req, res, next) {
-    return res.status(200).json({ key: process.env[req.body.key] })
-}

@@ -1,5 +1,5 @@
-const User = require("../db/userSchema.js")
-const setUserInfo = require("../config/helpers.js").setUserInfo
+const User = require("../../../db/userSchema.js")
+const setUserInfo = require("../../../config/helpers.js").setUserInfo
 const _ = require("underscore")
 
 

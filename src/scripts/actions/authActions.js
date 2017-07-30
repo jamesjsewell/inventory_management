@@ -142,10 +142,10 @@ export function resetPassword(token, { password }) {
     }
 }
 
-export function protectedTest(user) {
+export function authenticate(user) {
     return function(dispatch) {
         axios
-            .get(`${API_URL}/protected`, {
+            .get(`${API_URL}/auth/authenticate`, {
                 headers: { Authorization: cookies.get("token") }
             })
             .then(response => {

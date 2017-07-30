@@ -15,7 +15,7 @@ const setVars = require("../setEnvironmentVars.js")
 setVars.setEnvironmentVariables()
 
 // Import Routers
-let router = require("./routes/router.js")
+let router = require("./routing/router.js")
 
 // =========
 // RUN APP

@@ -45,8 +45,7 @@ class Profile extends Component {
     }
 
     componentWillMount() {
-        // console.log(this.props.user._id)
-        // this.props.fetchUser(this.props.user._id)
+        
     }
 
     componentWillReceiveProps(nextProps) {

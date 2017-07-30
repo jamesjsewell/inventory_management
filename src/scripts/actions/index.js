@@ -172,7 +172,7 @@ export function deleteData(action, errorType, isAuthReq, url, dispatch) {
 //= ===============================
 export function getAPIkey(key){
     return function(dispatch) {
-        axios.post(`${API_URL}/auth/request-api-key`, {
+        axios.post(`${API_URL}/env/request-api-key`, {
             key
         })
         .then(response => {
