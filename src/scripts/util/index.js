@@ -1,22 +1,14 @@
 import axios from "axios"
 import _ from "underscore"
-import { logoutUser } from "./authActions"
-import {
-    STATIC_ERROR,
-    LOGIN_ERROR,
-    REGISTER_ERROR,
-    FETCH_USER,
-    LOADING_DATA,
-    DATA_LOADED,
-    AUTH_ERROR,
-    GET_API_KEY
-} from "./types"
-
+import { SubmissionError } from "redux-form"
+import Cookies from "universal-cookie"
+import { combineReducers } from "redux"
 export const API_URL = "/api"
 export const CLIENT_ROOT_URL = "https://localhost:8080"
-import { SubmissionError } from "redux-form"
+export const types = { FETCH_USER: "fetch_user", GET_API_KEY: "get_api_key" }
+const { FETCH_USER, GET_API_KEY } = types
 
-import Cookies from "universal-cookie"
+// reads cookies for an auth token and user
 const cookies = new Cookies()
 function getToken() {
     return cookies.get("token")
@@ -39,41 +31,10 @@ export function fetchUser(uid) {
                     payload: response.data.user
                 })
             })
-            .catch(response => dispatch(errorHandler(response.data.error)))
+            .catch(response => dispatch())
     }
 }
 
-export function errorHandler(dispatch, error, type) {
-    console.log("Error type: ", type)
-    console.log(error)
-
-    let errorMessage = error.response ? error.response.data : error
-
-    if (type === LOGIN_ERROR) {
-        errorMessage = error.data ? error.data : error
-    }
-    if (type === REGISTER_ERROR) {
-        errorMessage = error.data.error ? error.data.error : error
-    }
-    if (type === AUTH_ERROR) {
-        if (error.status || error.response.status) {
-            if (error.status === 401 || error.response.status === 401) {
-                errorMessage = "You are not authorized to do this."
-                return dispatch(logoutUser(errorMessage))
-            }
-        }
-    }
-
-    dispatch({
-        type,
-        payload: errorMessage
-    })
-
-    // if (error.status === 401 || error.response.status === 401) {
-    //     errorMessage = "You are not authorized to do this."
-    //     return dispatch(logoutUser(errorMessage))
-    // }
-}
 
 // Post Request
 export function postData(action, errorType, isAuthReq, url, dispatch, data) {
@@ -93,7 +54,7 @@ export function postData(action, errorType, isAuthReq, url, dispatch, data) {
             })
         })
         .catch(error => {
-            errorHandler(dispatch, error.response, errorType)
+            
         })
 }
 
@@ -115,7 +76,7 @@ export function getData(action, errorType, isAuthReq, url, dispatch) {
             })
         })
         .catch(error => {
-            errorHandler(dispatch, error.response, errorType)
+            
         })
 }
 
@@ -163,13 +124,11 @@ export function deleteData(action, errorType, isAuthReq, url, dispatch) {
             })
         })
         .catch(error => {
-            errorHandler(dispatch, error.response, errorType)
+            
         })
 }
 
-//= ===============================
-// Static Page actions
-//= ===============================
+// static page actions
 export function getAPIkey(key){
     return function(dispatch) {
         axios.post(`${API_URL}/env/request-api-key`, {
@@ -183,7 +142,7 @@ export function getAPIkey(key){
         })
         .catch(error => {
             console.log(error)
-            errorHandler(dispatch, error.response, STATIC_ERROR)
+            
         })
     }
 }
@@ -202,8 +161,28 @@ export function sendContactForm({ name, emailAddress, message }) {
                 })
             })
             .catch(error => {
-                errorHandler(dispatch, error.response, STATIC_ERROR)
+                
             })
     }
 }
-//Contact GitHub API Training Shop Blog About
+
+const init_user = {
+    user: undefined
+}
+
+function userReducer(state = init_user, action) {
+    switch (action.type) {
+        case FETCH_USER: {
+            return _.extend({}, state, {
+                user: action.payload
+            })
+        }
+    }
+
+    return state
+}
+
+export default combineReducers({
+    user: userReducer
+})
+

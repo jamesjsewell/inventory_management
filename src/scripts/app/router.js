@@ -3,23 +3,23 @@ import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import createHistory from "history/createBrowserHistory"
-import Navbar from "./pages/navBarComponent.js"
-import Register from "./authComponents/registerComponent.js"
-import Login from "./authComponents/loginComponent.js"
-import Authentication from "./authComponents/requireAuthComponent.js"
-import ResetPasswordPage
-    from "./pages/resetPasswordPage/resetPasswordPageComponent.js"
-import HomePage from "./pages/homePage/homePageComponent.js"
-import AuthPage from "./pages/authPage/authPageComponent.js"
-import ProfilePage from "./pages/profilePage/profilePageComponent.js"
-import NotAuthenticatedPage
-    from "./pages/notAuthenticatedPage/notAuthenticatedPageComponent.js"
-import {
-    setActiveNavLink,
-    hideSidebar,
-    activateSidebar
-} from "../actions/navActions.js"
-import { dataIsLoading } from "../actions/testActions.js"
+// import Navbar from "./pages/navBarComponent.js"
+// import Register from "./authComponents/registerComponent.js"
+// import Login from "./authComponents/loginComponent.js"
+// import Authentication from "./authComponents/requireAuthComponent.js"
+// import ResetPasswordPage
+//     from "./pages/resetPasswordPage/resetPasswordPageComponent.js"
+// import HomePage from "./pages/homePage/homePageComponent.js"
+// import AuthPage from "./pages/authPage/authPageComponent.js"
+// import ProfilePage from "./pages/profilePage/profilePageComponent.js"
+// import NotAuthenticatedPage
+//     from "./pages/notAuthenticatedPage/notAuthenticatedPageComponent.js"
+// import {
+//     setActiveNavLink,
+//     hideSidebar,
+//     activateSidebar
+// } from "../actions/navActions.js"
+// import { dataIsLoading } from "../actions/testActions.js"
 import {
     Menu,
     Segment,
@@ -34,15 +34,18 @@ import {
     Divider
 } from "semantic-ui-react"
 
+import HomeView from "../features/home/components/HomeView.jsx"
+import Navbar from "../features/navbar/components/NavbarView.jsx"
+
 class Blank extends Component {
     render() {
         return <div />
     }
 }
 
-class RouteConfig extends Component {
+class RouterConfig extends Component {
     handleHideSidebar() {
-        this.props.hideSidebar()
+        //this.props.hideSidebar()
     }
 
     render() {
@@ -70,7 +73,7 @@ class RouteConfig extends Component {
                                 <Grid.Column>
                                     <Button
                                         onClick={() => {
-                                            this.props.dataIsLoading(false)
+                                            //this.props.dataIsLoading(false)
                                         }}
                                     >
                                         finish testing
@@ -83,25 +86,24 @@ class RouteConfig extends Component {
 
                     </Dimmer>
 
-                    <Authentication />
-
                     <Navbar />
+                    <Blank Authentication="Authentication" />
 
                     <Switch>
                         <Route
                             location={location}
                             key={location.key}
                             path="/reset-password/:resetToken"
-                            component={ResetPasswordPage}
+                            // component={ResetPasswordPage}
                         />
                         <Route
                             path="/profile"
                             component={this.props.user ? ProfilePage : Blank}
                         />
-                        <Route path="/login" component={AuthPage} />
-                        <Route path="/register" component={AuthPage} />
-                        <Route exact path="/" component={HomePage} />
-                        <Route path="*" component={HomePage} />
+                        <Route path="/login" component={Blank} />
+                        <Route path="/register" component={Blank} />
+                        <Route exact path="/" component={HomeView} />
+                        <Route path="*" component={HomeView} />
 
                     </Switch>
 
@@ -112,19 +114,15 @@ class RouteConfig extends Component {
     }
 }
 
+// user: state.auth.user,
+// sidebarVisible: state.nav.sidebarVisible,
+// loadingData: state.data.loadingData
+
 function mapStateToProps(state) {
-    return {
-        user: state.auth.user,
-        sidebarVisible: state.nav.sidebarVisible,
-        loadingData: state.data.loadingData
-    }
+    return {}
 }
 
-export default withRouter(
-    connect(mapStateToProps, {
-        setActiveNavLink,
-        hideSidebar,
-        dataIsLoading
-    })(RouteConfig)
-)
-
+// {
+//     setActiveNavLink, hideSidebar, dataIsLoading
+// }
+export default withRouter(connect(mapStateToProps)(RouterConfig))

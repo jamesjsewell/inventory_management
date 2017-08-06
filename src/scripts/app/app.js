@@ -4,8 +4,8 @@ import { Provider } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import { BrowserRouter, Route, Link } from "react-router-dom"
 import thunk from "redux-thunk"
-import RouteConfig from "./components/appComponent.js"
-import reducers from "./reducers/index.js"
+import RouterConfig from "./router.js"
+import rootReducer from "./reducers.js"
 import ReactGA from "react-ga"
 
 // Initialize Google Analytics
@@ -16,13 +16,13 @@ function logPageView() {
 }
 
 const middleware = applyMiddleware(thunk)
-const store = createStore(reducers, middleware)
+const store = createStore(rootReducer, middleware)
 
 ReactDOM.render(
 
     <Provider store={store}>
         <BrowserRouter>
-            <RouteConfig />
+            <RouterConfig />
         </BrowserRouter>
     </Provider>,
     document.querySelector(".wrapper")
