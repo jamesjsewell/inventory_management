@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from "react"
 import { Menu, Segment, Grid, Sidebar, Header, Button } from "semantic-ui-react"
 
 export default class NavbarLayout extends Component {
-    
 
     render() {
         console.log(this.props)

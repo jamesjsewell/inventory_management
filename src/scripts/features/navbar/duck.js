@@ -36,9 +36,9 @@ export function logoutUser(error) {
 }
 
 // Reducers
-const INITIAL_STATE = { activeNavTab: "", sidebarVisible: false }
+const init_nav = { activeNavTab: "" }
 
-function navLinkReducer(state = INITIAL_STATE, action) {
+function navLinkReducer(state = init_nav, action) {
 	switch (action.type) {
 		case SET_ACTIVE_NAV_LINK: {
 			return _.extend({}, state, { activeNavTab: action.payload })
@@ -48,7 +48,9 @@ function navLinkReducer(state = INITIAL_STATE, action) {
 	return state
 }
 
-function sidebarReducer(state = INITIAL_STATE, action) {
+const init_sidebar = { sidebarVisible: false }
+
+function sidebarReducer(state = init_sidebar, action) {
 	switch (action.type) {
 		case SHOW_HIDE_SIDEBAR: {
 			return _.extend({}, state, { sidebarVisible: action.payload })
@@ -64,8 +66,8 @@ export default combineReducers({
 })
 
 // Selectors
-const activeNavTab = state => state.nav.activeNavTab
-const sidebarVisible = state => state.nav.sidebarVisible
+const activeNavTab = state => state.nav.navLink.activeNavTab
+const sidebarVisible = state => state.nav.sidebar.sidebarVisible
 const authenticated = state => state.auth.authenticated
 
 export const selector = createStructuredSelector({
