@@ -8,7 +8,7 @@ const cookies = new Cookies()
 const SET_ACTIVE_NAV_LINK = "evanescent/navbar/SET_ACTIVE_NAV_LINK",
 	SHOW_HIDE_SIDEBAR = "evanescent/navbar/SHOW_HIDE_SIDEBAR"
 
-// Actions
+// actions
 export function setActiveNavLink(selectedItemName) {
 	return function(dispatch) {
 		dispatch({ type: SET_ACTIVE_NAV_LINK, payload: selectedItemName })
@@ -35,7 +35,7 @@ export function logoutUser(error) {
 	}
 }
 
-// Reducers
+// reducers
 const init_nav = { activeNavTab: "" }
 
 function navLinkReducer(state = init_nav, action) {
@@ -65,7 +65,7 @@ export default combineReducers({
 	sidebar: sidebarReducer
 })
 
-// Selectors
+// selectors
 const activeNavTab = state => state.nav.navLink.activeNavTab
 const sidebarVisible = state => state.nav.sidebar.sidebarVisible
 const authenticated = state => state.auth.authenticated
