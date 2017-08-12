@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 import { Field, reduxForm } from "redux-form"
-import { registerUser } from "../../actions/authActions.js"
 import { Button, Grid, Segment, Input, Form } from "semantic-ui-react"
 
 import {
@@ -15,27 +14,25 @@ import {
 } from "../../../util/formValidation/formValidation.js"
 import { FormField } from "../../../components/forms/fields/formField.js"
 
-const form = reduxForm({
-    form: "register",
-    asyncValidate,
-    asyncBlurFields: ["email", "passwordConfirm", "emailConfirm"],
-    shouldAsyncValidate
-})
-
 class Register extends Component {
     constructor(props) {
         super(props)
         this.state = { dispatchedRegister: false }
     }
 
+    handleRegisterSubmit(formProps) {
+        console.log("fuckkk")
+        this.props.registerAction(formProps)
+    }
+
     renderAlert() {
-        if (this.props.errorMessage) {
+        if (this.props.registerError) {
             return (
                 <Segment color="red" compact>
                     <span>
                         <strong>Registration Error: </strong>
                         {" "}
-                        {this.props.errorMessage}
+                        {this.props.registerError}
                     </span>
                 </Segment>
             )
@@ -52,12 +49,7 @@ class Register extends Component {
         const { handleSubmit } = this.props
 
         return (
-            <Form
-                onSubmit={() => {
-                    handleSubmit(this.props.registerSubmit.bind(this))
-                    this.state.dispatchedRegister = true
-                }}
-            >
+            <Form onSubmit={handleSubmit(this.handleRegisterSubmit.bind(this))}>
                 {this.renderAlert()}
 
                 <Field
@@ -110,5 +102,11 @@ class Register extends Component {
         )
     }
 }
-
-export default form(Register)
+const formConfig = {
+    form: "register",
+    asyncValidate,
+    asyncBlurFields: ["email", "passwordConfirm", "emailConfirm"],
+    shouldAsyncValidate
+}
+const registerContainer = reduxForm(formConfig)(Register)
+export default registerContainer

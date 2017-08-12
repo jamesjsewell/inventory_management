@@ -113,7 +113,9 @@ exports.aSyncValidation = function(req, res, next) {
                 }
             }
 
-            return res.status(422).send(errors)
+            if (Object.keys(errors).length > 0) {
+                return res.status(422).send(errors)
+            }
         })
     } else {
         User.findOne({ username }, (err, existingUser) => {
@@ -279,4 +281,3 @@ exports.verifyToken = function(req, res, next) {
         }
     )
 }
-

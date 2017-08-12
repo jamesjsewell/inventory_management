@@ -10,7 +10,7 @@ import UserSessionLayout from "./UserSessionLayout.jsx"
 		actions: bindActionCreators(duck, dispatch)
 	})
 )
-export default class Navbar extends Component {
+export default class UserSessionView extends Component {
 
 	render() {
 		return (

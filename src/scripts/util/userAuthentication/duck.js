@@ -17,21 +17,24 @@ export const types = {
 	PROTECTED_TEST: "protected_test"
 }
 
-const {AUTH_USER,
-GET_LOGGED_IN_USER,
-UNAUTH_USER,
-AUTH_ERROR,
-LOGIN_ERROR,
-REGISTER_ERROR,
-FORGOT_PASSWORD_REQUEST,
-RESET_PASSWORD_REQUEST,
-PROTECTED_TEST } = types
+const {
+	AUTH_USER,
+	GET_LOGGED_IN_USER,
+	UNAUTH_USER,
+	AUTH_ERROR,
+	LOGIN_ERROR,
+	REGISTER_ERROR,
+	FORGOT_PASSWORD_REQUEST,
+	RESET_PASSWORD_REQUEST,
+	PROTECTED_TEST
+} = types
 
 const cookies = new Cookies()
 
 // actions
 // TO-DO: Add expiration to cookie
 export function loginUser({ email, password }) {
+
 	return function(dispatch) {
 		axios
 			.post(`${API_URL}/auth/login`, { email, password })
@@ -42,12 +45,13 @@ export function loginUser({ email, password }) {
 				dispatch({ type: AUTH_USER, payload: response.data.user })
 			})
 			.catch(error => {
-				console.log(error)
+				dispatch({ type: LOGIN_ERROR, payload: "invalid email or password" })
 			})
 	}
 }
 
 export function registerUser({ email, firstName, lastName, password }) {
+
 	return function(dispatch) {
 		axios
 			.post(`${API_URL}/auth/register`, {
@@ -63,7 +67,9 @@ export function registerUser({ email, firstName, lastName, password }) {
 				cookies.set("user", response.data.user, { path: "/" })
 				dispatch({ type: AUTH_USER, payload: response.data.user })
 			})
-			.catch(error => {})
+			.catch(error => {
+				dispatch({ type: REGISTER_ERROR, payload: "unable to create account" })
+			})
 	}
 }
 
@@ -73,7 +79,7 @@ export function logoutUser(error) {
 		cookies.remove("token", { path: "/" })
 		cookies.remove("user", { path: "/" })
 		console.log(cookies.get("user"))
-		//window.location.href = `${CLIENT_ROOT_URL}/login`;
+	
 	}
 }
 
@@ -166,18 +172,14 @@ const init_auth = {
 	loginError: undefined,
 	registerError: undefined,
 	authError: undefined,
-	message: undefined,
-	content: undefined,
 	authenticated: true,
 	user: undefined
 }
 
-function authReducer(state = init_auth, action) {
+function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
 		case AUTH_USER: {
 			return _.extend({}, state, {
-				error: "",
-				message: "",
 				authenticated: true,
 				user: action.payload,
 				loginError: undefined
@@ -189,7 +191,6 @@ function authReducer(state = init_auth, action) {
 				authenticated: false,
 				loginError: undefined,
 				registerError: undefined,
-				error: action.payload,
 				user: undefined
 			})
 		}
@@ -200,12 +201,15 @@ function authReducer(state = init_auth, action) {
 
 		case LOGIN_ERROR: {
 			return _.extend({}, state, {
-				loginError: "invalid email or password"
+				loginError: true
 			})
 		}
 
 		case REGISTER_ERROR: {
-			return _.extend({}, state, { registerError: action.payload, loginError: undefined })
+			return _.extend({}, state, {
+				registerError: action.payload,
+				loginError: undefined
+			})
 		}
 
 		// case PROTECTED_TEST: {
@@ -221,7 +225,6 @@ function authReducer(state = init_auth, action) {
 }
 
 const init_password_reset = {
-	didPasswordReset: false,
 	passwordSendSuccessful: undefined,
 	stateOfPasswordSend: undefined,
 	sendingPassword: undefined
@@ -236,19 +239,12 @@ function passwordResetReducer(state = init_password_reset, action) {
 				passwordSendSuccessful: action.payload.sendSuccessful
 			})
 		}
-
-		case RESET_PASSWORD_REQUEST: {
-			return _.extend({}, state, {
-				didPasswordReset: action.payload.didReset,
-				stateOfReset: action.payload.message
-			})
-		}
 	}
 
 	return state
 }
 
 export default combineReducers({
-	auth: authReducer,
+	userSession: userSessionReducer,
 	passwordReset: passwordResetReducer
 })

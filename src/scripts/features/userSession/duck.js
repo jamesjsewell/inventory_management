@@ -14,20 +14,37 @@ import {
 	resetPassword,
 	authenticate
 } from "../../util/userAuthentication/duck"
-
+export {
+	loginUser,
+	registerUser,
+	logoutUser,
+	getForgotPasswordToken,
+	resetPassword,
+	authenticate
+}
 // reducers
 
 // selectors
-const activeNavTab = state => state.nav.navLink.activeNavTab
-const sidebarVisible = state => state.nav.sidebar.sidebarVisible
-const authenticated = state => state.auth.authenticated
-//NEED ONE FOR REGISTER ERROR
-//NEED ONE FOR LOGIN ERROR
-//SEND SUCCESSFUL 
-//STATE OF SEND
+
+//user session selectors
+
+const loginError = state => state.auth.userSession.loginError,
+	registerError = state => state.auth.userSession.registerError,
+	authenticated = state => state.auth.userSession.authenticated,
+	user = state => state.auth.userSession.user
+
+//password reset selectors
+const stateOfPasswordSend = state =>
+	state.auth.passwordReset.stateOfPasswordSend,
+	sendingPassword = state => state.auth.passwordReset.sendingPassword,
+	passwordSendSuccessful = state =>
+		state.auth.passwordReset.passwordSendSuccessful
 
 export const selector = createStructuredSelector({
-	activeNavTab,
-	sidebarVisible,
+	stateOfPasswordSend,
+	sendingPassword,
+	passwordSendSuccessful,
+	loginError,
+	registerError,
 	authenticated
 })

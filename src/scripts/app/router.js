@@ -36,6 +36,7 @@ import {
 
 import HomeView from "../features/home/components/HomeView.jsx"
 import Navbar from "../features/navbar/components/NavbarView.jsx"
+import UserSessionView from "../features/userSession/components/UserSessionView.jsx"
 
 class Blank extends Component {
     render() {
@@ -100,7 +101,7 @@ class RouterConfig extends Component {
                             path="/profile"
                             component={this.props.user ? ProfilePage : Blank}
                         />
-                        <Route path="/login" component={Blank} />
+                        <Route path="/login" component={UserSessionView} />
                         <Route path="/register" component={Blank} />
                         <Route exact path="/" component={HomeView} />
                         <Route path="*" component={HomeView} />

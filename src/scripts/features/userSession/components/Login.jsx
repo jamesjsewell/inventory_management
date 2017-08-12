@@ -2,7 +2,6 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import { Field, reduxForm } from "redux-form"
 import { Link } from "react-router-dom"
-import { loginUser } from "../../actions/authActions"
 import {
     Button,
     Grid,
@@ -17,16 +16,11 @@ import {
     maxLength,
     minLength,
     alphaNumeric,
-    email
+    email,
+    asyncValidate,
+    shouldAsyncValidate
 } from "../../../util/formValidation/formValidation.js"
 import { FormField } from "../../../components/forms/fields/formField.js"
-
-const form = reduxForm({
-    form: "loginForm",
-    asyncValidate,
-    asyncBlurFields: ["email", "password"],
-    shouldAsyncValidate
-})
 
 class Login extends Component {
     constructor(props) {
@@ -34,8 +28,13 @@ class Login extends Component {
         this.state = { dispatchedLogin: false }
     }
 
+    handleLoginSubmit(formProps) {
+        this.props.loginAction(formProps)
+        this.state.dispatchedLogin = true
+    }
+
     renderAlert() {
-        if (this.props.errorMessage) {
+        if (this.props.loginError) {
             return (
                 <Segment color="red" compact>
 
@@ -59,14 +58,19 @@ class Login extends Component {
     }
 
     render() {
-        const { handleSubmit, pristine, reset, submitting } = this.props
+        const {
+            handleSubmit,
+            pristine,
+            reset,
+            submitting,
+            loginError
+        } = this.props
 
         return (
             <Form
-                onSubmit={handleSubmit(this.props.loginSubmit.bind(this))}
+                onSubmit={handleSubmit(this.handleLoginSubmit.bind(this))}
                 size="huge"
                 padded
-                inverted={this.props.isInverted}
             >
 
                 {this.renderAlert()}
@@ -93,7 +97,6 @@ class Login extends Component {
 
                 <Button
                     type="submit"
-                    className="btn btn-primary"
                     loading={this.state.dispatchedLogin ? true : false}
                 >
                     Login
@@ -104,4 +107,6 @@ class Login extends Component {
     }
 }
 
-export default form(Login)
+export default reduxForm({
+    form: "loginForm"
+})(Login)

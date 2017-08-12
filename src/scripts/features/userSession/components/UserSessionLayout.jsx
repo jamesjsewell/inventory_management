@@ -7,18 +7,6 @@ import Register from "./Register.jsx"
 import ForgotPassword from "./ForgotPassword.jsx"
 
 export default class UserSessionLayout extends Component {
-    handleRegisterSubmit(formProps) {
-        this.props.actions.registerUser(formProps)
-    }
-
-    handleLoginSubmit(formProps) {
-        this.props.actions.loginUser(formProps)
-    }
-
-    handleResetPasswordSubmit(formProps) {
-        this.props.actions.getForgotPasswordToken(formProps)
-    }
-
     render() {
         return (
             <div>
@@ -40,9 +28,8 @@ export default class UserSessionLayout extends Component {
                             <Segment attached>
 
                                 <Login
-                                    loginSubmit={this.handleLoginSubmit.bind(
-                                        this
-                                    )}
+                                    loginError={this.props.loginError}
+                                    loginAction={this.props.actions.loginUser}
                                 />
 
                                 <Segment>
@@ -56,7 +43,12 @@ export default class UserSessionLayout extends Component {
                                         </Modal.Header>
                                         <Modal.Content>
                                             <Modal.Description>
-                                                <ForgotPassword />
+                                                <ForgotPassword
+                                                    action_resetPassword={
+                                                        this.props.actions
+                                                            .registerUser
+                                                    }
+                                                />
                                             </Modal.Description>
                                         </Modal.Content>
                                     </Modal>
@@ -79,9 +71,10 @@ export default class UserSessionLayout extends Component {
 
                             <Segment attached>
                                 <Register
-                                    registerSubmit={this.handleRegisterSubmit.bind(
-                                        this
-                                    )}
+                                    registerError={this.props.registerError}
+                                    registerAction={
+                                        this.props.actions.registerUser
+                                    }
                                 />
                             </Segment>
 

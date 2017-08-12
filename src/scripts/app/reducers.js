@@ -6,6 +6,6 @@ import user from '../util/index'
 import nav from '../features/navbar/duck'
 import auth from '../util/userAuthentication/duck'
 
-const rootReducer = combineReducers({auth, user, nav, home})
+const rootReducer = combineReducers({auth, user, nav, home, form: formReducer})
 
 export default rootReducer

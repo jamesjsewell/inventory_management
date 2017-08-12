@@ -47,7 +47,7 @@ export const aol = value =>
 
 //for async validation with redux form
 export const asyncValidate = (values, dispatch, validationType) => {
-    console.log("values", values)
+    
     var request = axios.post(`${API_URL}/auth/validate`, {
         values
     })
@@ -57,7 +57,7 @@ export const asyncValidate = (values, dispatch, validationType) => {
             return
         })
         .catch(error => {
-            console.log(error.response)
+            console.log(error.response.data)
             if (error.response.data) {
                 return(error.response.data)
             }
@@ -75,8 +75,8 @@ export function shouldAsyncValidate(params) {
         case "submit":
             // submitting, so only async validate if form is dirty or was never initialized
             // conversely, DON'T async validate if the form is pristine just as it was initialized
-            return !params.pristine || !params.initialized
-            //return false
+            // return !params.pristine || !params.initialized
+            return false
         default:
             return false
     }

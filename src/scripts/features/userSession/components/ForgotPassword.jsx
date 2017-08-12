@@ -11,7 +11,6 @@ import {
     asyncValidate
 } from "../../../util/formValidation/formValidation.js"
 import { FormField } from "../../../components/forms/fields/formField.js"
-//import { getForgotPasswordToken } from "../../actions/authActions.js"
 
 const form = reduxForm({
     form: "forgotPassword",
@@ -62,15 +61,14 @@ class ForgotPassword extends Component {
 
     render() {
 
-        const { handleSubmit } = this.props
+        const { handleSubmit, sendSuccessful, stateOfSend, sendingPassword, action_resetPassword } = this.props
      
         return (
             <Form
-                onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}
-                inverted={this.props.isInverted}
+                onSubmit={handleSubmit(action_resetPassword.bind(this))}
             >
 
-                {this.props.sendSuccessful ? <Segment>check your email and follow the link</Segment> : 
+                {sendSuccessful ? <Segment>check your email and follow the link</Segment> : 
 
                 <Field
                     name="email"
@@ -83,7 +81,7 @@ class ForgotPassword extends Component {
                     required={false}
                 /> }
 
-                {this.props.sendSuccessful ? <div></div> : <Field
+                {sendSuccessful ? <div></div> : <Field
                     name="emailConfirm"
                     component={FormField}
                     type="text"
@@ -101,7 +99,7 @@ class ForgotPassword extends Component {
                 />
 
                 <Button type="submit" loading={this.props.sending}>
-                    {this.props.sendSuccessful ? "resend email" : "send email"}
+                    {sendSuccessful ? "resend email" : "send email"}
                 </Button>
 
 
@@ -109,14 +107,6 @@ class ForgotPassword extends Component {
         )
     }
 }
-
-// function mapStateToProps(state) {
-//     return {
-//         sending: state.auth.passwordSending,
-//         stateOfSend: state.auth.stateOfPasswordSend,
-//         sendSuccessful: state.auth.passwordSendSuccessful
-//     }
-// }
 
 export default form(ForgotPassword)
 
