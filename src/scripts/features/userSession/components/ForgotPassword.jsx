@@ -19,34 +19,34 @@ const form = reduxForm({
 })
 
 function validate(formProps) {
-        const errors = {}
+    const errors = {}
 
-        if (!formProps.email) {
-            errors.email = "enter your email"
-        }
-
-        if (!formProps.emailConfirm) {
-            errors.emailConfirm = "confirm your email"
-        }
-
-        if (formProps.email !== formProps.emailConfirm) {
-            errors.emailConfirm = "emails must match"
-        }
-
-        return errors
+    if (!formProps.email) {
+        errors.email = "enter your email"
     }
 
-class ForgotPassword extends Component {
+    if (!formProps.emailConfirm) {
+        errors.emailConfirm = "confirm your email"
+    }
 
+    if (formProps.email !== formProps.emailConfirm) {
+        errors.emailConfirm = "emails must match"
+    }
+
+    return errors
+}
+
+class ForgotPassword extends Component {
     constructor(props) {
         super(props)
         this.state = { messageShowing: false }
     }
 
     componentWillReceiveProps(nextProps) {
-        
-        if (nextProps.sendSuccessful === true || nextProps.sendSuccessful === false) {
-
+        if (
+            nextProps.sendSuccessful === true ||
+            nextProps.sendSuccessful === false
+        ) {
             this.handleShowMessage()
         }
     }
@@ -60,48 +60,52 @@ class ForgotPassword extends Component {
     }
 
     render() {
+        const {
+            handleSubmit,
+            sendSuccessful,
+            stateOfSend,
+            sendingEmail,
+            requestPasswordAction
+        } = this.props
 
-        const { handleSubmit, sendSuccessful, stateOfSend, sendingPassword, action_resetPassword } = this.props
-     
         return (
-            <Form
-                onSubmit={handleSubmit(action_resetPassword.bind(this))}
-            >
+            <Form onSubmit={handleSubmit((formProps)=>{requestPasswordAction(formProps)})}>
 
-                {sendSuccessful ? <Segment>check your email and follow the link</Segment> : 
+                {sendSuccessful
+                    ? <Segment>check your email and follow the link</Segment>
+                    : <Field
+                          name="email"
+                          component={FormField}
+                          type="text"
+                          label="enter your email"
+                          placeholder="enter email"
+                          validate={[required, email, minLength(2)]}
+                          warn={[required, minLength(2)]}
+                          required={false}
+                      />}
 
-                <Field
-                    name="email"
-                    component={FormField}
-                    type="text"
-                    label="enter your email"
-                    placeholder="enter email"
-                    validate={[required, email, minLength(2)]}
-                    warn={[required, minLength(2)]}
-                    required={false}
-                /> }
-
-                {sendSuccessful ? <div></div> : <Field
-                    name="emailConfirm"
-                    component={FormField}
-                    type="text"
-                    placeholder="confirm email"
-                    validate={[required, email, minLength(2)]}
-                    warn={[required, minLength(2)]}
-                    required={false}
-                /> }
+                {sendSuccessful
+                    ? <div />
+                    : <Field
+                          name="emailConfirm"
+                          component={FormField}
+                          type="text"
+                          placeholder="confirm email"
+                          validate={[required, email, minLength(2)]}
+                          warn={[required, minLength(2)]}
+                          required={false}
+                      />}
 
                 <Message
                     visible={this.state.messageShowing ? true : false}
                     hidden={this.state.messageShowing ? false : true}
                     floating
-                    content={this.props.stateOfSend}
+                    content={stateOfSend}
                 />
 
-                <Button type="submit" loading={this.props.sending}>
+                <Button type="submit" loading={sendingEmail}>
                     {sendSuccessful ? "resend email" : "send email"}
                 </Button>
-
 
             </Form>
         )
@@ -109,4 +113,3 @@ class ForgotPassword extends Component {
 }
 
 export default form(ForgotPassword)
-

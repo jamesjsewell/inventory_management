@@ -225,18 +225,18 @@ function userSessionReducer(state = init_auth, action) {
 }
 
 const init_password_reset = {
-	passwordSendSuccessful: undefined,
-	stateOfPasswordSend: undefined,
-	sendingPassword: undefined
+	emailSendSuccessful: undefined,
+	stateOfEmailSend: undefined,
+	sendingEmail: undefined
 }
 
-function passwordResetReducer(state = init_password_reset, action) {
+function forgotPasswordReducer(state = init_password_reset, action) {
 	switch (action.type) {
 		case FORGOT_PASSWORD_REQUEST: {
 			return _.extend({}, state, {
-				stateOfPasswordSend: action.payload.stateOfSend,
-				sendingPassword: action.payload.sending,
-				passwordSendSuccessful: action.payload.sendSuccessful
+				stateOfEmailSend: action.payload.stateOfSend,
+				sendingEmail: action.payload.sending,
+				emailSendSuccessful: action.payload.sendSuccessful
 			})
 		}
 	}
@@ -246,5 +246,5 @@ function passwordResetReducer(state = init_password_reset, action) {
 
 export default combineReducers({
 	userSession: userSessionReducer,
-	passwordReset: passwordResetReducer
+	forgotPassword: forgotPasswordReducer
 })

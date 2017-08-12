@@ -44,9 +44,20 @@ export default class UserSessionLayout extends Component {
                                         <Modal.Content>
                                             <Modal.Description>
                                                 <ForgotPassword
-                                                    action_resetPassword={
+                                                    requestPasswordAction={
                                                         this.props.actions
-                                                            .registerUser
+                                                            .getForgotPasswordToken
+                                                    }
+                                                    sendSuccessful={
+                                                        this.props
+                                                            .emailSendSuccessful
+                                                    }
+                                                    stateOfSend={
+                                                        this.props
+                                                            .stateOfEmailSend
+                                                    }
+                                                    sendingEmail={
+                                                        this.props.sendingEmail
                                                     }
                                                 />
                                             </Modal.Description>

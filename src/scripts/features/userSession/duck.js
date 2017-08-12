@@ -33,17 +33,16 @@ const loginError = state => state.auth.userSession.loginError,
 	authenticated = state => state.auth.userSession.authenticated,
 	user = state => state.auth.userSession.user
 
-//password reset selectors
-const stateOfPasswordSend = state =>
-	state.auth.passwordReset.stateOfPasswordSend,
-	sendingPassword = state => state.auth.passwordReset.sendingPassword,
-	passwordSendSuccessful = state =>
-		state.auth.passwordReset.passwordSendSuccessful
+//request new password selectors
+const stateOfEmailSend = state => state.auth.forgotPassword.stateOfEmailSend,
+	sendingEmail = state => state.auth.forgotPassword.sendingEmail,
+	emailSendSuccessful = state =>
+		state.auth.forgotPassword.emailSendSuccessful
 
 export const selector = createStructuredSelector({
-	stateOfPasswordSend,
-	sendingPassword,
-	passwordSendSuccessful,
+	stateOfEmailSend,
+	sendingEmail,
+	emailSendSuccessful,
 	loginError,
 	registerError,
 	authenticated
