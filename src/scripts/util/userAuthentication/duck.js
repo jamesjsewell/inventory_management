@@ -34,7 +34,6 @@ const cookies = new Cookies()
 // actions
 // TO-DO: Add expiration to cookie
 export function loginUser({ email, password }) {
-
 	return function(dispatch) {
 		axios
 			.post(`${API_URL}/auth/login`, { email, password })
@@ -45,13 +44,15 @@ export function loginUser({ email, password }) {
 				dispatch({ type: AUTH_USER, payload: response.data.user })
 			})
 			.catch(error => {
-				dispatch({ type: LOGIN_ERROR, payload: "invalid email or password" })
+				dispatch({
+					type: LOGIN_ERROR,
+					payload: "invalid email or password"
+				})
 			})
 	}
 }
 
 export function registerUser({ email, firstName, lastName, password }) {
-
 	return function(dispatch) {
 		axios
 			.post(`${API_URL}/auth/register`, {
@@ -68,7 +69,10 @@ export function registerUser({ email, firstName, lastName, password }) {
 				dispatch({ type: AUTH_USER, payload: response.data.user })
 			})
 			.catch(error => {
-				dispatch({ type: REGISTER_ERROR, payload: "unable to create account" })
+				dispatch({
+					type: REGISTER_ERROR,
+					payload: "unable to create account"
+				})
 			})
 	}
 }
@@ -79,7 +83,6 @@ export function logoutUser(error) {
 		cookies.remove("token", { path: "/" })
 		cookies.remove("user", { path: "/" })
 		console.log(cookies.get("user"))
-	
 	}
 }
 
@@ -224,19 +227,28 @@ function userSessionReducer(state = init_auth, action) {
 	return state
 }
 
-const init_password_reset = {
+const init_forgot_password = {
 	emailSendSuccessful: undefined,
 	stateOfEmailSend: undefined,
-	sendingEmail: undefined
+	sendingEmail: undefined,
+	didPasswordReset: undefined,
+	stateOfReset: undefined
 }
 
-function forgotPasswordReducer(state = init_password_reset, action) {
+function forgotPasswordReducer(state = init_forgot_password, action) {
 	switch (action.type) {
 		case FORGOT_PASSWORD_REQUEST: {
 			return _.extend({}, state, {
 				stateOfEmailSend: action.payload.stateOfSend,
 				sendingEmail: action.payload.sending,
 				emailSendSuccessful: action.payload.sendSuccessful
+			})
+		}
+
+		case RESET_PASSWORD_REQUEST: {
+			return _.extend({}, state, {
+				didPasswordReset: action.payload.didReset,
+				stateOfReset: action.payload.message
 			})
 		}
 	}

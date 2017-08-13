@@ -37,6 +37,7 @@ import {
 import HomeView from "../features/home/components/HomeView.jsx"
 import Navbar from "../features/navbar/components/NavbarView.jsx"
 import UserSessionView from "../features/userSession/components/UserSessionView.jsx"
+import ResetPasswordView from "../features/userSession/components/ResetPasswordView.jsx"
 
 class Blank extends Component {
     render() {
@@ -95,7 +96,7 @@ class RouterConfig extends Component {
                             location={location}
                             key={location.key}
                             path="/reset-password/:resetToken"
-                            // component={ResetPasswordPage}
+                            component={ResetPasswordView}
                         />
                         <Route
                             path="/profile"
