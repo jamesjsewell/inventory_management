@@ -47,10 +47,13 @@ class EditProfile extends Component {
                 : ""
         }
         this.props.actions.getAPIkey("FILESTACK_KEY")
+        
+
     }
 
     componentWillMount() {
-        
+        console.log(this.props.actions)
+        this.props.actions.fetchUserProfile(this.props.user._id)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -89,13 +92,13 @@ class EditProfile extends Component {
 
         this.state.messageIsOpen = setTimeout(() => {
             this.setState({ messageIsOpen: false })
-            this.props.resetStatusOfUpdate()
+            this.props.actions.resetStatusOfUpdate()
         }, 2500)
     }
 
     handleUpload(evt) {
         evt.preventDefault()
-        this.props.actions.uploadProfileImage(this.props.apiKey)
+        this.props.actions.uploadProfileImage(this.props.filestackApiKey)
     }
 
     removeProfileImage() {
@@ -103,7 +106,7 @@ class EditProfile extends Component {
         this.state.removePicModalOpen = false
         var updated = { profile: this.state.upToDateProfile }
         updated["profile"]["avatarUrl"] = undefined
-        this.props.updatePersonalInfo(this.props.user._id, updated)
+        this.props.actions.updatePersonalInfo(this.props.user._id, updated)
     }
 
     handleFormSubmit(formProps) {

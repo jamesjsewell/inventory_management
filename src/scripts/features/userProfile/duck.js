@@ -1,16 +1,19 @@
 import { combineReducers } from "redux"
 import { createStructuredSelector } from "reselect"
 import _ from "underscore"
-
+import axios from "axios"
 import {
+	API_URL,
 	fetchUser,
 	postData,
 	getData,
 	putData,
 	deleteData,
-	getAPIkey
+	getAPIkey,
+	getToken
 } from "../../util/index.js"
 const FETCH_USER = "fetch_user",
+	GET_USER_PROFILE = "get_user_profile",
 	UPDATE_USER_PROFILE = "update_user_profile",
 	UPLOAD_PROFILE_IMAGE = "upload_profile_image"
 
@@ -19,6 +22,23 @@ import filestack from "filestack-js"
 
 // actions
 export { getAPIkey }
+
+export function fetchUserProfile(uid) {
+	console.log('fuckkk')
+    return function(dispatch) {
+        axios
+            .get(`${API_URL}/user/${uid}`, {
+                headers: { Authorization: getToken() }
+            })
+            .then(response => {
+                dispatch({
+                    type: GET_USER_PROFILE,
+                    payload: response.data
+                })
+            })
+            .catch(error => {console.log('error')})
+    }
+}
 
 export function updatePersonalInfo(userId, updatedInfo) {
 	return function(dispatch) {
@@ -134,10 +154,10 @@ const init_user_profile = {
 
 function userProfileReducer(state = init_user_profile, action) {
     switch (action.type) {
-        case FETCH_USER:
+        case GET_USER_PROFILE:
             return _.extend({}, state, {
-                username: action.payload.username,
-                profile: action.payload.profile
+                profile: action.payload.user.profile,
+                username: action.payload.user.username
             })
         case UPDATE_USER_PROFILE:
             
@@ -168,8 +188,8 @@ username = state => state.editProfile.userProfile.username,
 updatingProfile = state => state.editProfile.userProfile.updatingProfile,
 updated = state => state.editProfile.userProfile.updateProfileSuccess,
 errorUpdating = state => state.editProfile.userProfile.updateProfileError,
-receivedImgUrl = state => state.editProfile.userProfile.receivedImgUrl,
-apiKey = state => state.editProfile.userProfile.apiKey
+receivedImgUrl = state => state.editProfile.userProfile.receivedUrl,
+filestackApiKey = state => state.util.apiKeys.filestackApiKey
 
 
 export const selector = createStructuredSelector({
@@ -180,7 +200,7 @@ export const selector = createStructuredSelector({
 	updated,
 	errorUpdating,
 	receivedImgUrl,
-	apiKey
+	filestackApiKey
 })
 
 

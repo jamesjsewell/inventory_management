@@ -172,29 +172,14 @@ export function authenticate(user) {
 	}
 }
 
-export function setLoggedInUser(uid) {
-	return function(dispatch) {
-		axios
-			.get(`${API_URL}/user/${uid}`, {
-				headers: { Authorization: getToken() }
-			})
-			.then(response => {
-				dispatch({
-					type: SET_LOGGED_IN_USER,
-					payload: response.data.user
-				})
-			})
-			.catch(response => dispatch())
-	}
-}
-
 // reducers
 const init_auth = {
 	loginError: undefined,
 	registerError: undefined,
 	authError: undefined,
 	authenticated: undefined,
-	user: undefined
+	user: undefined,
+	profile: undefined
 }
 
 function userSessionReducer(state = init_auth, action) {
@@ -204,6 +189,7 @@ function userSessionReducer(state = init_auth, action) {
 			return _.extend({}, state, {
 				authenticated: true,
 				user: action.payload,
+				profile: action.payload.profile,
 				loginError: undefined
 			})
 		}
@@ -289,6 +275,5 @@ const routes = state => state.nav.navLink.routes,
 export const selector = createStructuredSelector({
 	routes,
 	user,
-	authenticated,
-	auths
+	authenticated
 })

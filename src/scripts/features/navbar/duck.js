@@ -9,6 +9,8 @@ const SET_ACTIVE_NAV_LINK = "evanescent/navbar/SET_ACTIVE_NAV_LINK",
 	SHOW_HIDE_SIDEBAR = "evanescent/navbar/SHOW_HIDE_SIDEBAR"
 
 // actions
+import {logoutUser} from "../../util/userAuthentication/duck.js"
+export {logoutUser}
 export function setActiveNavLink(selectedItemName) {
 	return function(dispatch) {
 		dispatch({ type: SET_ACTIVE_NAV_LINK, payload: selectedItemName })
@@ -24,14 +26,6 @@ export function activateSidebar() {
 export function hideSidebar() {
 	return function(dispatch) {
 		dispatch({ type: SHOW_HIDE_SIDEBAR, payload: false })
-	}
-}
-
-export function logoutUser(error) {
-	return function(dispatch) {
-		dispatch({ type: UNAUTH_USER, payload: error || "" })
-		cookies.remove("token", { path: "/" })
-		cookies.remove("user", { path: "/" })
 	}
 }
 

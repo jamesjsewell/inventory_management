@@ -34,10 +34,11 @@ class Authentication extends Component {
             if (nextProps.authenticated) {
                 if (
                     this.props.location.pathname.includes(
-                        this.props.routes.login
+                        this.props.routes.loginPath
                     )
                 ) {
-                    this.props.history.push("/" + this.props.routes.home)
+                    
+                    this.props.history.push("/" + this.props.routes.homePath)
                 }
             } else {
                 this.props.actions.authenticate(user)
