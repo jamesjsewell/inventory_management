@@ -12,7 +12,7 @@
     "watch-js": "NODE_ENV=development ./node_modules/.bin/watchify src/scripts/app/app.js --debug --verbose --transform babelify -o dist/assets/js/app.js&",
     "watch-css": "./node_modules/.bin/node-sass -w --output-style compressed src/styles/style.scss dist/assets/css/style.css&",
     "build": "echo '\n\n===== building js and scss files for production =====\n\n' && npm run hide-sensitive && npm run build-js && npm run build-css",
-    "hide-sensitive": "echo 'exports.setEnvironmentVariables = function() { process.env['ROOT_DIR'] = __dirname + '/dist' }' > setEnvironmentVars.js",
+    "hide-sensitive": "echo 'exports.setEnvironmentVariables = function() { process.env[\"ROOT_DIR\"] = __dirname + \"/dist\" }' > setEnvironmentVars.js",
     "build-js": "NODE_ENV=production browserify -i setEnvironmentVars.js src/scripts/app/app.js --transform babelify | uglifyjs -c > dist/assets/js/app.js ",
     "build-css": "node-sass --output-style compressed src/styles/style.scss dist/assets/css/style.css",
     "git": "npm run hide-sensitive && npm run build && npm run addToGit",
