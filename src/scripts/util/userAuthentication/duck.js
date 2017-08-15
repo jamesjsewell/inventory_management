@@ -3,11 +3,13 @@ import { combineReducers } from "redux"
 import { browserHistory } from "react-router"
 import Cookies from "universal-cookie"
 import _ from "underscore"
-import { API_URL, CLIENT_ROOT_URL } from "../index"
+import { API_URL, CLIENT_ROOT_URL, getToken } from "../index"
+
+import { createStructuredSelector } from "reselect"
 
 export const types = {
 	AUTH_USER: "auth_user",
-	GET_LOGGED_IN_USER: "get_logged_in_user",
+	SET_LOGGED_IN_USER: "set_logged_in_user",
 	UNAUTH_USER: "unauth_user",
 	AUTH_ERROR: "auth_error",
 	LOGIN_ERROR: "login_error",
@@ -19,7 +21,7 @@ export const types = {
 
 const {
 	AUTH_USER,
-	GET_LOGGED_IN_USER,
+	SET_LOGGED_IN_USER,
 	UNAUTH_USER,
 	AUTH_ERROR,
 	LOGIN_ERROR,
@@ -170,18 +172,35 @@ export function authenticate(user) {
 	}
 }
 
+export function setLoggedInUser(uid) {
+	return function(dispatch) {
+		axios
+			.get(`${API_URL}/user/${uid}`, {
+				headers: { Authorization: getToken() }
+			})
+			.then(response => {
+				dispatch({
+					type: SET_LOGGED_IN_USER,
+					payload: response.data.user
+				})
+			})
+			.catch(response => dispatch())
+	}
+}
+
 // reducers
 const init_auth = {
 	loginError: undefined,
 	registerError: undefined,
 	authError: undefined,
-	authenticated: true,
+	authenticated: undefined,
 	user: undefined
 }
 
 function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
 		case AUTH_USER: {
+			
 			return _.extend({}, state, {
 				authenticated: true,
 				user: action.payload,
@@ -214,6 +233,7 @@ function userSessionReducer(state = init_auth, action) {
 				loginError: undefined
 			})
 		}
+
 
 		// case PROTECTED_TEST: {
 		//   return _.extend( {}, state, { content: action.payload.message } );
@@ -259,4 +279,16 @@ function forgotPasswordReducer(state = init_forgot_password, action) {
 export default combineReducers({
 	userSession: userSessionReducer,
 	forgotPassword: forgotPasswordReducer
+})
+
+const routes = state => state.nav.navLink.routes,
+	user = state => state.auth.userSession.user,
+	authenticated = state => state.auth.userSession.authenticated,
+	auths = state => state.auth
+
+export const selector = createStructuredSelector({
+	routes,
+	user,
+	authenticated,
+	auths
 })

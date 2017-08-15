@@ -36,8 +36,13 @@ import {
 
 import HomeView from "../features/home/components/HomeView.jsx"
 import Navbar from "../features/navbar/components/NavbarView.jsx"
-import UserSessionView from "../features/userSession/components/UserSessionView.jsx"
-import ResetPasswordView from "../features/userSession/components/ResetPasswordView.jsx"
+import UserSessionView
+    from "../features/userSession/components/UserSessionView.jsx"
+import ResetPasswordView
+    from "../features/userSession/components/ResetPasswordView.jsx"
+import EditProfileView
+    from "../features/userProfile/components/EditProfileView.jsx"
+import Authentication from "../util/userAuthentication/components/Authentication.jsx"
 
 class Blank extends Component {
     render() {
@@ -89,7 +94,7 @@ class RouterConfig extends Component {
                     </Dimmer>
 
                     <Navbar />
-                    <Blank Authentication="Authentication" />
+                    <Authentication />
 
                     <Switch>
                         <Route
@@ -100,7 +105,9 @@ class RouterConfig extends Component {
                         />
                         <Route
                             path="/profile"
-                            component={this.props.user ? ProfilePage : Blank}
+                            component={
+                                this.props.user ? EditProfileView : Blank
+                            }
                         />
                         <Route path="/login" component={UserSessionView} />
                         <Route path="/register" component={Blank} />
@@ -121,7 +128,9 @@ class RouterConfig extends Component {
 // loadingData: state.data.loadingData
 
 function mapStateToProps(state) {
-    return {}
+    return {
+        user: state.auth.userSession.user
+    }
 }
 
 // {

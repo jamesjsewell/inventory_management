@@ -36,7 +36,15 @@ export function logoutUser(error) {
 }
 
 // reducers
-const init_nav = { activeNavTab: "" }
+const init_nav = {
+	activeNavTab: "",
+	routes: {
+		homePath: "home",
+		loginPath: "login",
+		logoutPath: "logout",
+		profilePath: "profile"
+	}
+}
 
 function navLinkReducer(state = init_nav, action) {
 	switch (action.type) {
@@ -68,10 +76,12 @@ export default combineReducers({
 // selectors
 const activeNavTab = state => state.nav.navLink.activeNavTab
 const sidebarVisible = state => state.nav.sidebar.sidebarVisible
-const authenticated = state => state.auth.authenticated
+const authenticated = state => state.auth.userSession.authenticated
+const routes = state => state.nav.navLink.routes
 
 export const selector = createStructuredSelector({
 	activeNavTab,
 	sidebarVisible,
-	authenticated
+	authenticated,
+	routes
 })

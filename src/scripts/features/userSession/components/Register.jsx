@@ -21,7 +21,6 @@ class Register extends Component {
     }
 
     handleRegisterSubmit(formProps) {
-        console.log("fuckkk")
         this.props.registerAction(formProps)
     }
 

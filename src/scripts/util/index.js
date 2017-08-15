@@ -10,7 +10,7 @@ const { FETCH_USER, GET_API_KEY } = types
 
 // reads cookies for an auth token and user
 const cookies = new Cookies()
-function getToken() {
+export function getToken() {
     return cookies.get("token")
 }
 var user = cookies.get("user")
@@ -166,23 +166,5 @@ export function sendContactForm({ name, emailAddress, message }) {
     }
 }
 
-const init_user = {
-    user: undefined
-}
 
-function userReducer(state = init_user, action) {
-    switch (action.type) {
-        case FETCH_USER: {
-            return _.extend({}, state, {
-                user: action.payload
-            })
-        }
-    }
-
-    return state
-}
-
-export default combineReducers({
-    user: userReducer
-})
 

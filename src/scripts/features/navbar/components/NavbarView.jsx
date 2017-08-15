@@ -13,23 +13,15 @@ import NavbarLayout from "./NavbarLayout.jsx"
     })
 )
 class Navbar extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            homePath: "home",
-            loginPath: "login",
-            logoutPath: "logout",
-            profilePath: "profile"
-        }
-    }
+   
     handleItemClick(e) {
         e.preventDefault()
         var selectedItem = e.target.id.toLowerCase()
         this.props.actions.setActiveNavLink(selectedItem)
 
-        if (selectedItem === this.state.logoutPath) {
+        if (selectedItem === this.props.routes.logoutPath) {
             this.props.actions.logoutUser()
-            selectedItem = this.state.loginPath
+            selectedItem = this.props.routes.loginPath
         }
 
         this.props.actions.hideSidebar()
@@ -52,7 +44,6 @@ class Navbar extends Component {
         return (
             <NavbarLayout
                 {...this.props}
-                {...this.state}
                 action_onClickLink={this.handleItemClick.bind(this)}
                 action_sidebarVis={this.showHideSideBar.bind(this)}
             />

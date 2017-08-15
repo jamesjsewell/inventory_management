@@ -5,7 +5,7 @@ import { Field, reduxForm } from "redux-form"
 class HomeLayout extends Component {
 
     render() {
-        console.log(this.props)
+        
         return (
             <form
                 onSubmit={() => {
