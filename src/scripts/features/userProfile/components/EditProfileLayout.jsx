@@ -1,5 +1,5 @@
-import React, { Component } from "react"
-import { connect } from "react-redux"
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
 import {
     Button,
@@ -10,14 +10,14 @@ import {
     Header,
     Container,
     Message
-} from "semantic-ui-react"
+} from "semantic-ui-react";
 
-import EditProfile from "./EditProfile.jsx"
-//import Profile from "./profileComponent.js"
+import EditProfile from "./EditProfile.jsx";
+import Profile from "./Profile.jsx"
 
 export default class EditProfileLayout extends Component {
     constructor(props) {
-        super(props)
+        super(props);
     }
     componentWillMount() {}
     componentWillReceiveProps(nextProps) {}
@@ -48,16 +48,17 @@ export default class EditProfileLayout extends Component {
                             profile
                         </Header>
                         <Segment attached>
-                            
+                            <Profile
+                                user={this.props.user}
+                                profile={this.props.profile}
+                                username={this.props.username}
+                            />
                         </Segment>
 
                     </Grid.Column>
 
                 </Grid.Row>
             </Grid>
-        )
+        );
     }
 }
-
-
-
