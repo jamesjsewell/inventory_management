@@ -17,8 +17,6 @@ const requireLogin = passport.authenticate("local", { session: false })
 // actual crud routes
 authRoutes.post("/register", UserAuthController.register)
 
-authRoutes.post("/validate", UserAuthController.aSyncValidation)
-
 authRoutes.post("/login", requireLogin, UserAuthController.login)
 
 authRoutes.post("/forgot-password", UserAuthController.forgotPassword)
