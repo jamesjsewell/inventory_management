@@ -138,7 +138,6 @@ export default class Profile extends Component {
                 var theAttribute = userAttributes[attr]
                     ? userAttributes[attr].toString()
                     : undefined
-                console.log(attr)
                 if (theAttribute && theAttribute.replace(/ /g, "")) {
                     attributeNodes.push(
                         <Segment><Icon name={attributeIcons[attr]} /> {userAttributes[attr]}</Segment>

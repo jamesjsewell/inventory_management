@@ -24,7 +24,7 @@ import filestack from "filestack-js"
 export { getAPIkey }
 
 export function fetchUserProfile(uid) {
-	console.log('fuckkk')
+	
     return function(dispatch) {
         axios
             .get(`${API_URL}/user/${uid}`, {
