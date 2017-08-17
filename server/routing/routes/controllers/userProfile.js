@@ -2,10 +2,6 @@ const User = require("../../../db/userSchema.js")
 const setUserInfo = require("../../../config/helpers.js").setUserInfo
 const _ = require("underscore")
 
-
-//= =======================================
-// User Routes
-//= =======================================
 exports.viewProfile = function(req, res, next) {
     const userId = req.params.userId
     if (req.user._id.toString() !== userId) {
@@ -21,9 +17,9 @@ exports.viewProfile = function(req, res, next) {
             return next(err)
         }
 
-        //const userToReturn = setUserInfo(user);
+        const userToReturn = setUserInfo(user);
 
-        return res.status(200).json({ user: user })
+        return res.status(200).json({ user: userToReturn })
     })
 }
 
