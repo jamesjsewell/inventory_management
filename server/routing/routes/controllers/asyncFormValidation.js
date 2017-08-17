@@ -1,7 +1,7 @@
 const User = require("../../../db/userSchema.js");
 
 exports.aSyncValidation = function(req, res, next) {
-    const email = req.body.values.email.toLowerCase();
+    const email = req.body.values.email;
     const emailConfirm = req.body.values.emailConfirm;
     const password = req.body.values.password;
     const passwordConfirm = req.body.values.passwordConfirm;
@@ -42,9 +42,8 @@ exports.aSyncValidation = function(req, res, next) {
             // If user is not unique, return error
             if (existingUser) {
                 errors["username"] = "username already in use";
+                return res.status(422).send(errors);
             }
-
-            return res.status(422).send(errors);
         });
     }
 };
