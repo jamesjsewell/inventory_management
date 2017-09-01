@@ -15,23 +15,59 @@ import {
     Divider
 } from "semantic-ui-react";
 
-import InputField from "../../../components/forms/fields/inputField/InputField.jsx"
+import InputField
+    from "../../../components/forms/fields/inputField/InputField.jsx";
 
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
-
+        this.state = { errorLoadingNeeds: false, successAddingNeed: false };
     }
     componentWillMount() {
-        this.props.actions.fetchNeeds()
+        if (!this.props.collectionOfNeeds) {
+            this.props.actions.fetchNeeds();
+        }
     }
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
+        console.log(nextProps);
+    }
+
+    handleMessage(success, type) {
+        if (type === "addingNeed") {
+            if (success === true) {
+                this.state.successAddingNeed = true;
+
+                this.state.successAddingNeed = setTimeout(() => {
+                    this.props.actions.resetStatus("addingNeed");
+                    this.setState({ successAddingNeed: false });
+                }, 2500);
+            }
+        }
+
+        if (type === "loadingNeeds") {
+            if (success === false) {
+                this.state.errorLoadingNeeds = true;
+            }
+        }
     }
 
     render() {
-        console.log(this.props.collectionOfNeeds? this.props.collectionOfNeeds : null)
-        console.log(this.props.arrayOfNeeds)
+        console.log(
+            this.props.collectionOfNeeds ? this.props.collectionOfNeeds : null
+        );
+        console.log(this.props.arrayOfNeeds);
+        const asyncNeeds = this.props.loadingNeeds || this.props.addingNeed
+            ? true
+            : false,
+            errorLoadingNeeds = this.props.errorLoadingNeeds,
+            addedNeed = this.props.addedNeed;
+
+        if (errorLoadingNeeds) {
+            this.handleMessage(false, "loadingNeeds");
+        }
+        if (addedNeed) {
+            this.handleMessage(true, "addingNeed");
+        }
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -43,11 +79,36 @@ export default class NeedsPollLayout extends Component {
                         </Header>
 
                         <Segment attached label={"test"}>
-                            <Segment compact>
-                                <InputField inputPlaceholder="enter need" inputName="needField" inputLabel="enter new need" doThisOnSubmit={(userInput)=>{this.props.actions.submitNewNeed(userInput.needField, 'some_ID', this.props.collectionOfNeeds)}} />
+                            <Segment compact loading={asyncNeeds}>
+                                <InputField
+                                    inputPlaceholder="enter need"
+                                    inputName="needField"
+                                    inputLabel="enter new need"
+                                    doThisOnSubmit={userInput => {
+                                        if (userInput) {
+                                            this.props.actions.submitNewNeed(
+                                                userInput.needField,
+                                                "some_ID",
+                                                this.props.collectionOfNeeds
+                                            );
+                                        }
+                                    }}
+                                />
+                                {this.state.successAddingNeed
+                                    ? <Message positive>added need!</Message>
+                                    : null}
+
                             </Segment>
-                            <Segment>
-                                {this.props.arrayOfNeeds? this.props.arrayOfNeeds[0].attributes.nameOfNeed : null}
+                            <Segment loading={asyncNeeds}>
+                                {this.props.arrayOfNeeds
+                                    ? this.props.arrayOfNeeds[0].attributes
+                                          .nameOfNeed
+                                    : null}
+                                {this.state.errorLoadingNeeds
+                                    ? <Message negative>
+                                          internal server error
+                                      </Message>
+                                    : null}
                                 <Label size="huge">toiletries</Label>
                                 <Progress percent={20} />
                                 <Button negative>I need this</Button>
@@ -78,12 +139,12 @@ export default class NeedsPollLayout extends Component {
                 <Grid.Row>
 
                     <Grid.Column>
-                        <Header attached="top" size="large" textAlign="center">
-                          
-                        </Header>
-                        <Segment attached>
-                           
-                        </Segment>
+                        <Header
+                            attached="top"
+                            size="large"
+                            textAlign="center"
+                        />
+                        <Segment attached />
 
                     </Grid.Column>
 

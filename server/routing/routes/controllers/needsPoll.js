@@ -21,8 +21,9 @@ exports.postNeed = function(req, res, next) {
 
 exports.getNeeds = function(req, res, next) {
 	Need.find(req.query, function(err, results) {
-		if (err) return res.json(err);
+		if (err) return res.json({error: 'internal server error'});
 		res.json(results);
+
 	}); //.populate("");
 };
 

@@ -50,7 +50,7 @@ class InputField extends Component {
     handleFormSubmit(formProps) {
         var userInput = formProps;
 
-        if (userInput) {
+        if (Object.keys(formProps).length > 0 && formProps.constructor === Object) {
             this.props.doThisOnSubmit(userInput);
         }
     }
@@ -91,7 +91,14 @@ class InputField extends Component {
                     type="text"
                     label={this.props.inputLabel}
                 />
-
+                <Button
+                    onClick={e => {
+                        //e.preventDefault();
+                    }}
+                    type="submit"
+                >
+                    submit
+                </Button>
             </Form>
         );
     }
