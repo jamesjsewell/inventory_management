@@ -15,14 +15,23 @@ import {
     Divider
 } from "semantic-ui-react";
 
+import InputField from "../../../components/forms/fields/inputField/InputField.jsx"
+
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
+
     }
-    componentWillMount() {}
-    componentWillReceiveProps(nextProps) {}
+    componentWillMount() {
+        this.props.actions.fetchNeeds()
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps)
+    }
 
     render() {
+        console.log(this.props.collectionOfNeeds? this.props.collectionOfNeeds : null)
+        console.log(this.props.arrayOfNeeds)
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -34,10 +43,11 @@ export default class NeedsPollLayout extends Component {
                         </Header>
 
                         <Segment attached label={"test"}>
-                            <Segment>
-                                Add an item(s) you need <input />{" "}
+                            <Segment compact>
+                                <InputField inputPlaceholder="enter need" inputName="needField" inputLabel="enter new need" doThisOnSubmit={(userInput)=>{this.props.actions.submitNewNeed(userInput.needField, 'some_ID', this.props.collectionOfNeeds)}} />
                             </Segment>
                             <Segment>
+                                {this.props.arrayOfNeeds? this.props.arrayOfNeeds[0].attributes.nameOfNeed : null}
                                 <Label size="huge">toiletries</Label>
                                 <Progress percent={20} />
                                 <Button negative>I need this</Button>
@@ -45,7 +55,7 @@ export default class NeedsPollLayout extends Component {
                                 <Button positive>I have this</Button>
                             </Segment>
 
-                            <Segment as={Grid} columns={3} streched>
+                            <Segment secondary as={Grid} columns={3} streched>
                                 <Grid.Column textAlign="left">
                                     someone needs this
                                 </Grid.Column>

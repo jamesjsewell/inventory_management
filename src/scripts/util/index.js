@@ -55,7 +55,7 @@ export function postData(action, errorType, isAuthReq, url, dispatch, data) {
                 payload: response.data
             });
         })
-        .catch(error => {});
+        .catch(error => {console.log(error.response)});
 }
 
 // Get Request

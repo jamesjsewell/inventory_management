@@ -1,24 +1,21 @@
 const Need = require("../../../db/needsPoll/needSchema.js");
 
 exports.postNeed = function(req, res, next) {
-	const postedBy = req.body.postedBy, degreeOfNeed = req.body.degreeOfNeed;
+	const nameOfNeed = req.body.nameOfNeed,
+		postedBy = req.body.postedBy,
+		degreeOfNeed = req.body.degreeOfNeed;
 
 	const need = new Need({
+		nameOfNeed,
 		postedBy,
 		degreeOfNeed
 	});
 
-	console.log(need)
-
-	need.save((err, need) => {
+	need.save(err => {
 		if (err) {
-			console.log(err)
-			return next(err);
+			return res.status(500).send(err);
 		}
-
-		res.status(201).json({
-			needObj: need
-		});
+		res.status(201).json(need);
 	});
 };
 
@@ -26,7 +23,7 @@ exports.getNeeds = function(req, res, next) {
 	Need.find(req.query, function(err, results) {
 		if (err) return res.json(err);
 		res.json(results);
-	}).populate("");
+	}); //.populate("");
 };
 
 exports.updateNeed = function(req, res, next) {
