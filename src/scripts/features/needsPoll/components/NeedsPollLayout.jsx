@@ -18,6 +18,8 @@ import {
 import InputField
     from "../../../components/forms/fields/inputField/InputField.jsx";
 
+import Need from "./Need.jsx";
+
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
@@ -48,6 +50,31 @@ export default class NeedsPollLayout extends Component {
             if (success === false) {
                 this.state.errorLoadingNeeds = true;
             }
+        }
+    }
+
+    renderNeeds() {
+        var arrayOfNeedElements = [];
+
+        if (this.props.arrayOfNeeds) {
+            for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
+                
+                arrayOfNeedElements.push(
+                    <Need
+                        nameOfNeed={
+                            this.props.arrayOfNeeds[i].attributes.nameOfNeed
+                        }
+                        degreeOfNeed={
+                            this.props.arrayOfNeeds[i].attributes.degreeOfNeed
+                        }
+                    />
+                );
+            }
+
+            return arrayOfNeedElements;
+        }
+        else{
+            return null
         }
     }
 
@@ -99,21 +126,15 @@ export default class NeedsPollLayout extends Component {
                                     : null}
 
                             </Segment>
+
                             <Segment loading={asyncNeeds}>
-                                {this.props.arrayOfNeeds
-                                    ? this.props.arrayOfNeeds[0].attributes
-                                          .nameOfNeed
-                                    : null}
+
                                 {this.state.errorLoadingNeeds
                                     ? <Message negative>
                                           internal server error
                                       </Message>
-                                    : null}
-                                <Label size="huge">toiletries</Label>
-                                <Progress percent={20} />
-                                <Button negative>I need this</Button>
-                                {" "}
-                                <Button positive>I have this</Button>
+                                    : this.renderNeeds()}
+
                             </Segment>
 
                             <Segment secondary as={Grid} columns={3} streched>
