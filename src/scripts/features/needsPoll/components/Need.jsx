@@ -24,20 +24,44 @@ export default class NeedsPollLayout extends Component {
     }
 
     render() {
-        const { degreeOfNeed, nameOfNeed } = this.props;
+        const {
+            degreeOfNeed,
+            nameOfNeed,
+            idOfNeed,
+            collectionOfNeeds,
+            removeNeed,
+            updateNeed
+        } = this.props;
         return (
             <Segment>
                 <Button
                     floated="right"
                     icon={<Icon fitted size="large" name="remove" />}
                     size="tiny"
+                    onClick={() => {
+                        removeNeed(idOfNeed, collectionOfNeeds);
+                    }}
                 />
 
                 <Label basic size="huge">{nameOfNeed}</Label>
-                <Progress percent={degreeOfNeed} />
-                <Button negative>I need this</Button>
+                <Progress value={degreeOfNeed} total={this.props.totalOfOccupants} progress='ratio' />
+                <Button
+                    onClick={() => {
+                        updateNeed(idOfNeed, collectionOfNeeds, "needs", this.props.totalOfOccupants);
+                    }}
+                    negative
+                >
+                    I need this
+                </Button>
                 {" "}
-                <Button positive>I have this</Button>
+                <Button
+                    onClick={() => {
+                        updateNeed(idOfNeed, collectionOfNeeds, "has", this.props.totalOfOccupants);
+                    }}
+                    positive
+                >
+                    I have this
+                </Button>
             </Segment>
         );
     }

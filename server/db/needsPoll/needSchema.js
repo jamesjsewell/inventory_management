@@ -13,12 +13,16 @@ const NeedSchema = new Schema(
             type: String,
             required: true
         },
+        unitsRequired: {
+            type: Number,
+            required: true  
+        },
         postedBy: {
             type: String,
             lowercase: true,
             required: true
         },
-        degreeOfNeed: { type: Number, default: 1 }
+        degreeOfNeed: { type: Number, default: 0 }
     },
     {
         timestamps: true

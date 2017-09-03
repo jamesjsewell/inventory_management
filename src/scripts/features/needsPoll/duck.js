@@ -15,10 +15,14 @@ import {
 
 import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 
-const ADD_SUBMITTED_NEED = "add_submitted_need", FETCH_NEEDS = "fetch_needs";
+const ADD_SUBMITTED_NEED = "add_submitted_need",
+	FETCH_NEEDS = "fetch_needs",
+	REMOVE_NEED = "remove_need",
+	UPDATE_NEED = "update_need";
 
-export function submitNewNeed(nameOfNeed, postedById, needsCollection) {
+export function submitNewNeed(values, postedById, needsCollection) {
 	return function(dispatch) {
+		console.log(values)
 		dispatch({
 			type: ADD_SUBMITTED_NEED,
 			payload: {
@@ -28,8 +32,10 @@ export function submitNewNeed(nameOfNeed, postedById, needsCollection) {
 
 		needsCollection.create(
 			{
-				nameOfNeed: nameOfNeed,
-				postedBy: postedById
+				nameOfNeed: values.nameOfNeed,
+				postedBy: postedById,
+				degreeOfNeed: 0,
+				unitsRequired: Number(values.unitsRequired)
 			},
 			{ wait: true, success: successCallback }
 		);
@@ -44,6 +50,91 @@ export function submitNewNeed(nameOfNeed, postedById, needsCollection) {
 				}
 			});
 		}
+	};
+}
+
+export function removeNeed(idOfNeed, needsCollection) {
+	return function(dispatch) {
+		dispatch({
+			type: REMOVE_NEED,
+			payload: {
+				status: "active"
+			}
+		});
+
+		var model = needsCollection.get(idOfNeed);
+
+		model
+			.destroy()
+			.done(
+				dispatch({
+					type: REMOVE_NEED,
+					payload: {
+						collection: needsCollection,
+						arrayOfNeeds: needsCollection.models,
+						status: "success"
+					}
+				})
+			)
+			.fail(function(err) {
+				dispatch({
+					type: REMOVE_NEED,
+					payload: {
+						status: "error"
+					}
+				});
+			});
+	};
+}
+
+export function updateNeed(idOfNeed, needsCollection, update, occupants) {
+	return function(dispatch) {
+		dispatch({
+			type: UPDATE_NEED,
+			payload: {
+				status: "active"
+			}
+		});
+
+		var model = needsCollection.get(idOfNeed);
+
+		var updatedInfo = {};
+
+		if (update === "needs" && model.get("degreeOfNeed") > 0) {
+			updatedInfo.degreeOfNeed = model.get("degreeOfNeed") - 1;
+		}
+
+		if (update === "has" && model.get("degreeOfNeed") < occupants) {
+			updatedInfo.degreeOfNeed = model.get("degreeOfNeed") + 1;
+		}
+
+		model.set(updatedInfo);
+
+		model
+			.save()
+			.done(() => {
+				needsCollection.reset(needsCollection.models, model);
+
+				var updatedModel = needsCollection.get(idOfNeed);
+				console.log(updatedModel.attributes.degreeOfNeed);
+				dispatch({
+					type: UPDATE_NEED,
+					payload: {
+						collection: needsCollection,
+						arrayOfNeeds: needsCollection.models,
+						status: "success"
+					}
+				});
+			})
+			.fail(function(err) {
+				console.log(err);
+				dispatch({
+					type: UPDATE_NEED,
+					payload: {
+						status: "error"
+					}
+				});
+			});
 	};
 }
 
@@ -106,7 +197,12 @@ const init_needs_poll = {
 	addingNeed: false,
 	addedNeed: false,
 	errorAddingNeed: false,
-	errorLoadingNeeds: false
+	errorLoadingNeeds: false,
+	removingNeed: false,
+	removedNeed: false,
+	errorRemovingNeed: false,
+	statusOfRemoveNeed: "inactive",
+	totalOfOccupants: 20
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
@@ -140,6 +236,50 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 				: false;
 
 			return _.extend({}, state, extendObj);
+
+		case REMOVE_NEED:
+			var extendObj = {};
+			if (action.payload.collection) {
+				extendObj.collectionOfNeeds = action.payload.collection;
+			}
+
+			if (action.payload.arrayOfNeeds) {
+				extendObj.arrayOfNeeds = action.payload.arrayOfNeeds;
+			}
+			extendObj.statusOfRemoveNeed = action.payload.status;
+			extendObj.removingNeed = action.payload.status == "active"
+				? true
+				: false;
+			extendObj.removedNeed = action.payload.status == "success"
+				? true
+				: false;
+			extendObj.errorRemovingNeed = action.payload.status == "error"
+				? true
+				: false;
+
+			return _.extend({}, state, extendObj);
+
+		case UPDATE_NEED:
+			var extendObj = {};
+			if (action.payload.collection) {
+				extendObj.collectionOfNeeds = action.payload.collection;
+			}
+
+			if (action.payload.arrayOfNeeds) {
+				extendObj.arrayOfNeeds = action.payload.arrayOfNeeds;
+			}
+			extendObj.statusOfUpdateNeed = action.payload.status;
+			extendObj.updatingNeed = action.payload.status == "active"
+				? true
+				: false;
+			extendObj.updatedNeed = action.payload.status == "success"
+				? true
+				: false;
+			extendObj.errorUpdatingNeed = action.payload.status == "error"
+				? true
+				: false;
+
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -154,7 +294,16 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	errorLoadingNeeds = state => state.needsPoll.errorLoadingNeeds,
 	statusOfCreateNeed = state => state.needsPoll.statusOfCreateNeed,
 	addingNeed = state => state.needsPoll.addingNeed,
-	addedNeed = state => state.needsPoll.addedNeed;
+	addedNeed = state => state.needsPoll.addedNeed,
+	statusOfRemoveNeed = state => state.needsPoll.statusOfRemoveNeed,
+	removingNeed = state => state.needsPoll.removingNeed,
+	removedNeed = state => state.needsPoll.removedNeed,
+	errorRemovingNeed = state => state.needsPoll.errorRemovingNeed,
+	statusOfUpdateNeed = state => state.needsPoll.statusOfUpdateNeed,
+	updatingNeed = state => state.needsPoll.updatingNeed,
+	updatedNeed = state => state.needsPoll.updatedNeed,
+	errorUpdatingNeed = state => state.needsPoll.errorUpdatingNeed,
+	totalOfOccupants = state => state.needsPoll.totalOfOccupants;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -162,5 +311,14 @@ export const selector = createStructuredSelector({
 	loadingNeeds,
 	errorLoadingNeeds,
 	addingNeed,
-	addedNeed
+	addedNeed,
+	statusOfRemoveNeed,
+	removingNeed,
+	removedNeed,
+	errorRemovingNeed,
+	statusOfUpdateNeed,
+	updatingNeed,
+	updatedNeed,
+	errorRemovingNeed,
+	totalOfOccupants
 });

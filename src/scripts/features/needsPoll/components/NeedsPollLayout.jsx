@@ -15,8 +15,7 @@ import {
     Divider
 } from "semantic-ui-react";
 
-import InputField
-    from "../../../components/forms/fields/inputField/InputField.jsx";
+import NeedForm from "./NeedForm.jsx";
 
 import Need from "./Need.jsx";
 
@@ -30,9 +29,7 @@ export default class NeedsPollLayout extends Component {
             this.props.actions.fetchNeeds();
         }
     }
-    componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
-    }
+    componentWillReceiveProps(nextProps) {}
 
     handleMessage(success, type) {
         if (type === "addingNeed") {
@@ -58,31 +55,30 @@ export default class NeedsPollLayout extends Component {
 
         if (this.props.arrayOfNeeds) {
             for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
-                
                 arrayOfNeedElements.push(
                     <Need
+                        updateNeed={this.props.actions.updateNeed.bind(this)}
+                        removeNeed={this.props.actions.removeNeed.bind(this)}
                         nameOfNeed={
                             this.props.arrayOfNeeds[i].attributes.nameOfNeed
                         }
                         degreeOfNeed={
                             this.props.arrayOfNeeds[i].attributes.degreeOfNeed
                         }
+                        idOfNeed={this.props.arrayOfNeeds[i].attributes._id}
+                        collectionOfNeeds={this.props.collectionOfNeeds}
+                        totalOfOccupants={this.props.totalOfOccupants}
                     />
                 );
             }
 
             return arrayOfNeedElements;
-        }
-        else{
-            return null
+        } else {
+            return null;
         }
     }
 
     render() {
-        console.log(
-            this.props.collectionOfNeeds ? this.props.collectionOfNeeds : null
-        );
-        console.log(this.props.arrayOfNeeds);
         const asyncNeeds = this.props.loadingNeeds || this.props.addingNeed
             ? true
             : false,
@@ -99,22 +95,19 @@ export default class NeedsPollLayout extends Component {
             <Grid container columns="equal" stackable>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <Header attached="top" size="large" textAlign="center">
+                        <Header attached size="large" textAlign="center">
                             <Header.Content>
                                 needs{" "}
                             </Header.Content>
                         </Header>
 
-                        <Segment attached label={"test"}>
+                        <Segment attached="bottom" label={"test"}>
                             <Segment compact loading={asyncNeeds}>
-                                <InputField
-                                    inputPlaceholder="enter need"
-                                    inputName="needField"
-                                    inputLabel="enter new need"
+                                <NeedForm
                                     doThisOnSubmit={userInput => {
                                         if (userInput) {
                                             this.props.actions.submitNewNeed(
-                                                userInput.needField,
+                                                userInput,
                                                 "some_ID",
                                                 this.props.collectionOfNeeds
                                             );
@@ -126,8 +119,24 @@ export default class NeedsPollLayout extends Component {
                                     : null}
 
                             </Segment>
-
-                            <Segment loading={asyncNeeds}>
+                            <Segment
+                                attached
+                                secondary
+                                as={Grid}
+                                columns={3}
+                                streched
+                            >
+                                <Grid.Column textAlign="left">
+                                    not enough
+                                </Grid.Column>
+                                <Grid.Column textAlign="center">
+                                    running low
+                                </Grid.Column>
+                                <Grid.Column textAlign="right">
+                                    plenty
+                                </Grid.Column>
+                            </Segment>
+                            <Segment attached loading={asyncNeeds}>
 
                                 {this.state.errorLoadingNeeds
                                     ? <Message negative>
@@ -135,18 +144,6 @@ export default class NeedsPollLayout extends Component {
                                       </Message>
                                     : this.renderNeeds()}
 
-                            </Segment>
-
-                            <Segment secondary as={Grid} columns={3} streched>
-                                <Grid.Column textAlign="left">
-                                    someone needs this
-                                </Grid.Column>
-                                <Grid.Column textAlign="center">
-                                    some people need this
-                                </Grid.Column>
-                                <Grid.Column textAlign="right">
-                                    many people need this
-                                </Grid.Column>
                             </Segment>
 
                         </Segment>
