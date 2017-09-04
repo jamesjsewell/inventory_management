@@ -189,6 +189,7 @@ export function resetStatus(type) {
 
 export function editNeed(idOfNeed) {
 	return function(dispatch) {
+		console.log(idOfNeed)
 		dispatch({
 			type: EDIT_NEED,
 			payload: { status: "active", idOfNeed: idOfNeed }

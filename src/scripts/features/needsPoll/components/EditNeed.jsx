@@ -35,28 +35,25 @@ import { FormField } from "../../../components/forms/fields/formField.js";
 class EditNeed extends Component {
     constructor(props) {
         super(props);
-        this.state = {description: null};
-        this.props.needsCollection.get(this.props.idOfNeed);
+        this.state = { description: null };
+        var model = this.props.needsCollection.get(this.props.idOfEditedNeed);
+        console.log(model, this.props.idOfEditedNeed);
+        this.state.model = model;
     }
 
-    componentWillMount() {
-        
-    }
+    componentWillMount() {}
 
     componentWillReceiveProps(nextProps) {
         // if (nextProps.profile) {
         //     this.setState({ upToDateProfile: nextProps.profile });
         //     this.state.upToDateUsername = nextProps.username;
         // }
-
         // if (nextProps.username) {
         //     this.state.upToDateUsername = nextProps.username;
         // }
-
         // if (nextProps.receivedImgUrl) {
         //     this.setState({ receivedImgUrl: nextProps.receivedImgUrl });
         // }
-
         // if (
         //     nextProps.updated === true ||
         //     nextProps.updating === true ||
@@ -167,305 +164,80 @@ class EditNeed extends Component {
 
     render() {
         const { handleSubmit } = this.props;
-        const user = this.props.user;
-        const username = this.state.upToDateUsername
-            ? this.state.upToDateUsername
-            : undefined;
-        const profile = this.state.upToDateProfile;
-        var imgUrl = this.state.upToDateProfile &&
-            this.state.upToDateProfile.avatarUrl
-            ? this.state.upToDateProfile.avatarUrl
-            : undefined;
-        imgUrl = this.state.receivedImgUrl ? this.state.receivedImgUrl : imgUrl;
 
-        if (user) {
-            var messageToUser = "";
-            if (this.props.updatingProfile === true) {
-                messageToUser = "updating your profile";
-            }
-            if (this.props.updated === true) {
-                messageToUser = "updated your profile";
-            }
-            if (this.props.errorUpdating) {
-                messageToUser = this.props.errorUpdating;
-            }
-            const userFistName = profile && profile.firstName
-                ? profile.firstName
-                : undefined,
-                userLastName = profile && profile.lastName
-                    ? profile.lastName
-                    : undefined,
-                userAge = profile && profile.age ? profile.age : undefined,
-                userGender = profile && profile.gender
-                    ? profile.gender
-                    : undefined,
-                userLocation = profile && profile.location
-                    ? profile.location
-                    : undefined,
-                userRelationshipStatus = profile && profile.relationshipStatus
-                    ? profile.relationshipStatus
-                    : undefined,
-                userWebsite = profile && profile.website
-                    ? profile.website
-                    : undefined;
-
+        if (this.state.model) {
             return (
                 <Form
                     onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}
-                    size="large"
+                    size="massive"
                     padded
-                    widths="equal"
-                    inverted={this.props.isInverted}
-                    loading={
-                        this.props.updatingProfile || !profile === true
-                            ? true
-                            : false
-                    }
+                    loading={false}
                 >
 
                     {this.renderAlert()}
 
-                    <Segment.Group
+                    <Field
+                        
+                        placeholder="enter name of item"
+                        name="nameOfNeed"
+                        component={FormField}
+                        type="text"
+                        label="item name"
+                        validate={[alphaNumeric]}
+                    />
+
+                    <Field
+
+                        placeholder="enter number of people"
+                        name="numberOfPeople"
+                        component={FormField}
+                        type="text"
+                        label="estimated number of people"
+                        validate={[alphaNumeric, number]}
+                    />
+
+                    <textarea
                         as={Segment}
                         basic
-                        horizontal
-                        size="small"
-                        padded
-                    >
-                        <Segment basic compact>
-
-                            <Field
-                                placeholder={username}
-                                name="username"
-                                component={FormField}
-                                type="text"
-                                label="username"
-                                validate={[alphaNumeric]}
-                            />
-
-                            <Field
-                                placeholder={userFistName}
-                                name="firstName"
-                                component={FormField}
-                                type="text"
-                                label="first name"
-                                validate={[alphaNumeric]}
-                            />
-
-                            <Field
-                                placeholder={userLastName}
-                                name="lastName"
-                                component={FormField}
-                                type="text"
-                                label="last name"
-                                validate={[alphaNumeric]}
-                            />
-
-                            <Field
-                                placeholder={userAge ? userAge : "enter age"}
-                                name="age"
-                                component={FormField}
-                                type="text"
-                                label="age"
-                                validate={[alphaNumeric, number]}
-                            />
-
-                        </Segment>
-
-                        <Segment>
-
-                            <Field
-                                placeholder={
-                                    userGender ? userGender : "enter gender"
-                                }
-                                name="gender"
-                                component={FormField}
-                                type="text"
-                                label="gender"
-                                validate={[alphaNumeric]}
-                            />
-
-                            <Field
-                                placeholder={
-                                    userLocation
-                                        ? userLocation
-                                        : "enter location"
-                                }
-                                name="location"
-                                component={FormField}
-                                type="text"
-                                label="location"
-                            />
-
-                            <Field
-                                placeholder={
-                                    userRelationshipStatus
-                                        ? userRelationshipStatus
-                                        : "enter relationship status"
-                                }
-                                name="relationshipStatus"
-                                component={FormField}
-                                type="text"
-                                label="relationship"
-                                validate={[alphaNumeric]}
-                            />
-
-                            <Field
-                                placeholder={
-                                    userWebsite
-                                        ? userWebsite
-                                        : "enter your website"
-                                }
-                                name="website"
-                                component={FormField}
-                                type="text"
-                                label="your website"
-                            />
-
-                        </Segment>
-
-                        <Segment compact size="tiny">
-
-                            {imgUrl
-                                ? <Segment.Group compact size="mini">
-
-                                      <Image
-                                          size="tiny"
-                                          compact
-                                          centered
-                                          fluid
-                                          as="img"
-                                          basic
-                                          src={imgUrl}
-                                      />
-
-                                      <Segment size="mini" compact>
-
-                                          <Button.Group>
-                                              <Button
-                                                  type="button"
-                                                  onClick={this.handleUpload.bind(
-                                                      this
-                                                  )}
-                                                  icon="refresh"
-                                                  basic
-                                              />
-
-                                              {imgUrl === profile.avatarUrl
-                                                  ? <Button
-                                                        onClick={() => {
-                                                            this.setState({
-                                                                removePicModalOpen: true
-                                                            });
-                                                        }}
-                                                        type="button"
-                                                        icon="remove"
-                                                        basic
-                                                    />
-                                                  : null}
-                                          </Button.Group>
-
-                                      </Segment>
-
-                                  </Segment.Group>
-                                : <Segment.Group compact size="mini">
-                                      <Segment>
-                                          <Button
-                                              type="button"
-                                              onClick={this.handleUpload.bind(
-                                                  this
-                                              )}
-                                              icon="camera"
-                                          />
-                                      </Segment>
-                                      <Segment>add profile picture</Segment>
-                                  </Segment.Group>}
-
-                            <Modal
-                                open={
-                                    this.state.removePicModalOpen &&
-                                        this.state.upToDateProfile.avatarUrl
-                                        ? true
-                                        : false
-                                }
-                            >
-                                <Modal.Header>
-                                    Are you sure you want to remove this photo?
-                                </Modal.Header>
-                                <Modal.Content>
-
-                                    <Modal.Actions>
-                                        <Button
-                                            type="button"
-                                            content="no"
-                                            onClick={() => {
-                                                this.setState({
-                                                    removePicModalOpen: false
-                                                });
-                                            }}
-                                        />
-                                        <Button
-                                            type="button"
-                                            icon="check"
-                                            content="remove photo"
-                                            onClick={this.removeProfileImage.bind(
-                                                this
-                                            )}
-                                        />
-
-                                    </Modal.Actions>
-                                </Modal.Content>
-                            </Modal>
-
-                            <textarea
-                                as={Segment}
-                                basic
-                                size="small"
-                                compact
-                                id="aboutMe"
-                                name="aboutMe"
-                                value={this.state.aboutMeText}
-                                onChange={this.handleDescriptionChange.bind(this)}
-                                placeholder={
-                                    profile && profile.aboutMe
-                                        ? profile.aboutMe
-                                        : "tell us about yourself"
-                                }
-                            />
-
-                        </Segment>
-
-                    </Segment.Group>
+                        size="medium"
+                        compact
+                        id="description"
+                        name="description"
+                        value={this.state.description}
+                        onChange={this.handleDescriptionChange.bind(this)}
+                        placeholder={"enter a description for this item"}
+                    />
 
                     <Message
                         visible={this.state.messageIsOpen ? true : false}
                         hidden={this.state.messageIsOpen ? false : true}
                         floating
                         compact
-                        success={this.props.updated ? true : false}
-                        content={messageToUser}
+                        success={true} //this.props.updated ? true : false
+                        content={"something"}
                     />
 
-                    {this.props.updatingProfile
-                        ? null
-                        : <Button
-                              basic
-                              type="submit"
-                              content="save"
-                              loading={this.props.updatingProfile}
-                          />}
+                    <Segment compact>
+                    <Button
+                        type="submit"
+                        content="save"
+                        loading={this.props.updatingProfile}
+                    />
+                    </Segment>
 
                 </Form>
             );
         } else {
-            return <div>could not find user</div>;
+            return <div>could not find item</div>;
         }
     }
 }
-
+// {this.props.updatingNeed
+//                         ? null
+//                         : }
 export default reduxForm({
-    form: "profileForm",
+    form: "editNeedForm",
     asyncValidate,
-    asyncBlurFields: ["username"],
+    asyncBlurFields: ["nameOfNeed"],
     shouldAsyncValidate
 })(EditNeed);

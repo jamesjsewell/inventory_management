@@ -97,7 +97,7 @@ export default class NeedsPollLayout extends Component {
                     <Button
                         floated="right"
                         onClick={() => {
-                            this.props.editNeed();
+                            this.props.editNeed(idOfNeed);
                         }}
                     >
                         edit

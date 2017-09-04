@@ -155,7 +155,7 @@ export default class NeedsPollLayout extends Component {
 
                                 <Modal
                                     open={this.state.editingNeed}
-                                    size="large"
+                                    size="huge"
                                 >
                                     <Modal.Content>
                                         <EditNeed needsCollection={collectionOfNeeds} idOfEditedNeed={this.props.idOfEditedNeed} />
