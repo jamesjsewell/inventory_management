@@ -13,7 +13,7 @@ const NeedSchema = new Schema(
             type: String,
             required: true
         },
-        unitsRequired: {
+        numberOfPeople: {
             type: Number,
             required: true  
         },

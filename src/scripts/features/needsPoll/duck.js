@@ -18,11 +18,12 @@ import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 const ADD_SUBMITTED_NEED = "add_submitted_need",
 	FETCH_NEEDS = "fetch_needs",
 	REMOVE_NEED = "remove_need",
-	UPDATE_NEED = "update_need";
+	UPDATE_NEED = "update_need",
+	EDIT_NEED = "edit_need";
 
 export function submitNewNeed(values, postedById, needsCollection) {
 	return function(dispatch) {
-		console.log(values)
+		console.log(values);
 		dispatch({
 			type: ADD_SUBMITTED_NEED,
 			payload: {
@@ -35,7 +36,7 @@ export function submitNewNeed(values, postedById, needsCollection) {
 				nameOfNeed: values.nameOfNeed,
 				postedBy: postedById,
 				degreeOfNeed: 0,
-				unitsRequired: Number(values.unitsRequired)
+				numberOfPeople: Number(values.numberOfPeople)
 			},
 			{ wait: true, success: successCallback }
 		);
@@ -186,6 +187,15 @@ export function resetStatus(type) {
 	};
 }
 
+export function editNeed(idOfNeed) {
+	return function(dispatch) {
+		dispatch({
+			type: EDIT_NEED,
+			payload: { status: "active", idOfNeed: idOfNeed }
+		});
+	};
+}
+
 // reducers
 
 const init_needs_poll = {
@@ -202,7 +212,9 @@ const init_needs_poll = {
 	removedNeed: false,
 	errorRemovingNeed: false,
 	statusOfRemoveNeed: "inactive",
-	totalOfOccupants: 20
+	totalOfOccupants: 20,
+	editingNeed: false,
+	idOfEditedNeed: null
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
@@ -280,6 +292,16 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 				: false;
 
 			return _.extend({}, state, extendObj);
+
+		case EDIT_NEED:
+			var extendObj = {};
+			if (action.payload.status === "active") {
+				extendObj.editingNeed = true;
+				extendObj.idOfEditedNeed = action.payload.idOfNeed
+			}
+
+
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -303,7 +325,9 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	updatingNeed = state => state.needsPoll.updatingNeed,
 	updatedNeed = state => state.needsPoll.updatedNeed,
 	errorUpdatingNeed = state => state.needsPoll.errorUpdatingNeed,
-	totalOfOccupants = state => state.needsPoll.totalOfOccupants;
+	totalOfOccupants = state => state.needsPoll.totalOfOccupants,
+	editingNeed = state => state.needsPoll.editingNeed,
+	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -320,5 +344,7 @@ export const selector = createStructuredSelector({
 	updatingNeed,
 	updatedNeed,
 	errorRemovingNeed,
-	totalOfOccupants
+	totalOfOccupants,
+	editingNeed,
+	idOfEditedNeed
 });

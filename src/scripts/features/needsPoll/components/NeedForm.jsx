@@ -23,6 +23,7 @@ import _ from "underscore";
 import {
     alphaNumeric,
     number,
+    required,
     asyncValidate,
     shouldAsyncValidate
 } from "../../../util/formValidation/formValidation.js";
@@ -38,7 +39,11 @@ class NeedForm extends Component {
 
     componentWillMount() {}
 
-    componentWillReceiveProps(nextProps) {}
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.addedNeed){
+            this.props.reset()
+        }
+    }
 
     handleOpenMessage() {
         this.state.messageIsOpen = true;
@@ -87,23 +92,25 @@ class NeedForm extends Component {
                 {this.renderAlert()}
 
                 <Field
-                    placeholder="name of need"
+                    placeholder="name of item"
                     name="nameOfNeed"
                     component={FormField}
                     type="text"
-                    label={"submit a need"}
+                    label={"name of item"}
+                    validate={[required, alphaNumeric]}
                 />
 
                 <Field
-                    placeholder={"units needed"}
-                    name={"unitsRequired"}
+                    placeholder={"estimated number of people"}
+                    name={"numberOfPeople"}
                     component={FormField}
                     type="text"
-                    label={"estimated amount needed"}
-                    validate={[number]}
+                    label={"number of people"}
+                    validate={[number, required, alphaNumeric]}
                 />
 
                 <Button
+                basic
                     onClick={e => {
                         //e.preventDefault();
                     }}

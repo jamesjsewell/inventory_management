@@ -4,13 +4,13 @@ exports.postNeed = function(req, res, next) {
 	const nameOfNeed = req.body.nameOfNeed,
 		postedBy = req.body.postedBy,
 		degreeOfNeed = req.body.degreeOfNeed,
-		unitsRequired = req.body.unitsRequired
+		numberOfPeople = req.body.numberOfPeople
 
 	const need = new Need({
 		nameOfNeed,
 		postedBy,
 		degreeOfNeed,
-		unitsRequired
+		numberOfPeople
 	});
 
 	need.save(err => {

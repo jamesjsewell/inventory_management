@@ -33,7 +33,7 @@ export default class NeedsPollLayout extends Component {
             updateNeed
         } = this.props;
         return (
-            <Segment>
+            <Segment raised>
                 <Button
                     floated="right"
                     icon={<Icon fitted size="large" name="remove" />}
@@ -43,25 +43,67 @@ export default class NeedsPollLayout extends Component {
                     }}
                 />
 
-                <Label basic size="huge">{nameOfNeed}</Label>
-                <Progress value={degreeOfNeed} total={this.props.totalOfOccupants} progress='ratio' />
-                <Button
-                    onClick={() => {
-                        updateNeed(idOfNeed, collectionOfNeeds, "needs", this.props.totalOfOccupants);
-                    }}
-                    negative
-                >
-                    I need this
-                </Button>
-                {" "}
-                <Button
-                    onClick={() => {
-                        updateNeed(idOfNeed, collectionOfNeeds, "has", this.props.totalOfOccupants);
-                    }}
-                    positive
-                >
-                    I have this
-                </Button>
+                <Header size="huge">{nameOfNeed} </Header>
+                <Header.Subheader size="huge">
+                    {this.props.degreeOfNeed}
+                    {" "}
+                    out of
+                    {" "}
+                    {this.props.numberOfPeople}
+                    {" "}
+                    people have this item
+                    {" "}
+                </Header.Subheader>
+                <Progress
+                    value={degreeOfNeed}
+                    total={this.props.numberOfPeople}
+                    progress="ratio"
+                />
+                <Segment attached>
+                    do you need this item?
+                </Segment>
+                <Segment attached="bottom">
+
+                    <Button
+                        onClick={() => {
+                            updateNeed(
+                                idOfNeed,
+                                collectionOfNeeds,
+                                "has",
+                                this.props.numberOfPeople
+                            );
+                        }}
+                        positive
+                    >
+                        I have this
+                    </Button>
+
+                    {degreeOfNeed > 1
+                        ? <Button
+                              onClick={() => {
+                                  updateNeed(
+                                      idOfNeed,
+                                      collectionOfNeeds,
+                                      "needs",
+                                      this.props.numberOfPeople
+                                  );
+                              }}
+                              negative
+                          >
+                              I need this
+                          </Button>
+                        : null}
+
+                    <Button
+                        floated="right"
+                        onClick={() => {
+                            this.props.editNeed();
+                        }}
+                    >
+                        edit
+                    </Button>
+
+                </Segment>
             </Segment>
         );
     }

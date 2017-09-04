@@ -12,24 +12,35 @@ import {
     Message,
     Progress,
     Label,
-    Divider
+    Divider,
+    Modal
 } from "semantic-ui-react";
 
 import NeedForm from "./NeedForm.jsx";
 
 import Need from "./Need.jsx";
 
+import EditNeed from "./EditNeed.jsx";
+
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
-        this.state = { errorLoadingNeeds: false, successAddingNeed: false };
+        this.state = {
+            errorLoadingNeeds: false,
+            successAddingNeed: false,
+            editingNeed: false
+        };
     }
     componentWillMount() {
         if (!this.props.collectionOfNeeds) {
             this.props.actions.fetchNeeds();
         }
     }
-    componentWillReceiveProps(nextProps) {}
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.editingNeed) {
+            this.state.editingNeed = true;
+        }
+    }
 
     handleMessage(success, type) {
         if (type === "addingNeed") {
@@ -65,9 +76,12 @@ export default class NeedsPollLayout extends Component {
                         degreeOfNeed={
                             this.props.arrayOfNeeds[i].attributes.degreeOfNeed
                         }
+                        numberOfPeople={
+                            this.props.arrayOfNeeds[i].attributes.numberOfPeople
+                        }
                         idOfNeed={this.props.arrayOfNeeds[i].attributes._id}
                         collectionOfNeeds={this.props.collectionOfNeeds}
-                        totalOfOccupants={this.props.totalOfOccupants}
+                        editNeed={this.props.actions.editNeed.bind(this)}
                     />
                 );
             }
@@ -81,9 +95,9 @@ export default class NeedsPollLayout extends Component {
     render() {
         const asyncNeeds = this.props.loadingNeeds || this.props.addingNeed
             ? true
-            : false,
-            errorLoadingNeeds = this.props.errorLoadingNeeds,
-            addedNeed = this.props.addedNeed;
+            : false;
+
+        const { errorLoadingNeeds, addedNeed, editingNeed, collectionOfNeeds } = this.props;
 
         if (errorLoadingNeeds) {
             this.handleMessage(false, "loadingNeeds");
@@ -95,15 +109,16 @@ export default class NeedsPollLayout extends Component {
             <Grid container columns="equal" stackable>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <Header attached size="large" textAlign="center">
+                        <Segment attached size="huge" textAlign="center">
                             <Header.Content>
                                 needs{" "}
                             </Header.Content>
-                        </Header>
+                        </Segment>
 
-                        <Segment attached="bottom" label={"test"}>
+                        <Segment attached="bottom">
                             <Segment compact loading={asyncNeeds}>
                                 <NeedForm
+                                    addedNeed={this.props.addedNeed}
                                     doThisOnSubmit={userInput => {
                                         if (userInput) {
                                             this.props.actions.submitNewNeed(
@@ -119,13 +134,7 @@ export default class NeedsPollLayout extends Component {
                                     : null}
 
                             </Segment>
-                            <Segment
-                                attached
-                                secondary
-                                as={Grid}
-                                columns={3}
-                                streched
-                            >
+                            <Segment secondary as={Grid} columns={3} streched>
                                 <Grid.Column textAlign="left">
                                     not enough
                                 </Grid.Column>
@@ -136,13 +145,22 @@ export default class NeedsPollLayout extends Component {
                                     plenty
                                 </Grid.Column>
                             </Segment>
-                            <Segment attached loading={asyncNeeds}>
+                            <Segment basic loading={asyncNeeds}>
 
                                 {this.state.errorLoadingNeeds
                                     ? <Message negative>
                                           internal server error
                                       </Message>
                                     : this.renderNeeds()}
+
+                                <Modal
+                                    open={this.state.editingNeed}
+                                    size="large"
+                                >
+                                    <Modal.Content>
+                                        <EditNeed needsCollection={collectionOfNeeds} idOfEditedNeed={this.props.idOfEditedNeed} />
+                                    </Modal.Content>
+                                </Modal>
 
                             </Segment>
 
