@@ -206,6 +206,13 @@ export function resetStatus(type) {
 				payload: { status: "inactive" }
 			});
 		}
+
+		if (type === "updatingNeed"){
+			dispatch({
+				type: UPDATE_NEED,
+				payload: { status: "inactive" }
+			});
+		}
 	};
 }
 
@@ -378,6 +385,7 @@ export const selector = createStructuredSelector({
 	statusOfUpdateNeed,
 	updatingNeed,
 	updatedNeed,
+	errorUpdatingNeed,
 	errorRemovingNeed,
 	totalOfOccupants,
 	editingNeed,

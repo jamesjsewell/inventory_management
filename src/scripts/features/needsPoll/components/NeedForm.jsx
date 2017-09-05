@@ -58,7 +58,7 @@ class NeedForm extends Component {
 
         this.state.messageIsOpen = setTimeout(() => {
             this.props.resetStatus('addingNeed')
-            this.setState({ messageIsOpen: false, message: null });
+            this.setState({ messageIsOpen: false, message: null, description: null });
         }, 5000);
     }
 

@@ -28,7 +28,9 @@ export default class NeedsPollLayout extends Component {
         this.state = {
             errorLoadingNeeds: false,
             successAddingNeed: false,
-            editingNeed: false
+            editingNeed: false,
+            updateNeed: false,
+            errorUpdatingNeed: false
         };
     }
     componentWillMount() {
@@ -40,6 +42,14 @@ export default class NeedsPollLayout extends Component {
         if (nextProps.editingNeed) {
             this.state.editingNeed = true;
         }
+
+        if (nextProps.updatedNeed){
+            this.handleMessage(true, 'updatingNeed')
+        }
+
+        if (nextProps.errorUpdatingNeed){
+            this.handleMessage(false, 'updatingNeed')
+        }
     }
 
     handleMessage(success, type) {
@@ -50,13 +60,36 @@ export default class NeedsPollLayout extends Component {
                 this.state.successAddingNeed = setTimeout(() => {
                     this.props.actions.resetStatus("addingNeed");
                     this.setState({ successAddingNeed: false });
-                }, 2500);
+                }, 5000);
             }
         }
 
         if (type === "loadingNeeds") {
             if (success === false) {
                 this.state.errorLoadingNeeds = true;
+            }
+        }
+
+        if (type === "updatingNeed"){
+            if (success === true){
+                this.state.updatedNeed = true
+                this.state.errorUpdatingNeed = false
+
+                this.state.updatedNeed = setTimeout(() => {
+                    this.props.actions.resetStatus("updatingNeed");
+                    this.setState({ updatedNeed: false });
+                }, 5000);
+            }
+            else{
+
+                this.state.updatedNeed = false
+                this.state.errorUpdatingNeed = true
+
+                this.state.errorUpdatingNeed = setTimeout(() => {
+                    this.props.actions.resetStatus("updatingNeed");
+                    this.setState({ errorUpdatingNeed: false });
+                }, 5000);
+
             }
         }
     }
@@ -110,8 +143,10 @@ export default class NeedsPollLayout extends Component {
             addedNeed,
             errorAddingNeed,
             editingNeed,
+            updatedNeed,
+            errorUpdatingNeed,
             collectionOfNeeds,
-            idOfEditedNeed,
+            idOfEditedNeed
         } = this.props;
 
         if (errorLoadingNeeds) {
@@ -134,7 +169,9 @@ export default class NeedsPollLayout extends Component {
                         <Segment attached="bottom">
                             <Segment compact loading={asyncNeeds}>
                                 <NeedForm
-                                    resetStatus={this.props.actions.resetStatus.bind(this)}
+                                    resetStatus={this.props.actions.resetStatus.bind(
+                                        this
+                                    )}
                                     errorAddingNeed={this.props.errorAddingNeed}
                                     addedNeed={this.props.addedNeed}
                                     doThisOnSubmit={userInput => {
@@ -175,17 +212,19 @@ export default class NeedsPollLayout extends Component {
                                     open={this.props.editingNeed}
                                     size="huge"
                                 >
-                                    <Segment><Button
-                                        type="button"
-                                        floated="right"
-                                        icon="remove"
-                                        onClick={() => {
-                                            this.props.actions.editNeed(
-                                                "",
-                                                true
-                                            );
-                                        }}
-                                    /></Segment>
+                                    <Segment>
+                                        <Button
+                                            type="button"
+                                            floated="right"
+                                            icon="remove"
+                                            onClick={() => {
+                                                this.props.actions.editNeed(
+                                                    "",
+                                                    true
+                                                );
+                                            }}
+                                        />
+                                    </Segment>
                                     <Modal.Content>
 
                                         <Grid columns={2} as={Segment} basic>
@@ -206,6 +245,13 @@ export default class NeedsPollLayout extends Component {
                                             <Grid.Column width={7}>
                                                 <Need
                                                     isPreview={true}
+                                                    description={
+                                                        editingNeed
+                                                            ? model.get(
+                                                                  "description"
+                                                              )
+                                                            : null
+                                                    }
                                                     nameOfNeed={
                                                         editingNeed
                                                             ? model.get(
@@ -233,6 +279,16 @@ export default class NeedsPollLayout extends Component {
                                                             .collectionOfNeeds
                                                     }
                                                 />
+                                                {this.state.updatedNeed
+                                                    ? <Message positive>
+                                                          updated successfully
+                                                      </Message>
+                                                    : null}
+                                                {this.state.errorUpdatingNeed
+                                                    ? <Message negative>
+                                                          something went wrong
+                                                      </Message>
+                                                    : null}
                                             </Grid.Column>
 
                                         </Grid>

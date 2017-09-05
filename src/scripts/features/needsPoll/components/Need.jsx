@@ -74,34 +74,55 @@ export default class NeedsPollLayout extends Component {
                     progress="ratio"
                 />
 
-                <Header attached="top">description</Header>
-                <Segment attached="bottom" size="small">
-                    <Button
-                        type="button"
-                        onClick={e => {
-                            e.preventDefault();
-                            if (this.state.openedDescription === false) {
-                                this.setState({ openedDescription: true });
-                            } else {
-                                this.setState({ openedDescription: false });
-                            }
-                        }}
-                        compact
-                        size="tiny"
-                        icon={this.state.openedDescription ? "minus" : "add"}
-                    />
-                    <Divider />
+                {!this.props.isPreview
+                    ? <Header attached="top">
+                          <Button
+                              type="button"
+                              onClick={e => {
+                                  e.preventDefault();
+                                  if (this.state.openedDescription === false) {
+                                      this.setState({
+                                          openedDescription: true
+                                      });
+                                  } else {
+                                      this.setState({
+                                          openedDescription: false
+                                      });
+                                  }
+                              }}
+                              size="tiny"
+                              basic
+                              icon={
+                                  this.state.openedDescription ? "minus" : "add"
+                              }
+                          /> description
+                      </Header>
+                    : null}
 
-                    {this.state.openedDescription
-                        ? <Container text>{this.props.description}</Container>
-                        : null}
-                </Segment>
+                {!this.props.isPreview
+                    ? <Segment attached="bottom" size="small">
 
-                <Segment size="large" attached="top">
-                    <Header>
-                        do you need this item?
-                    </Header>
-                </Segment>
+                          {this.state.openedDescription
+                              ? <Container fluid text textAlign="left">
+                                    {this.props.description}
+                                </Container>
+                              : null}
+                      </Segment>
+                    : null}
+
+                {this.props.isPreview
+                    ? <Container fluid text textAlign="left">
+                          {this.props.description}
+                      </Container>
+                    : null}
+
+                {!this.props.isPreview
+                    ? <Segment size="large" attached="top">
+                          <Header>
+                              do you need this item?
+                          </Header>
+                      </Segment>
+                    : null}
                 {!this.props.isPreview
                     ? <Segment attached="bottom">
 
