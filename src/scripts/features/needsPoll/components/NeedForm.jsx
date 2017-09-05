@@ -33,16 +33,16 @@ class NeedForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            messageIsOpen: false
+            messageIsOpen: false,
+            description: null
         };
     }
 
     componentWillMount() {}
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.addedNeed){
-            this.props.reset()
-        }
+        // if(nextProps.addedNeed){
+        // }
     }
 
     handleOpenMessage() {
@@ -56,10 +56,22 @@ class NeedForm extends Component {
 
     handleFormSubmit(formProps) {
         var userInput = formProps;
-        console.log(formProps)
-        if (Object.keys(formProps).length > 0 && formProps.constructor === Object) {
+        console.log(formProps);
+        if (
+            Object.keys(formProps).length > 0 &&
+            formProps.constructor === Object
+        ) {
+            if (this.state.description) {
+                userInput["description"] = this.state.description;
+            }
             this.props.doThisOnSubmit(userInput);
+            this.props.reset();
+            this.props.untouch(["nameOfNeed", "numberOfPeople", "description"]);
         }
+    }
+
+    handleDescriptionChange(event) {
+        this.setState({ description: event.target.value });
     }
 
     renderAlert() {
@@ -91,26 +103,47 @@ class NeedForm extends Component {
 
                 {this.renderAlert()}
 
-                <Field
-                    placeholder="name of item"
-                    name="nameOfNeed"
-                    component={FormField}
-                    type="text"
-                    label={"name of item"}
-                    validate={[required, alphaNumeric]}
-                />
+                <Segment.Group horizontal>
 
-                <Field
-                    placeholder={"estimated number of people"}
-                    name={"numberOfPeople"}
-                    component={FormField}
-                    type="text"
-                    label={"number of people"}
-                    validate={[number, required, alphaNumeric]}
-                />
+                    <Segment>
+                        <Field
+                            placeholder="name of item"
+                            name="nameOfNeed"
+                            component={FormField}
+                            type="text"
+                            label={"name of item"}
+                            validate={[required, alphaNumeric]}
+                        />
+
+                        <Field
+                            placeholder={"estimated number of people"}
+                            name={"numberOfPeople"}
+                            component={FormField}
+                            type="text"
+                            label={"number of people"}
+                            validate={[number, required, alphaNumeric]}
+                        />
+                    </Segment>
+
+                    <Segment>
+
+                        <textarea
+                            as={Segment}
+                            basic
+                            size="medium"
+                            compact
+                            id="description"
+                            name="description"
+                            value={this.state.description}
+                            onChange={this.handleDescriptionChange.bind(this)}
+                            placeholder={"enter a description for this item"}
+                        />
+
+                    </Segment>
+                </Segment.Group>
 
                 <Button
-                basic
+                    basic
                     onClick={e => {
                         //e.preventDefault();
                     }}

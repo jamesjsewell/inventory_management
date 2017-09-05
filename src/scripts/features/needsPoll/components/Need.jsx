@@ -15,12 +15,14 @@ import {
     Image,
     Icon,
     Label,
-    Progress
+    Progress,
+    Divider
 } from "semantic-ui-react";
 
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
+        this.state = { openedDescription: false };
     }
 
     render() {
@@ -33,18 +35,29 @@ export default class NeedsPollLayout extends Component {
             updateNeed
         } = this.props;
         return (
-            <Segment raised>
-                <Button
-                    floated="right"
-                    icon={<Icon fitted size="large" name="remove" />}
-                    size="tiny"
-                    onClick={() => {
-                        removeNeed(idOfNeed, collectionOfNeeds);
-                    }}
-                />
+            <Segment raised={true} padded color="grey">
+                {!this.props.isPreview
+                    ? <Button
+                          onClick={() => {
+                              this.props.editNeed(idOfNeed);
+                          }}
+                      >
+                          edit
+                      </Button>
+                    : null}
+                {!this.props.isPreview
+                    ? <Button
+                          floated="right"
+                          icon={<Icon fitted size="large" name="remove" />}
+                          size="tiny"
+                          onClick={() => {
+                              removeNeed(idOfNeed, collectionOfNeeds);
+                          }}
+                      />
+                    : null}
 
                 <Header size="huge">{nameOfNeed} </Header>
-                <Header.Subheader size="huge">
+                <Header>
                     {this.props.degreeOfNeed}
                     {" "}
                     out of
@@ -53,57 +66,82 @@ export default class NeedsPollLayout extends Component {
                     {" "}
                     people have this item
                     {" "}
-                </Header.Subheader>
+                </Header>
+
                 <Progress
                     value={degreeOfNeed}
                     total={this.props.numberOfPeople}
                     progress="ratio"
                 />
-                <Segment attached>
-                    do you need this item?
-                </Segment>
-                <Segment attached="bottom">
 
+                <Header attached="top">description</Header>
+                <Segment attached="bottom" size="small">
                     <Button
-                        onClick={() => {
-                            updateNeed(
-                                idOfNeed,
-                                collectionOfNeeds,
-                                "has",
-                                this.props.numberOfPeople
-                            );
+                        type="button"
+                        onClick={e => {
+                            e.preventDefault();
+                            if (this.state.openedDescription === false) {
+                                this.setState({ openedDescription: true });
+                            } else {
+                                this.setState({ openedDescription: false });
+                            }
                         }}
-                        positive
-                    >
-                        I have this
-                    </Button>
+                        compact
+                        size="tiny"
+                        icon={this.state.openedDescription ? "minus" : "add"}
+                    />
+                    <Divider />
 
-                    {degreeOfNeed > 1
-                        ? <Button
+                    {this.state.openedDescription
+                        ? <Container text>{this.props.description}</Container>
+                        : null}
+                </Segment>
+
+                <Segment size="large" attached="top">
+                    <Header>
+                        do you need this item?
+                    </Header>
+                </Segment>
+                {!this.props.isPreview
+                    ? <Segment attached="bottom">
+
+                          <Button
                               onClick={() => {
                                   updateNeed(
                                       idOfNeed,
                                       collectionOfNeeds,
-                                      "needs",
+                                      "has",
                                       this.props.numberOfPeople
                                   );
                               }}
-                              negative
+                              basic
+                              size="large"
+                              positive
                           >
-                              I need this
+                              I have this{" "}
                           </Button>
-                        : null}
 
-                    <Button
-                        floated="right"
-                        onClick={() => {
-                            this.props.editNeed(idOfNeed);
-                        }}
-                    >
-                        edit
-                    </Button>
+                          {degreeOfNeed > 1
+                              ? <Button
+                                    size="large"
+                                    icon="plus"
+                                    onClick={() => {
+                                        updateNeed(
+                                            idOfNeed,
+                                            collectionOfNeeds,
+                                            "needs",
+                                            this.props.numberOfPeople
+                                        );
+                                    }}
+                                    basic
+                                    negative
+                                >
+                                    I need this
+                                </Button>
+                              : null}
 
-                </Segment>
+                      </Segment>
+                    : null}
             </Segment>
         );
     }

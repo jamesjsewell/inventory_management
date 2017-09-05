@@ -15,14 +15,15 @@ const NeedSchema = new Schema(
         },
         numberOfPeople: {
             type: Number,
-            required: true  
+            required: true
         },
         postedBy: {
             type: String,
             lowercase: true,
             required: true
         },
-        degreeOfNeed: { type: Number, default: 0 }
+        degreeOfNeed: { type: Number, default: 0 },
+        description: { type: String }
     },
     {
         timestamps: true

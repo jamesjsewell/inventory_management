@@ -47,7 +47,6 @@ export const aol = value =>
 
 //for async validation with redux form
 export const asyncValidate = (values, dispatch, validationType) => {
-   
     if (values.nameOfNeed) {
         var request = axios.post(`${API_URL}/needsPoll/newNeedForm`, {
             values

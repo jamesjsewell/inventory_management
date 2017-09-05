@@ -23,7 +23,7 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 
 export function submitNewNeed(values, postedById, needsCollection) {
 	return function(dispatch) {
-		console.log(values);
+		
 		dispatch({
 			type: ADD_SUBMITTED_NEED,
 			payload: {
@@ -36,7 +36,8 @@ export function submitNewNeed(values, postedById, needsCollection) {
 				nameOfNeed: values.nameOfNeed,
 				postedBy: postedById,
 				degreeOfNeed: 0,
-				numberOfPeople: Number(values.numberOfPeople)
+				numberOfPeople: Number(values.numberOfPeople),
+				description: values.description
 			},
 			{ wait: true, success: successCallback }
 		);
@@ -88,7 +89,7 @@ export function removeNeed(idOfNeed, needsCollection) {
 	};
 }
 
-export function updateNeed(idOfNeed, needsCollection, update, occupants) {
+export function updateNeed(idOfNeed, needsCollection, update, people, userInput) {
 	return function(dispatch) {
 		dispatch({
 			type: UPDATE_NEED,
@@ -102,11 +103,19 @@ export function updateNeed(idOfNeed, needsCollection, update, occupants) {
 		var updatedInfo = {};
 
 		if (update === "needs" && model.get("degreeOfNeed") > 0) {
-			updatedInfo.degreeOfNeed = model.get("degreeOfNeed") - 1;
+			updatedInfo.degreeOfNeed = Number(model.get("degreeOfNeed")) - 1;
 		}
 
-		if (update === "has" && model.get("degreeOfNeed") < occupants) {
-			updatedInfo.degreeOfNeed = model.get("degreeOfNeed") + 1;
+		if (update === "has" && model.get("degreeOfNeed") < people) {
+			updatedInfo.degreeOfNeed = Number(model.get("degreeOfNeed")) + 1;
+		}
+
+		if (update === "edit"){
+			updatedInfo.numberOfPeople = userInput.numberOfPeople
+			updatedInfo.nameOfNeed = userInput.nameOfNeed
+			updatedInfo.degreeOfNeed = userInput.degreeOfNeed
+			updatedInfo.description = userInput.description
+
 		}
 
 		model.set(updatedInfo);
@@ -117,7 +126,7 @@ export function updateNeed(idOfNeed, needsCollection, update, occupants) {
 				needsCollection.reset(needsCollection.models, model);
 
 				var updatedModel = needsCollection.get(idOfNeed);
-				console.log(updatedModel.attributes.degreeOfNeed);
+			
 				dispatch({
 					type: UPDATE_NEED,
 					payload: {
@@ -187,13 +196,22 @@ export function resetStatus(type) {
 	};
 }
 
-export function editNeed(idOfNeed) {
+export function editNeed(idOfNeed, close) {
 	return function(dispatch) {
-		console.log(idOfNeed)
-		dispatch({
+		
+		if(!close){
+			dispatch({
 			type: EDIT_NEED,
 			payload: { status: "active", idOfNeed: idOfNeed }
 		});
+		}
+		else{
+			dispatch({
+			type: EDIT_NEED,
+			payload: { status: "inactive" }
+		});
+		}
+		
 	};
 }
 
@@ -299,6 +317,10 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			if (action.payload.status === "active") {
 				extendObj.editingNeed = true;
 				extendObj.idOfEditedNeed = action.payload.idOfNeed
+			}
+			else{
+
+				extendObj.editingNeed = false
 			}
 
 

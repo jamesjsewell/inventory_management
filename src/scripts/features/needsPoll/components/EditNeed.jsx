@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm } from "redux-form";
@@ -27,10 +28,50 @@ import {
     alphaNumeric,
     email,
     shouldAsyncValidate,
-    asyncValidate,
     number
 } from "../../../util/formValidation/formValidation.js";
 import { FormField } from "../../../components/forms/fields/formField.js";
+import { API_URL } from "../../../util/index.js";
+
+var formDefaults = {};
+
+const asyncValidate = (values, dispatch) => {
+    var checkAsync = true;
+
+    if (values.nameOfNeed === formDefaults.nameOfNeed) {
+        checkAsync = false;
+    }
+
+    var request = axios.post(`${API_URL}/needsPoll/newNeedForm`, {
+        values
+    });
+
+    if (Number(values.degreeOfNeed) > Number(values.numberOfPeople)) {
+        console.log('degree', values.degreeOfNeed)
+        console.log('number of people', values.numberOfPeople)
+        return new Promise((resolve, reject) => {
+            console.log(values.degreeOfNeed)
+            resolve({degreeOfNeed: "more people have this than there are people" })
+        });
+    }
+
+    if (checkAsync) {
+        return request
+            .then(response => {
+                return;
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                if (error.response.data) {
+                    return error.response.data;
+                }
+            });
+    } else {
+        return new Promise((resolve, reject) => {
+            resolve(undefined);
+        });
+    }
+};
 
 class EditNeed extends Component {
     constructor(props) {
@@ -39,6 +80,11 @@ class EditNeed extends Component {
         var model = this.props.needsCollection.get(this.props.idOfEditedNeed);
         console.log(model, this.props.idOfEditedNeed);
         this.state.model = model;
+        formDefaults.nameOfNeed = this.state.model.get("nameOfNeed");
+        formDefaults.numberOfPeople = this.state.model.get("numberOfPeople");
+        formDefaults.degreeOfNeed = this.state.model.get("degreeOfNeed");
+        this.state.description = this.state.model.get("description");
+
     }
 
     componentWillMount() {}
@@ -95,6 +141,18 @@ class EditNeed extends Component {
 
     handleFormSubmit(formProps) {
         var userInput = formProps;
+
+        if(this.state.description){
+            userInput["description"] = this.state.description
+        }
+
+        this.props.updateNeed(
+            this.props.idOfEditedNeed,
+            this.props.needsCollection,
+            "edit",
+            null,
+            userInput
+        );
 
         // const profile = this.state.upToDateProfile;
         // const username = this.state.upToDateUsername;
@@ -169,7 +227,7 @@ class EditNeed extends Component {
             return (
                 <Form
                     onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}
-                    size="massive"
+                    size="huge"
                     padded
                     loading={false}
                 >
@@ -177,22 +235,32 @@ class EditNeed extends Component {
                     {this.renderAlert()}
 
                     <Field
-                        
                         placeholder="enter name of item"
                         name="nameOfNeed"
                         component={FormField}
                         type="text"
                         label="item name"
                         validate={[alphaNumeric]}
+                        initialValues={{
+                            nameOfNeed: this.state.model.get("nameOfNeed")
+                        }}
                     />
 
                     <Field
-
-                        placeholder="enter number of people"
+                        placeholder="estimated number of people who need"
                         name="numberOfPeople"
                         component={FormField}
                         type="text"
-                        label="estimated number of people"
+                        label="people who need"
+                        validate={[alphaNumeric, number]}
+                    />
+
+                    <Field
+                        placeholder="estimated number of people who have"
+                        name="degreeOfNeed"
+                        component={FormField}
+                        type="text"
+                        label="people who have"
                         validate={[alphaNumeric, number]}
                     />
 
@@ -217,8 +285,9 @@ class EditNeed extends Component {
                         content={"something"}
                     />
 
-                    <Segment compact>
+                    <Segment>
                     <Button
+                        padded
                         type="submit"
                         content="save"
                         loading={this.props.updatingProfile}
@@ -238,6 +307,7 @@ class EditNeed extends Component {
 export default reduxForm({
     form: "editNeedForm",
     asyncValidate,
-    asyncBlurFields: ["nameOfNeed"],
-    shouldAsyncValidate
+    asyncBlurFields: ["nameOfNeed", "degreeOfNeed", "numberOfPeople"],
+    shouldAsyncValidate,
+    initialValues: formDefaults
 })(EditNeed);

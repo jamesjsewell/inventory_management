@@ -9,7 +9,8 @@ export const FormField = ({
     placeholder,
     required,
     asyncValidation,
-    meta: { touched, error, warning, value, asyncValidating }
+    initialValues,
+    meta: { touched, error, warning, value, asyncValidating, pristine }
 }) => (
     <Form.Field className={asyncValidating ? 'async-validating' : ''} required={required} error={error && touched ? true : false} >
         <Header sub size="tiny">{label}</Header>

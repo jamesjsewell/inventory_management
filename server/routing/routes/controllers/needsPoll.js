@@ -4,13 +4,15 @@ exports.postNeed = function(req, res, next) {
 	const nameOfNeed = req.body.nameOfNeed,
 		postedBy = req.body.postedBy,
 		degreeOfNeed = req.body.degreeOfNeed,
-		numberOfPeople = req.body.numberOfPeople
+		numberOfPeople = req.body.numberOfPeople,
+		description = req.body.description
 
 	const need = new Need({
 		nameOfNeed,
 		postedBy,
 		degreeOfNeed,
-		numberOfPeople
+		numberOfPeople,
+		description
 	});
 
 	need.save(err => {
@@ -66,7 +68,7 @@ exports.validateNewNeed = function(req, res, next) {
             var errors = {}
             // If user is not unique, return error
             if (existingNeed) {
-                errors["nameOfNeed"] = "need already created";
+                errors["nameOfNeed"] = "already exists";
             }
 
             if (Object.keys(errors).length > 0) {

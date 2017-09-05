@@ -68,6 +68,7 @@ export default class NeedsPollLayout extends Component {
             for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
                 arrayOfNeedElements.push(
                     <Need
+                        isPreview={false}
                         updateNeed={this.props.actions.updateNeed.bind(this)}
                         removeNeed={this.props.actions.removeNeed.bind(this)}
                         nameOfNeed={
@@ -79,11 +80,18 @@ export default class NeedsPollLayout extends Component {
                         numberOfPeople={
                             this.props.arrayOfNeeds[i].attributes.numberOfPeople
                         }
+                        description={
+                            this.props.arrayOfNeeds[i].attributes.description
+                        }
                         idOfNeed={this.props.arrayOfNeeds[i].attributes._id}
                         collectionOfNeeds={this.props.collectionOfNeeds}
                         editNeed={this.props.actions.editNeed.bind(this)}
                     />
                 );
+
+                if (i != this.props.arrayOfNeeds.length - 1) {
+                    arrayOfNeedElements.push(<Divider />);
+                }
             }
 
             return arrayOfNeedElements;
@@ -97,14 +105,21 @@ export default class NeedsPollLayout extends Component {
             ? true
             : false;
 
-        const { errorLoadingNeeds, addedNeed, editingNeed, collectionOfNeeds } = this.props;
+        const {
+            errorLoadingNeeds,
+            addedNeed,
+            editingNeed,
+            collectionOfNeeds,
+            idOfEditedNeed
+        } = this.props;
 
         if (errorLoadingNeeds) {
             this.handleMessage(false, "loadingNeeds");
         }
-        if (addedNeed) {
-            this.handleMessage(true, "addingNeed");
+        if (editingNeed) {
+            var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
+
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -154,11 +169,71 @@ export default class NeedsPollLayout extends Component {
                                     : this.renderNeeds()}
 
                                 <Modal
-                                    open={this.state.editingNeed}
+                                    open={this.props.editingNeed}
                                     size="huge"
                                 >
+                                    <Segment><Button
+                                        type="button"
+                                        floated="right"
+                                        icon="remove"
+                                        onClick={() => {
+                                            this.props.actions.editNeed(
+                                                "",
+                                                true
+                                            );
+                                        }}
+                                    /></Segment>
                                     <Modal.Content>
-                                        <EditNeed needsCollection={collectionOfNeeds} idOfEditedNeed={this.props.idOfEditedNeed} />
+
+                                        <Grid columns={2} as={Segment} basic>
+                                            <Grid.Column width={9}>
+                                                <EditNeed
+                                                    needsCollection={
+                                                        collectionOfNeeds
+                                                    }
+                                                    idOfEditedNeed={
+                                                        this.props
+                                                            .idOfEditedNeed
+                                                    }
+                                                    updateNeed={this.props.actions.updateNeed.bind(
+                                                        this
+                                                    )}
+                                                />
+                                            </Grid.Column>
+                                            <Grid.Column width={7}>
+                                                <Need
+                                                    isPreview={true}
+                                                    nameOfNeed={
+                                                        editingNeed
+                                                            ? model.get(
+                                                                  "nameOfNeed"
+                                                              )
+                                                            : null
+                                                    }
+                                                    degreeOfNeed={
+                                                        editingNeed
+                                                            ? model.get(
+                                                                  "degreeOfNeed"
+                                                              )
+                                                            : null
+                                                    }
+                                                    numberOfPeople={
+                                                        editingNeed
+                                                            ? model.get(
+                                                                  "numberOfPeople"
+                                                              )
+                                                            : null
+                                                    }
+                                                    idOfNeed={idOfEditedNeed}
+                                                    collectionOfNeeds={
+                                                        this.props
+                                                            .collectionOfNeeds
+                                                    }
+                                                />
+                                            </Grid.Column>
+
+                                        </Grid>
+
                                     </Modal.Content>
                                 </Modal>
 
