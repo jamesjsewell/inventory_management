@@ -34,6 +34,7 @@ class NeedForm extends Component {
         super(props);
         this.state = {
             messageIsOpen: false,
+            message: null,
             description: null
         };
     }
@@ -41,17 +42,24 @@ class NeedForm extends Component {
     componentWillMount() {}
 
     componentWillReceiveProps(nextProps) {
-        // if(nextProps.addedNeed){
-        // }
+        if(nextProps.addedNeed){
+            this.handleOpenMessage()
+            this.state.message="added item"
+        }
+
+        if(nextProps.errorAddingNeed){
+            this.handleOpenMessage()
+            this.state.message="something went wrong"
+        }
     }
 
     handleOpenMessage() {
         this.state.messageIsOpen = true;
 
         this.state.messageIsOpen = setTimeout(() => {
-            this.setState({ messageIsOpen: false });
-            this.props.actions.resetStatusOfUpdate();
-        }, 2500);
+            this.props.resetStatus('addingNeed')
+            this.setState({ messageIsOpen: false, message: null });
+        }, 5000);
     }
 
     handleFormSubmit(formProps) {
@@ -123,6 +131,9 @@ class NeedForm extends Component {
                             label={"number of people"}
                             validate={[number, required, alphaNumeric]}
                         />
+                        {this.state.messageIsOpen
+                    ? <Message positive={this.props.addedNeed} negative={this.props.errorAddingNeed}> {this.state.message}</Message>
+                    : null}
                     </Segment>
 
                     <Segment>
@@ -151,6 +162,8 @@ class NeedForm extends Component {
                 >
                     submit
                 </Button>
+
+
             </Form>
         );
     }

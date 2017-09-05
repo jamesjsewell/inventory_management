@@ -108,9 +108,10 @@ export default class NeedsPollLayout extends Component {
         const {
             errorLoadingNeeds,
             addedNeed,
+            errorAddingNeed,
             editingNeed,
             collectionOfNeeds,
-            idOfEditedNeed
+            idOfEditedNeed,
         } = this.props;
 
         if (errorLoadingNeeds) {
@@ -133,6 +134,8 @@ export default class NeedsPollLayout extends Component {
                         <Segment attached="bottom">
                             <Segment compact loading={asyncNeeds}>
                                 <NeedForm
+                                    resetStatus={this.props.actions.resetStatus.bind(this)}
+                                    errorAddingNeed={this.props.errorAddingNeed}
                                     addedNeed={this.props.addedNeed}
                                     doThisOnSubmit={userInput => {
                                         if (userInput) {

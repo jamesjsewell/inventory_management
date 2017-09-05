@@ -23,7 +23,6 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 
 export function submitNewNeed(values, postedById, needsCollection) {
 	return function(dispatch) {
-		
 		dispatch({
 			type: ADD_SUBMITTED_NEED,
 			payload: {
@@ -39,7 +38,7 @@ export function submitNewNeed(values, postedById, needsCollection) {
 				numberOfPeople: Number(values.numberOfPeople),
 				description: values.description
 			},
-			{ wait: true, success: successCallback }
+			{ wait: true, success: successCallback, error: errorCallback }
 		);
 
 		function successCallback(response) {
@@ -49,6 +48,15 @@ export function submitNewNeed(values, postedById, needsCollection) {
 					collection: response.collection,
 					arrayOfNeeds: response.collection.models,
 					status: "success"
+				}
+			});
+		}
+
+		function errorCallback(response) {
+			dispatch({
+				type: ADD_SUBMITTED_NEED,
+				payload: {
+					status: "error"
 				}
 			});
 		}
@@ -89,7 +97,13 @@ export function removeNeed(idOfNeed, needsCollection) {
 	};
 }
 
-export function updateNeed(idOfNeed, needsCollection, update, people, userInput) {
+export function updateNeed(
+	idOfNeed,
+	needsCollection,
+	update,
+	people,
+	userInput
+) {
 	return function(dispatch) {
 		dispatch({
 			type: UPDATE_NEED,
@@ -110,12 +124,11 @@ export function updateNeed(idOfNeed, needsCollection, update, people, userInput)
 			updatedInfo.degreeOfNeed = Number(model.get("degreeOfNeed")) + 1;
 		}
 
-		if (update === "edit"){
-			updatedInfo.numberOfPeople = userInput.numberOfPeople
-			updatedInfo.nameOfNeed = userInput.nameOfNeed
-			updatedInfo.degreeOfNeed = userInput.degreeOfNeed
-			updatedInfo.description = userInput.description
-
+		if (update === "edit") {
+			updatedInfo.numberOfPeople = userInput.numberOfPeople;
+			updatedInfo.nameOfNeed = userInput.nameOfNeed;
+			updatedInfo.degreeOfNeed = userInput.degreeOfNeed;
+			updatedInfo.description = userInput.description;
 		}
 
 		model.set(updatedInfo);
@@ -126,7 +139,7 @@ export function updateNeed(idOfNeed, needsCollection, update, people, userInput)
 				needsCollection.reset(needsCollection.models, model);
 
 				var updatedModel = needsCollection.get(idOfNeed);
-			
+
 				dispatch({
 					type: UPDATE_NEED,
 					payload: {
@@ -198,20 +211,17 @@ export function resetStatus(type) {
 
 export function editNeed(idOfNeed, close) {
 	return function(dispatch) {
-		
-		if(!close){
+		if (!close) {
 			dispatch({
-			type: EDIT_NEED,
-			payload: { status: "active", idOfNeed: idOfNeed }
-		});
-		}
-		else{
+				type: EDIT_NEED,
+				payload: { status: "active", idOfNeed: idOfNeed }
+			});
+		} else {
 			dispatch({
-			type: EDIT_NEED,
-			payload: { status: "inactive" }
-		});
+				type: EDIT_NEED,
+				payload: { status: "inactive" }
+			});
 		}
-		
 	};
 }
 
@@ -257,6 +267,9 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 
 			if (action.payload.arrayOfNeeds) {
 				extendObj.arrayOfNeeds = action.payload.arrayOfNeeds;
+			}
+			if (action.payload.status === "error") {
+				extendObj.errorAddingNeed = true;
 			}
 			extendObj.statusOfCreateNeed = action.payload.status;
 			extendObj.addingNeed = action.payload.status == "active"
@@ -316,13 +329,10 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			var extendObj = {};
 			if (action.payload.status === "active") {
 				extendObj.editingNeed = true;
-				extendObj.idOfEditedNeed = action.payload.idOfNeed
+				extendObj.idOfEditedNeed = action.payload.idOfNeed;
+			} else {
+				extendObj.editingNeed = false;
 			}
-			else{
-
-				extendObj.editingNeed = false
-			}
-
 
 			return _.extend({}, state, extendObj);
 	}
@@ -340,6 +350,7 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	statusOfCreateNeed = state => state.needsPoll.statusOfCreateNeed,
 	addingNeed = state => state.needsPoll.addingNeed,
 	addedNeed = state => state.needsPoll.addedNeed,
+	errorAddingNeed = state => state.needsPoll.errorAddingNeed,
 	statusOfRemoveNeed = state => state.needsPoll.statusOfRemoveNeed,
 	removingNeed = state => state.needsPoll.removingNeed,
 	removedNeed = state => state.needsPoll.removedNeed,
@@ -350,7 +361,7 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	errorUpdatingNeed = state => state.needsPoll.errorUpdatingNeed,
 	totalOfOccupants = state => state.needsPoll.totalOfOccupants,
 	editingNeed = state => state.needsPoll.editingNeed,
-	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed
+	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -359,6 +370,7 @@ export const selector = createStructuredSelector({
 	errorLoadingNeeds,
 	addingNeed,
 	addedNeed,
+	errorAddingNeed,
 	statusOfRemoveNeed,
 	removingNeed,
 	removedNeed,
