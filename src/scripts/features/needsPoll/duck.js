@@ -63,37 +63,47 @@ export function submitNewNeed(values, postedById, needsCollection) {
 	};
 }
 
-export function removeNeed(idOfNeed, needsCollection) {
+export function removeNeed(idOfNeed, needsCollection, prompt) {
 	return function(dispatch) {
-		dispatch({
-			type: REMOVE_NEED,
-			payload: {
-				status: "active"
-			}
-		});
-
-		var model = needsCollection.get(idOfNeed);
-
-		model
-			.destroy()
-			.done(
-				dispatch({
-					type: REMOVE_NEED,
-					payload: {
-						collection: needsCollection,
-						arrayOfNeeds: needsCollection.models,
-						status: "success"
-					}
-				})
-			)
-			.fail(function(err) {
-				dispatch({
-					type: REMOVE_NEED,
-					payload: {
-						status: "error"
-					}
-				});
+		if (!prompt) {
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					status: "active"
+				}
 			});
+
+			var model = needsCollection.get(idOfNeed);
+
+			model
+				.destroy()
+				.done(
+					dispatch({
+						type: REMOVE_NEED,
+						payload: {
+							collection: needsCollection,
+							arrayOfNeeds: needsCollection.models,
+							status: "success"
+						}
+					})
+				)
+				.fail(function(err) {
+					dispatch({
+						type: REMOVE_NEED,
+						payload: {
+							status: "error"
+						}
+					});
+				});
+		} else if (prompt) {
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					status: "prompt",
+					idOfNeedToRemove: idOfNeed
+				}
+			});
+		}
 	};
 }
 
@@ -145,7 +155,8 @@ export function updateNeed(
 					payload: {
 						collection: needsCollection,
 						arrayOfNeeds: needsCollection.models,
-						status: "success"
+						status: "success",
+						idOfUpdatedNeed: idOfNeed
 					}
 				});
 			})
@@ -154,7 +165,8 @@ export function updateNeed(
 				dispatch({
 					type: UPDATE_NEED,
 					payload: {
-						status: "error"
+						status: "error",
+						idOfUpdatedNeed: idOfNeed
 					}
 				});
 			});
@@ -207,9 +219,16 @@ export function resetStatus(type) {
 			});
 		}
 
-		if (type === "updatingNeed"){
+		if (type === "updatingNeed") {
 			dispatch({
 				type: UPDATE_NEED,
+				payload: { status: "inactive" }
+			});
+		}
+
+		if (type === "removingNeed"){
+			dispatch({
+				type: REMOVE_NEED,
 				payload: { status: "inactive" }
 			});
 		}
@@ -247,10 +266,13 @@ const init_needs_poll = {
 	removingNeed: false,
 	removedNeed: false,
 	errorRemovingNeed: false,
+	needRemovalPrompt: false,
+	idOfNeedToRemove: null,
 	statusOfRemoveNeed: "inactive",
 	totalOfOccupants: 20,
 	editingNeed: false,
-	idOfEditedNeed: null
+	idOfEditedNeed: null,
+	idOfUpdatedNeed: null
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
@@ -307,6 +329,10 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			extendObj.errorRemovingNeed = action.payload.status == "error"
 				? true
 				: false;
+			extendObj.needRemovalPrompt = action.payload.status == "prompt"
+				? true
+				: false;
+			extendObj.idOfNeedToRemove = action.payload.idOfNeedToRemove
 
 			return _.extend({}, state, extendObj);
 
@@ -329,6 +355,7 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			extendObj.errorUpdatingNeed = action.payload.status == "error"
 				? true
 				: false;
+			extendObj.idOfUpdatedNeed = action.payload.idOfUpdatedNeed;
 
 			return _.extend({}, state, extendObj);
 
@@ -362,13 +389,16 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	removingNeed = state => state.needsPoll.removingNeed,
 	removedNeed = state => state.needsPoll.removedNeed,
 	errorRemovingNeed = state => state.needsPoll.errorRemovingNeed,
+	needRemovalPrompt = state => state.needsPoll.needRemovalPrompt,
+	idOfNeedToRemove = state => state.needsPoll.idOfNeedToRemove,
 	statusOfUpdateNeed = state => state.needsPoll.statusOfUpdateNeed,
 	updatingNeed = state => state.needsPoll.updatingNeed,
 	updatedNeed = state => state.needsPoll.updatedNeed,
 	errorUpdatingNeed = state => state.needsPoll.errorUpdatingNeed,
 	totalOfOccupants = state => state.needsPoll.totalOfOccupants,
 	editingNeed = state => state.needsPoll.editingNeed,
-	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed;
+	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed,
+	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -382,6 +412,8 @@ export const selector = createStructuredSelector({
 	removingNeed,
 	removedNeed,
 	errorRemovingNeed,
+	needRemovalPrompt,
+	idOfNeedToRemove,
 	statusOfUpdateNeed,
 	updatingNeed,
 	updatedNeed,
@@ -389,5 +421,6 @@ export const selector = createStructuredSelector({
 	errorRemovingNeed,
 	totalOfOccupants,
 	editingNeed,
-	idOfEditedNeed
+	idOfEditedNeed,
+	idOfUpdatedNeed
 });

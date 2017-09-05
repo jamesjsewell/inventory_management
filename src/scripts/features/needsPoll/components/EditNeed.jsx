@@ -123,7 +123,7 @@ class EditNeed extends Component {
         this.state.messageIsOpen = setTimeout(() => {
             this.setState({ messageIsOpen: false });
             this.props.actions.resetStatusOfUpdate();
-        }, 2500);
+        }, 5000);
     }
 
     handleUpload(evt) {

@@ -22,7 +22,47 @@ import {
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
-        this.state = { openedDescription: false };
+        this.state = {
+            openedDescription: false,
+            updatedNeed: false,
+            errorUpdatingNeed: false
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.updatedNeed && this.state.updatedNeed === false) {
+            if (nextProps.idOfUpdatedNeed === this.props.idOfNeed) {
+                this.handleMessage(true);
+            }
+        }
+        if (
+            nextProps.errorUpdatingNeed &&
+            this.state.errorUpdatingNeed === false
+        ) {
+            if (nextProps.idOfUpdatedNeed === this.props.idOfNeed) {
+                this.handleMessage(false);
+            }
+        }
+    }
+
+    handleMessage(success) {
+        if (success) {
+            this.state.updatedNeed = true;
+            this.state.errorUpdatingNeed = false;
+
+            this.state.updatedNeed = setTimeout(() => {
+                this.props.resetStatus("updatingNeed");
+                this.setState({ updatedNeed: false });
+            }, 5000);
+        } else {
+            this.state.updatedNeed = false;
+            this.state.errorUpdatingNeed = true;
+
+            this.state.errorUpdatingNeed = setTimeout(() => {
+                this.props.resetStatus("updatingNeed");
+                this.setState({ errorUpdatingNeed: false });
+            }, 5000);
+        }
     }
 
     render() {
@@ -51,7 +91,8 @@ export default class NeedsPollLayout extends Component {
                           icon={<Icon fitted size="large" name="remove" />}
                           size="tiny"
                           onClick={() => {
-                              removeNeed(idOfNeed, collectionOfNeeds);
+                              removeNeed(idOfNeed, null, true);
+                              //removeNeed(idOfNeed, collectionOfNeeds);
                           }}
                       />
                     : null}
@@ -162,6 +203,12 @@ export default class NeedsPollLayout extends Component {
                               : null}
 
                       </Segment>
+                    : null}
+                {this.state.updatedNeed
+                    ? <Message positive>updated successfully</Message>
+                    : null}
+                {this.state.errorUpdatingNeed
+                    ? <Message negative>something went wrong</Message>
                     : null}
             </Segment>
         );

@@ -29,8 +29,9 @@ export default class NeedsPollLayout extends Component {
             errorLoadingNeeds: false,
             successAddingNeed: false,
             editingNeed: false,
-            updateNeed: false,
-            errorUpdatingNeed: false
+            updatedNeed: false,
+            errorUpdatingNeed: false,
+            needRemovalPrompt: false
         };
     }
     componentWillMount() {
@@ -43,12 +44,19 @@ export default class NeedsPollLayout extends Component {
             this.state.editingNeed = true;
         }
 
-        if (nextProps.updatedNeed){
-            this.handleMessage(true, 'updatingNeed')
+        if (nextProps.updatedNeed && !this.state.updatedNeed) {
+            this.handleMessage(true, "updatingNeed");
         }
 
-        if (nextProps.errorUpdatingNeed){
-            this.handleMessage(false, 'updatingNeed')
+        if (nextProps.errorUpdatingNeed && !this.state.errorUpdatingNeed) {
+            this.handleMessage(false, "updatingNeed");
+        }
+
+        if (nextProps.needRemovalPrompt) {
+            this.handleMessage(null, "removingNeed");
+        }
+        else{
+            this.state.needRemovalPrompt = false
         }
     }
 
@@ -70,28 +78,30 @@ export default class NeedsPollLayout extends Component {
             }
         }
 
-        if (type === "updatingNeed"){
-            if (success === true){
-                this.state.updatedNeed = true
-                this.state.errorUpdatingNeed = false
+        if (type === "updatingNeed") {
+            if (success === true) {
+                this.state.updatedNeed = true;
+                this.state.errorUpdatingNeed = false;
 
                 this.state.updatedNeed = setTimeout(() => {
                     this.props.actions.resetStatus("updatingNeed");
                     this.setState({ updatedNeed: false });
                 }, 5000);
-            }
-            else{
-
-                this.state.updatedNeed = false
-                this.state.errorUpdatingNeed = true
+            } else {
+                this.state.updatedNeed = false;
+                this.state.errorUpdatingNeed = true;
 
                 this.state.errorUpdatingNeed = setTimeout(() => {
                     this.props.actions.resetStatus("updatingNeed");
                     this.setState({ errorUpdatingNeed: false });
                 }, 5000);
-
             }
         }
+
+        if (type === "removingNeed") {
+            this.state.needRemovalPrompt = true;
+        }
+
     }
 
     renderNeeds() {
@@ -117,8 +127,12 @@ export default class NeedsPollLayout extends Component {
                             this.props.arrayOfNeeds[i].attributes.description
                         }
                         idOfNeed={this.props.arrayOfNeeds[i].attributes._id}
+                        idOfUpdatedNeed={this.props.idOfUpdatedNeed}
                         collectionOfNeeds={this.props.collectionOfNeeds}
                         editNeed={this.props.actions.editNeed.bind(this)}
+                        errorUpdatingNeed={this.props.errorUpdatingNeed}
+                        updatedNeed={this.props.updatedNeed}
+                        resetStatus={this.props.actions.resetStatus.bind(this)}
                     />
                 );
 
@@ -146,7 +160,9 @@ export default class NeedsPollLayout extends Component {
             updatedNeed,
             errorUpdatingNeed,
             collectionOfNeeds,
-            idOfEditedNeed
+            idOfEditedNeed,
+            idOfUpdatedNeed,
+            idOfNeedToRemove
         } = this.props;
 
         if (errorLoadingNeeds) {
@@ -294,6 +310,45 @@ export default class NeedsPollLayout extends Component {
                                         </Grid>
 
                                     </Modal.Content>
+                                </Modal>
+
+                                <Modal open={this.state.needRemovalPrompt}>
+                                    <Button
+                                        icon="close"
+                                        basic
+                                        floated="right"
+                                        onClick={() => {
+                                            this.props.actions.resetStatus("removingNeed");
+                                        }}
+                                    />
+
+                                    <Modal.Header>
+                                        are you sure you want to delete this item?
+                                    </Modal.Header>
+                                    <Modal.Content>
+
+                                        <Button
+                                            onClick={() => {
+                                                this.props.actions.resetStatus(
+                                                    "removingNeed"
+                                                );
+                                            }}
+                                            positive
+                                        >
+                                            no
+                                        </Button>
+
+                                        <Button
+                                            onClick={() => {
+                                                this.props.actions.removeNeed(idOfNeedToRemove, collectionOfNeeds)
+                                            }}
+                                            negative
+                                        >
+                                            yes
+                                        </Button>
+
+                                    </Modal.Content>
+
                                 </Modal>
 
                             </Segment>
