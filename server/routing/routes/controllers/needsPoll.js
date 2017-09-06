@@ -5,7 +5,7 @@ exports.postNeed = function(req, res, next) {
 		postedBy = req.body.postedBy,
 		degreeOfNeed = req.body.degreeOfNeed,
 		numberOfPeople = req.body.numberOfPeople,
-		description = req.body.description
+		description = req.body.description;
 
 	const need = new Need({
 		nameOfNeed,
@@ -59,20 +59,19 @@ exports.deleteNeed = function(req, res, next) {
 };
 
 exports.validateNewNeed = function(req, res, next) {
-
-	var nameOfNeed = req.body.values.nameOfNeed
+	var nameOfNeed = req.body.values.nameOfNeed;
 
 	Need.findOne({ nameOfNeed }, (err, existingNeed) => {
-            if (err) {
-            }
-            var errors = {}
-            // If user is not unique, return error
-            if (existingNeed) {
-                errors["nameOfNeed"] = "already exists";
-            }
+		if (err) {
+		}
+		var errors = {};
+		// If user is not unique, return error
+		if (existingNeed) {
+			errors["nameOfNeed"] = "already exists";
+		}
 
-            if (Object.keys(errors).length > 0) {
-                return res.status(422).send(errors);
-            }
-        });
+		if (Object.keys(errors).length > 0) {
+			return res.status(422).send(errors);
+		}
+	});
 };

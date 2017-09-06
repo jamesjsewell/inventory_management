@@ -31,7 +31,8 @@ export default class NeedsPollLayout extends Component {
             editingNeed: false,
             updatedNeed: false,
             errorUpdatingNeed: false,
-            needRemovalPrompt: false
+            needRemovalPrompt: false,
+            errorRemovingNeed: false
         };
     }
     componentWillMount() {
@@ -54,9 +55,12 @@ export default class NeedsPollLayout extends Component {
 
         if (nextProps.needRemovalPrompt) {
             this.handleMessage(null, "removingNeed");
+        } else {
+            this.state.needRemovalPrompt = false;
         }
-        else{
-            this.state.needRemovalPrompt = false
+
+        if (nextProps.errorRemovingNeed) {
+            this.handleMessage(false, "errorRemovingNeed");
         }
     }
 
@@ -102,6 +106,13 @@ export default class NeedsPollLayout extends Component {
             this.state.needRemovalPrompt = true;
         }
 
+        if (type === "errorRemovingNeed") {
+            this.state.errorRemovingNeed;
+            this.state.errorRemovingNeed = setTimeout(() => {
+                this.props.actions.resetStatus("removingNeed");
+                this.setState({ errorRemovingNeed: false });
+            }, 5000);
+        }
     }
 
     renderNeeds() {
@@ -162,7 +173,8 @@ export default class NeedsPollLayout extends Component {
             collectionOfNeeds,
             idOfEditedNeed,
             idOfUpdatedNeed,
-            idOfNeedToRemove
+            idOfNeedToRemove,
+            errorRemovingNeed
         } = this.props;
 
         if (errorLoadingNeeds) {
@@ -318,7 +330,9 @@ export default class NeedsPollLayout extends Component {
                                         basic
                                         floated="right"
                                         onClick={() => {
-                                            this.props.actions.resetStatus("removingNeed");
+                                            this.props.actions.resetStatus(
+                                                "removingNeed"
+                                            );
                                         }}
                                     />
 
@@ -340,12 +354,22 @@ export default class NeedsPollLayout extends Component {
 
                                         <Button
                                             onClick={() => {
-                                                this.props.actions.removeNeed(idOfNeedToRemove, collectionOfNeeds)
+                                                this.props.actions.removeNeed(
+                                                    idOfNeedToRemove,
+                                                    collectionOfNeeds,
+                                                    false
+                                                );
                                             }}
                                             negative
                                         >
                                             yes
                                         </Button>
+
+                                        {this.props.errorRemovingNeed
+                                            ? <Message negative>
+                                                  something went wrong
+                                              </Message>
+                                            : null}
 
                                     </Modal.Content>
 

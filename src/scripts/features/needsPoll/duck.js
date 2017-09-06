@@ -75,32 +75,36 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 
 			var model = needsCollection.get(idOfNeed);
 
-			model
-				.destroy()
-				.done(
-					dispatch({
-						type: REMOVE_NEED,
-						payload: {
-							collection: needsCollection,
-							arrayOfNeeds: needsCollection.models,
-							status: "success"
-						}
-					})
-				)
-				.fail(function(err) {
-					dispatch({
-						type: REMOVE_NEED,
-						payload: {
-							status: "error"
-						}
-					});
-				});
+			model.destroy({success: onSuccess, error: onError, wait: true})
+
 		} else if (prompt) {
 			dispatch({
 				type: REMOVE_NEED,
 				payload: {
 					status: "prompt",
 					idOfNeedToRemove: idOfNeed
+				}
+			});
+		}
+
+		function onSuccess() {
+			console.log('success')
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					collection: needsCollection,
+					arrayOfNeeds: needsCollection.models,
+					status: "success"
+				}
+			});
+		}
+
+		function onError(response) {
+			console.log(response)
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					status: "error"
 				}
 			});
 		}
@@ -226,7 +230,7 @@ export function resetStatus(type) {
 			});
 		}
 
-		if (type === "removingNeed"){
+		if (type === "removingNeed") {
 			dispatch({
 				type: REMOVE_NEED,
 				payload: { status: "inactive" }
@@ -312,27 +316,37 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 
 		case REMOVE_NEED:
 			var extendObj = {};
-			if (action.payload.collection) {
-				extendObj.collectionOfNeeds = action.payload.collection;
-			}
 
-			if (action.payload.arrayOfNeeds) {
-				extendObj.arrayOfNeeds = action.payload.arrayOfNeeds;
+			if (!action.payload.status === "prompt") {
+				if (
+					action.payload.collection &&
+					action.payload.status === "success"
+				) {
+					extendObj.collectionOfNeeds = action.payload.collection;
+				}
+
+				if (
+					action.payload.arrayOfNeeds &&
+					action.payload.status === "success"
+				) {
+					extendObj.arrayOfNeeds = action.payload.arrayOfNeeds;
+				}
+				extendObj.statusOfRemoveNeed = action.payload.status;
+				extendObj.removingNeed = action.payload.status == "active"
+					? true
+					: false;
+				extendObj.removedNeed = action.payload.status == "success"
+					? true
+					: false;
+				extendObj.errorRemovingNeed = action.payload.status === "error"
+					? true
+					: false;
+			} else {
+				extendObj.needRemovalPrompt = action.payload.status == "prompt"
+					? true
+					: false;
+				extendObj.idOfNeedToRemove = action.payload.idOfNeedToRemove;
 			}
-			extendObj.statusOfRemoveNeed = action.payload.status;
-			extendObj.removingNeed = action.payload.status == "active"
-				? true
-				: false;
-			extendObj.removedNeed = action.payload.status == "success"
-				? true
-				: false;
-			extendObj.errorRemovingNeed = action.payload.status == "error"
-				? true
-				: false;
-			extendObj.needRemovalPrompt = action.payload.status == "prompt"
-				? true
-				: false;
-			extendObj.idOfNeedToRemove = action.payload.idOfNeedToRemove
 
 			return _.extend({}, state, extendObj);
 
