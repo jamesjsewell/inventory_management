@@ -25,7 +25,8 @@ export default class NeedsPollLayout extends Component {
         this.state = {
             openedDescription: false,
             updatedNeed: false,
-            errorUpdatingNeed: false
+            errorUpdatingNeed: false,
+            errorRemovingNeed: false
         };
     }
 
@@ -43,9 +44,14 @@ export default class NeedsPollLayout extends Component {
                 this.handleMessage(false);
             }
         }
+
+        if (nextProps.errorRemovingNeed) {
+            
+            this.handleMessage(false, "remove");
+        }
     }
 
-    handleMessage(success) {
+    handleMessage(success, type) {
         if (success) {
             this.state.updatedNeed = true;
             this.state.errorUpdatingNeed = false;
@@ -62,6 +68,16 @@ export default class NeedsPollLayout extends Component {
                 this.props.resetStatus("updatingNeed");
                 this.setState({ errorUpdatingNeed: false });
             }, 5000);
+
+            if (type === "remove") {
+                
+                this.state.errorRemovingNeed = true;
+
+                this.state.errorRemovingNeed = setTimeout(() => {
+                    this.props.resetStatus("removingNeed");
+                    this.setState({ errorRemovingNeed: false });
+                }, 5000);
+            }
         }
     }
 
@@ -208,7 +224,14 @@ export default class NeedsPollLayout extends Component {
                     ? <Message positive>updated successfully</Message>
                     : null}
                 {this.state.errorUpdatingNeed
-                    ? <Message negative>something went wrong</Message>
+                    ? <Message negative>
+                          something went wrong, could not update
+                      </Message>
+                    : null}
+                {this.state.errorRemovingNeed
+                    ? <Message negative>
+                          something went wrong, could not remove
+                      </Message>
                     : null}
             </Segment>
         );

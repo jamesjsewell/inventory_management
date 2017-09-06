@@ -144,6 +144,7 @@ export default class NeedsPollLayout extends Component {
                         errorUpdatingNeed={this.props.errorUpdatingNeed}
                         updatedNeed={this.props.updatedNeed}
                         resetStatus={this.props.actions.resetStatus.bind(this)}
+                        errorRemovingNeed={this.props.errorRemovingNeed}
                     />
                 );
 
@@ -184,6 +185,7 @@ export default class NeedsPollLayout extends Component {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
 
+        console.log(errorRemovingNeed)
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
