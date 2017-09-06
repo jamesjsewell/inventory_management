@@ -45,13 +45,14 @@ const asyncValidate = (values, dispatch) => {
     var request = axios.post(`${API_URL}/needsPoll/newNeedForm`, {
         values
     });
-
+  
     if (Number(values.degreeOfNeed) > Number(values.numberOfPeople)) {
-        console.log('degree', values.degreeOfNeed)
-        console.log('number of people', values.numberOfPeople)
+       
         return new Promise((resolve, reject) => {
-            console.log(values.degreeOfNeed)
-            resolve({degreeOfNeed: "more people have this than there are people" })
+            
+            resolve({
+                degreeOfNeed: "more people have this than there are people"
+            });
         });
     }
 
@@ -61,7 +62,7 @@ const asyncValidate = (values, dispatch) => {
                 return;
             })
             .catch(error => {
-                console.log(error.response.data);
+               
                 if (error.response.data) {
                     return error.response.data;
                 }
@@ -78,40 +79,16 @@ class EditNeed extends Component {
         super(props);
         this.state = { description: null };
         var model = this.props.needsCollection.get(this.props.idOfEditedNeed);
-        console.log(model, this.props.idOfEditedNeed);
         this.state.model = model;
         formDefaults.nameOfNeed = this.state.model.get("nameOfNeed");
         formDefaults.numberOfPeople = this.state.model.get("numberOfPeople");
         formDefaults.degreeOfNeed = this.state.model.get("degreeOfNeed");
         this.state.description = this.state.model.get("description");
-
     }
 
     componentWillMount() {}
 
-    componentWillReceiveProps(nextProps) {
-        // if (nextProps.profile) {
-        //     this.setState({ upToDateProfile: nextProps.profile });
-        //     this.state.upToDateUsername = nextProps.username;
-        // }
-        // if (nextProps.username) {
-        //     this.state.upToDateUsername = nextProps.username;
-        // }
-        // if (nextProps.receivedImgUrl) {
-        //     this.setState({ receivedImgUrl: nextProps.receivedImgUrl });
-        // }
-        // if (
-        //     nextProps.updated === true ||
-        //     nextProps.updating === true ||
-        //     nextProps.errorUpdating === true
-        // ) {
-        //     if (this.props.anyTouched) {
-        //         this.props.untouch();
-        //         this.props.reset();
-        //         this.handleOpenMessage();
-        //     }
-        // }
-    }
+    componentWillReceiveProps(nextProps) {}
 
     handleDescriptionChange(event) {
         this.setState({ description: event.target.value });
@@ -126,24 +103,15 @@ class EditNeed extends Component {
         }, 5000);
     }
 
-    handleUpload(evt) {
-        // evt.preventDefault();
-        // this.props.actions.uploadProfileImage(this.props.filestackApiKey);
-    }
+    handleUpload(evt) {}
 
-    removeProfileImage() {
-        // this.state.receivedImgUrl = undefined;
-        // this.state.removePicModalOpen = false;
-        // var updated = { profile: this.state.upToDateProfile };
-        // updated["profile"]["avatarUrl"] = undefined;
-        // this.props.actions.updatePersonalInfo(this.props.user._id, updated);
-    }
+    removeProfileImage() {}
 
     handleFormSubmit(formProps) {
         var userInput = formProps;
 
-        if(this.state.description){
-            userInput["description"] = this.state.description
+        if (this.state.description) {
+            userInput["description"] = this.state.description;
         }
 
         this.props.updateNeed(
@@ -153,55 +121,6 @@ class EditNeed extends Component {
             null,
             userInput
         );
-
-        // const profile = this.state.upToDateProfile;
-        // const username = this.state.upToDateUsername;
-
-        // var avatarUrl = this.state.receivedImgUrl;
-
-        // if (profile.avatarUrl && !this.state.receivedImgUrl) {
-        //     avatarUrl = profile.avatarUrl;
-        // }
-
-        // var parsedInput = {
-        //     username: userInput.username ? userInput.username : username,
-        //     profile: {
-        //         firstName: userInput.firstName
-        //             ? userInput.firstName
-        //             : profile.firstName,
-        //         lastName: userInput.lastName
-        //             ? userInput.lastName
-        //             : profile.lastName,
-        //         age: userInput.age ? userInput.age : profile.age,
-        //         gender: userInput.gender ? userInput.gender : profile.gender,
-        //         location: userInput.location
-        //             ? userInput.location
-        //             : profile.location,
-        //         relationshipStatus: userInput.relationshipStatus
-        //             ? userInput.relationshipStatus
-        //             : profile.relationshipStatus,
-        //         website: userInput.website
-        //             ? userInput.website
-        //             : profile.website,
-        //         avatarUrl: avatarUrl
-        //     }
-        // };
-
-        // if (this.state.aboutMeText) {
-        //     parsedInput["profile"]["aboutMe"] = this.state.aboutMeText;
-        // } else {
-        //     parsedInput["profile"]["aboutMe"] = this.state.upToDateProfile
-        //         .aboutMe
-        //         ? this.state.upToDateProfile.aboutMe
-        //         : "";
-        // }
-
-        // if (!this.props.updatingProfile) {
-        //     this.props.actions.updatePersonalInfo(
-        //         this.props.user._id,
-        //         parsedInput
-        //     );
-        // }
     }
 
     renderAlert() {
@@ -276,22 +195,13 @@ class EditNeed extends Component {
                         placeholder={"enter a description for this item"}
                     />
 
-                    <Message
-                        visible={this.state.messageIsOpen ? true : false}
-                        hidden={this.state.messageIsOpen ? false : true}
-                        floating
-                        compact
-                        success={true} //this.props.updated ? true : false
-                        content={"something"}
-                    />
-
                     <Segment>
-                    <Button
-                        padded
-                        type="submit"
-                        content="save"
-                        loading={this.props.updatingProfile}
-                    />
+                        <Button
+                            padded
+                            type="submit"
+                            content="save"
+                            loading={this.props.updatingProfile}
+                        />
                     </Segment>
 
                 </Form>
@@ -301,9 +211,7 @@ class EditNeed extends Component {
         }
     }
 }
-// {this.props.updatingNeed
-//                         ? null
-//                         : }
+
 export default reduxForm({
     form: "editNeedForm",
     asyncValidate,

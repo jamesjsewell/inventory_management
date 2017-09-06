@@ -64,7 +64,7 @@ class NeedForm extends Component {
 
     handleFormSubmit(formProps) {
         var userInput = formProps;
-        console.log(formProps);
+    
         if (
             Object.keys(formProps).length > 0 &&
             formProps.constructor === Object
@@ -155,9 +155,6 @@ class NeedForm extends Component {
 
                 <Button
                     basic
-                    onClick={e => {
-                        //e.preventDefault();
-                    }}
                     type="submit"
                 >
                     submit

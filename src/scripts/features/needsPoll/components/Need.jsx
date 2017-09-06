@@ -80,7 +80,7 @@ export default class NeedsPollLayout extends Component {
             }
         }
     }
-
+    
     render() {
         const {
             degreeOfNeed,
@@ -108,7 +108,7 @@ export default class NeedsPollLayout extends Component {
                           size="tiny"
                           onClick={() => {
                               removeNeed(idOfNeed, null, true);
-                              //removeNeed(idOfNeed, collectionOfNeeds);
+                              
                           }}
                       />
                     : null}

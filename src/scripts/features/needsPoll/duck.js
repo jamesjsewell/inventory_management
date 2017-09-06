@@ -100,7 +100,7 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 		}
 
 		function onError(response) {
-			console.log(response);
+			
 			dispatch({
 				type: REMOVE_NEED,
 				payload: {
@@ -110,7 +110,7 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 		}
 	};
 }
-
+console
 export function updateNeed(
 	idOfNeed,
 	needsCollection,
@@ -165,7 +165,7 @@ export function updateNeed(
 				});
 			})
 			.fail(function(err) {
-				console.log(err);
+				
 				dispatch({
 					type: UPDATE_NEED,
 					payload: {
