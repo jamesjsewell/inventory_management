@@ -75,8 +75,7 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 
 			var model = needsCollection.get(idOfNeed);
 
-			model.destroy({success: onSuccess, error: onError, wait: true})
-
+			model.destroy({ success: onSuccess, error: onError, wait: true });
 		} else if (prompt) {
 			dispatch({
 				type: REMOVE_NEED,
@@ -88,7 +87,6 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 		}
 
 		function onSuccess() {
-			console.log('success')
 			dispatch({
 				type: REMOVE_NEED,
 				payload: {
@@ -100,7 +98,7 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 		}
 
 		function onError(response) {
-			console.log(response)
+			console.log(response);
 			dispatch({
 				type: REMOVE_NEED,
 				payload: {

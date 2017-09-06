@@ -51,7 +51,7 @@ exports.deleteNeed = function(req, res, next) {
 		if (error) {
 			res.status(400).json(error);
 		}
-		res.json({
+		res.status(201).json({
 			msg: `need with id ${req.params.theNeedId} has been removed.`,
 			id: req.params.theNeedId
 		});
