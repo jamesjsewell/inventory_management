@@ -110,7 +110,7 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 		}
 	};
 }
-console
+
 export function updateNeed(
 	idOfNeed,
 	needsCollection,

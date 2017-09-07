@@ -7,14 +7,14 @@ const ROLE_ADMIN = require("../../config/constants").ROLE_ADMIN;
 
 const Schema = mongoose.Schema;
 
-const NeedSchema = new Schema(
+const ShelterSchema = new Schema(
     {
-        nameOfNeed: {
+        nameOfShelter: {
             type: String,
             required: true
         },
-        numberOfPeople: {
-            type: Number,
+        locationOfShelter: {
+            type: String,
             required: true
         },
         postedBy: {
@@ -22,7 +22,8 @@ const NeedSchema = new Schema(
             lowercase: true,
             required: true
         },
-        degreeOfNeed: { type: Number, default: 0 },
+        occupants: { type: Number },
+        volunteers: { type: Number },
         description: { type: String },
         shelter: { type: String }
     },
@@ -31,4 +32,4 @@ const NeedSchema = new Schema(
     }
 );
 
-module.exports = mongoose.model("Need", NeedSchema);
+module.exports = mongoose.model("Shelter", ShelterSchema);
