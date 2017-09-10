@@ -60,7 +60,7 @@ exports.validateNewShelter = function(req, res, next) {
 	Shelter.findOne({ nameOfItem }, (err, existingShelter) => {
 		if (err) {
 		}
-		var errors = {};
+		var errors = {'null': null};
 		// If user is not unique, return error
 		if (existingShelter) {
 			errors["nameOfItem"] = "already exists";

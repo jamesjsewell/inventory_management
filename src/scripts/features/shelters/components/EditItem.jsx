@@ -35,6 +35,7 @@ import { API_URL } from "../../../util/index.js";
 
 var formDefaults = {};
 
+
 const asyncValidate = (values, dispatch) => {
     var checkAsync = true;
 
@@ -75,7 +76,13 @@ class EditItem extends Component {
 
     componentWillMount() {}
 
-    componentWillReceiveProps(nextProps) {}
+    componentWillReceiveProps(nextProps) {
+
+        var model = nextProps.collectionOfItems.get(this.props.idOfEditedItem);
+        this.state.model = model;
+        formDefaults.nameOfItem = this.state.model.get("nameOfItem");
+
+    }
 
     handleDescriptionChange(event) {
         this.setState({ description: event.target.value });
@@ -108,6 +115,9 @@ class EditItem extends Component {
             null,
             userInput
         );
+
+        
+        this.props.untouch(["nameOfItem", "description"]);
     }
 
     renderAlert() {

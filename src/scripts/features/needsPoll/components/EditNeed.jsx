@@ -88,7 +88,11 @@ class EditNeed extends Component {
 
     componentWillMount() {}
 
-    componentWillReceiveProps(nextProps) {}
+    componentWillReceiveProps(nextProps) {
+        var model = nextProps.needsCollection.get(this.props.idOfEditedNeed);
+        this.state.model = model;
+        formDefaults.nameOfNeed = this.state.model.get("nameOfNeed");
+    }
 
     handleDescriptionChange(event) {
         this.setState({ description: event.target.value });
