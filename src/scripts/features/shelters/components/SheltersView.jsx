@@ -14,3 +14,4 @@ export default class SheltersView extends Component {
 	render() {
 		return <SheltersLayout {...this.props} />
 	}
+}

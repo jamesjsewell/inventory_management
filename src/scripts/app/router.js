@@ -43,6 +43,7 @@ import ResetPasswordView
 import EditProfileView
     from "../features/userProfile/components/EditProfileView.jsx"
 import NeedsPollView from "../features/needsPoll/components/NeedsPollView.jsx"
+import SheltersView from "../features/shelters/components/SheltersView.jsx"
 import Authentication from "../util/userAuthentication/components/Authentication.jsx"
 
 
@@ -111,6 +112,7 @@ class RouterConfig extends Component {
                                 this.props.user ? EditProfileView : Blank
                             }
                         />
+                        <Route path="/shelters" component={SheltersView} />
                         <Route path="/needs" component={NeedsPollView} />
                         <Route path="/login" component={UserSessionView} />
                         <Route path="/register" component={Blank} />

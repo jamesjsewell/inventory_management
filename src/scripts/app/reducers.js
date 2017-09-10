@@ -7,7 +7,8 @@ import auth from '../util/userAuthentication/duck'
 import editProfile from '../features/userProfile/duck'
 import util from '../util/index.js'
 import needsPollReducer from '../features/needsPoll/duck.js'
+import sheltersReducer from '../features/shelters/duck.js'
 
-const rootReducer = combineReducers({auth, editProfile, nav, home, util, form: formReducer, needsPoll: needsPollReducer})
+const rootReducer = combineReducers({auth, editProfile, nav, home, util, form: formReducer, needsPoll: needsPollReducer, shelters: sheltersReducer })
 
 export default rootReducer

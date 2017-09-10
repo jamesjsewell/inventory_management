@@ -13,7 +13,7 @@ import {
 	getToken
 } from "../../util/index.js";
 
-import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
+import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
 
 const NEW_ITEM = "new_item",
 	FETCH_ITEMS = "fetch_items",
@@ -35,10 +35,12 @@ export function createItem(values, postedById, itemCollection) {
 				}
 			}
 		});
-
+		console.log(values);
 		itemCollection.create(
 			{
-				keys: undefined
+				nameOfItem: values.nameOfItem,
+				postedBy: postedById,
+				description: values.description
 			},
 			{ wait: true, success: successCallback, error: errorCallback }
 		);
@@ -77,7 +79,7 @@ export function createItem(values, postedById, itemCollection) {
 
 export function fetchItems() {
 	return function(dispatch) {
-		var itemCollection = new CollectionOfNeeds();
+		var itemCollection = new CollectionOfItems();
 
 		dispatch({
 			type: FETCH_ITEMS,
@@ -148,7 +150,12 @@ export function updateItem(
 
 		var updatedInfo = {};
 
-		//model.get("keyOfObject") to get value from model
+	
+
+		if (updateType === "edit") {
+			updatedInfo.nameOfItem = userInput.nameOfItem;
+			updatedInfo.description = userInput.description;
+		}
 
 		model.set(updatedInfo);
 
@@ -218,6 +225,18 @@ export function removeItem(idOfItem, itemCollection, prompt) {
 								success: true,
 								error: false,
 								idOfItem: idOfItem
+							}
+						}
+					});
+
+					dispatch({
+						type: REMOVE_ITEM_PROMPT,
+						payload: {
+							status: {
+								inProgress: false,
+								success: null,
+								error: null,
+								idOfItem: null
 							}
 						}
 					});
@@ -335,7 +354,7 @@ export function editItem(idOfItem, close) {
 						inProgress: false,
 						success: null,
 						error: null,
-						idOfItem: null
+						idOfItem: idOfItem
 					}
 				}
 			});
@@ -346,58 +365,84 @@ export function editItem(idOfItem, close) {
 // reducers
 const init_needs_poll = {
 	collectionOfItems: null,
-	arrayOfItems: null,
-	statusOfCreateItem: null,
-	statusOfFetchItems: null,
-	statusOfUpdateItem: null,
-	statusOfRemoveItem: null,
-	statusOfEditItem: null
+	arrayOfItems: [],
+	statusOfCreateItem: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	},
+	statusOfFetchItems: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	},
+	statusOfUpdateItem: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	},
+	statusOfRemoveItem: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	},
+	statusOfRemoveItemPrompt: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	},
+	statusOfEditItem: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	}
 };
 
-export default function needsPollReducer(state = init_needs_poll, action) {
+export default function sheltersReducer(state = init_needs_poll, action) {
+	var extendObj = {};
+
+	if (action.payload && action.payload.collection) {
+		extendObj.collectionOfItems = action.payload.collection;
+	}
+
+	if (action.payload && action.payload.arrayOfItems) {
+		extendObj.arrayOfItems = action.payload.arrayOfItems;
+	}
+
 	switch (action.type) {
-
-		if (action.payload.collection) {
-			extendObj.collectionOfItems = action.payload.collection;
-		}
-
-		if (action.payload.arrayOfItems) {
-			extendObj.arrayOfItems = action.payload.arrayOfItems;
-		}	
-
 		case NEW_ITEM:
-
 			extendObj.statusOfCreateItem = action.payload.status;
 
 			return _.extend({}, state, extendObj);
 
 		case FETCH_ITEMS:
-
-			extendObj.statusOfFetchItems = action.payload.status
+			extendObj.statusOfFetchItems = action.payload.status;
 
 			return _.extend({}, state, extendObj);
 
 		case UPDATE_ITEM:
-
 			extendObj.statusOfUpdateItem = action.payload.status;
 
 			return _.extend({}, state, extendObj);
 
 		case REMOVE_ITEM:
-	
 			extendObj.statusOfRemoveItem = action.payload.status;
 
 			return _.extend({}, state, extendObj);
 
 		case REMOVE_ITEM_PROMPT:
-
 			extendObj.statusOfRemoveItemPrompt = action.payload.status;
 
 			return _.extend({}, state, extendObj);
 
 		case EDIT_ITEM:
-
-			extendObj.statusOfEditItem = action.payload;
+			extendObj.statusOfEditItem = action.payload.status;
 
 			return _.extend({}, state, extendObj);
 	}
@@ -405,15 +450,14 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 	return state;
 }
 
-const collectionOfItems = state => state.needsPoll.collectionOfItems,
-	arrayOfItems = state => state.needsPoll.arrayOfItems,
-	statusOfCreateItem = state => state.needsPoll.statusOfCreateItem,
-	statusOfFetchItems = state => state.needsPoll.statusOfFetchItems,
-	statusOfUpdateItem = state => state.needsPoll.statusOfUpdateItem,
-	statusOfRemoveItem = state => state.needsPoll.statusOfRemoveItem,
-	statusOfRemoveItemPrompt = state =>
-		state.needsPoll.statusOfRemoveItemPrompt,
-	statusOfEditItem = state => state.needsPoll.statusOfEditItem;
+const collectionOfItems = state => state.shelters.collectionOfItems,
+	arrayOfItems = state => state.shelters.arrayOfItems,
+	statusOfCreateItem = state => state.shelters.statusOfCreateItem,
+	statusOfFetchItems = state => state.shelters.statusOfFetchItems,
+	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem,
+	statusOfRemoveItem = state => state.shelters.statusOfRemoveItem,
+	statusOfRemoveItemPrompt = state => state.shelters.statusOfRemoveItemPrompt,
+	statusOfEditItem = state => state.shelters.statusOfEditItem;
 
 export const selector = createStructuredSelector({
 	collectionOfItems,

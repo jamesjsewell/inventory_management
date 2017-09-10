@@ -19,7 +19,7 @@ import {
     Divider
 } from "semantic-ui-react";
 
-export default class NeedsPollLayout extends Component {
+export default class Need extends Component {
     constructor(props) {
         super(props);
         this.state = {

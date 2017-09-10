@@ -16,6 +16,9 @@ import {
     Modal
 } from "semantic-ui-react";
 
+import EditItem from "./EditItem.jsx";
+import Item from "./Item.jsx";
+import NewItemForm from "./NewItemForm.jsx";
 
 export default class SheltersLayout extends Component {
     constructor(props) {
@@ -39,26 +42,35 @@ export default class SheltersLayout extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
-        if (nextProps.statusOfEditItem.inProgress === true ) {
+        if (nextProps.statusOfEditItem.inProgress === true) {
             this.state.userIsEditingItem = true;
         }
+        else{
+            this.state.userIsEditingItem = false
+        }
 
-        if (nextProps.statusOfUpdateItem.success && !this.state.successUpdatingItem) {
+        if (
+            nextProps.statusOfUpdateItem.success &&
+            !this.state.successUpdatingItem
+        ) {
             this.handleMessage(true, "updateItem");
         }
 
-        if (nextProps.statusOfUpdateItem.error && !this.state.errorUpdatingItem) {
+        if (
+            nextProps.statusOfUpdateItem.error &&
+            !this.state.errorUpdatingItem
+        ) {
             this.handleMessage(false, "updateItem");
         }
 
-        if (nextProps.statusOfRemoveItemPrompt) {
-            this.handleMessage(null, "removeItem");
+        if (nextProps.statusOfRemoveItemPrompt.inProgress) {
+            this.handleMessage(true, "itemRemovalPrompt");
         } else {
-            this.state.itemRemovalPromptOpen = false;
+            this.handleMessage(false, "itemRemovalPrompt");
         }
 
         if (nextProps.statusOfRemoveItem.error) {
-            this.handleMessage(false, "errorRemovingItem");
+            this.handleMessage(false, "removeItem");
         }
     }
 
@@ -75,17 +87,15 @@ export default class SheltersLayout extends Component {
         }
 
         if (type === "loadingItems") {
-
-            if (success === true){
-                this.state.successLoadingItems = true
-                this.state.errorLoadingItems = false
+            if (success === true) {
+                this.state.successLoadingItems = true;
+                this.state.errorLoadingItems = false;
             }
 
             if (success === false) {
                 this.state.errorLoadingItems = true;
-                this.state.successLoadingItems = false
+                this.state.successLoadingItems = false;
             }
-
         }
 
         if (type === "updateItem") {
@@ -109,15 +119,23 @@ export default class SheltersLayout extends Component {
         }
 
         if (type === "removingItem") {
-            this.state.itemRemovalPromptOpen = true;
+            if (success === true) {
+                //removing item
+            } else {
+                this.state.errorRemovingItem = true;
+                this.state.errorRemovingItem = setTimeout(() => {
+                    this.props.actions.resetStatus("removingItem");
+                    this.setState({ errorRemovingItem: false });
+                }, 5000);
+            }
         }
 
-        if (type === "errorRemovingItem") {
-            this.state.errorRemovingItem = true
-            this.state.errorRemovingItem = setTimeout(() => {
-                this.props.actions.resetStatus("removingItem");
-                this.setState({ errorRemovingItem: false });
-            }, 5000);
+        if (type === "itemRemovalPrompt") {
+            if (success === true) {
+                this.state.itemRemovalPromptOpen = true;
+            } else {
+                this.state.itemRemovalPromptOpen = false;
+            }
         }
     }
 
@@ -127,26 +145,23 @@ export default class SheltersLayout extends Component {
         if (this.props.arrayOfItems) {
             for (var i = 0; i < this.props.arrayOfItems.length; i++) {
                 arrayOfItemElements.push(
-                    <Need
-                        
-                        updateItem={this.props.actions.updatedItem.bind(this)}
+                    <Item
+                        updateItem={this.props.actions.updateItem.bind(this)}
                         removeItem={this.props.actions.removeItem.bind(this)}
                         editItem={this.props.actions.editItem.bind(this)}
                         nameOfItem={
                             this.props.arrayOfItems[i].attributes.nameOfItem
                         }
-
                         descriptionOfItem={
                             this.props.arrayOfItems[i].attributes.description
                         }
                         idOfItem={this.props.arrayOfItems[i].attributes._id}
-                        idOfUpdatedItem={this.props.statusOfUpdateItem.status.idOfItem}
+                        idOfUpdatedItem={this.props.statusOfUpdateItem.idOfItem}
                         collectionOfItems={this.props.collectionOfItems}
-                        
-                        errorUpdatingItem={this.props.statusOfUpdateItem.status.error}
-                        updatedItem={this.props.updatedItem}
+                        errorUpdatingItem={this.props.statusOfUpdateItem.error}
+                        successUpdatingItem={this.state.successUpdatingItem}
                         resetStatus={this.props.actions.resetStatus.bind(this)}
-                        errorRemovingItem={this.props.errorRemovingItem}
+                        errorRemovingItem={this.state.errorRemovingItem}
                     />
                 );
 
@@ -156,37 +171,39 @@ export default class SheltersLayout extends Component {
             }
 
             return arrayOfItemElements;
-
         } else {
             return null;
         }
     }
 
     render() {
-        const asyncItems = this.state.statusOfLoadingItems.inProgress || this.state.statusOfAddingItem.inProgress
+        const asyncItems = this.props.statusOfFetchItems.inProgress ||
+            this.props.statusOfCreateItem.inProgress
             ? true
             : false;
 
-        var userIsEditingItem = this.state.statusOfEditItem.status.inProgress
+        var userIsEditingItem = this.props.statusOfEditItem.inProgress;
 
         const {
-            ,
-            ,
             collectionOfItems,
             idOfEditedItem,
-            idOfEditedItem,
-            idOfUpdatedNeed,
             idOfItemToRemove,
-            errorRemovingNeed
+            statusOfRemoveItem,
+            statusOfRemoveItemPrompt
         } = this.props;
 
         if (this.state.errorLoadingItems) {
             this.handleMessage(false, "loadingItems");
         }
         if (this.state.userIsEditingItem) {
-            var model = this.props.collectionOfItems.get(this.props.statusOfEditItem.idOfItem);
+            if (this.props.collectionOfItems) {
+                var model = this.props.collectionOfItems.get(
+                    this.props.statusOfEditItem.idOfItem
+                );
+                
+            }
         }
-        Need
+
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -199,12 +216,16 @@ export default class SheltersLayout extends Component {
 
                         <Segment attached="bottom">
                             <Segment compact loading={asyncItems}>
-                                <NeedForm
+                                <NewItemForm
                                     resetStatus={this.props.actions.resetStatus.bind(
                                         this
                                     )}
-                                    errorAddingItem={this.props.statusOfAddingItem.error}
-                                    successAddingItem={this.props.statusOfAddingItem.success}
+                                    errorAddingItem={
+                                        this.props.statusOfCreateItem.error
+                                    }
+                                    successAddingItem={
+                                        this.props.statusOfCreateItem.success
+                                    }
                                     doThisOnSubmit={userInput => {
                                         if (userInput) {
                                             this.props.actions.createItem(
@@ -220,20 +241,10 @@ export default class SheltersLayout extends Component {
                                     : null}
 
                             </Segment>
-                            <Segment secondary as={Grid} columns={3} streched>
-                                <Grid.Column textAlign="left">
-                                    not enough
-                                </Grid.Column>
-                                <Grid.Column textAlign="center">
-                                    running low
-                                </Grid.Column>
-                                <Grid.Column textAlign="right">
-                                    plenty
-                                </Grid.Column>
-                            </Segment>
+
                             <Segment basic loading={asyncItems}>
 
-                                {this.state.statusOfLoadingItems.error
+                                {this.props.statusOfFetchItems.error
                                     ? <Message negative>
                                           internal server error
                                       </Message>
@@ -260,13 +271,14 @@ export default class SheltersLayout extends Component {
 
                                         <Grid columns={2} as={Segment} basic>
                                             <Grid.Column width={9}>
-                                                <EditNeed
+                                                <EditItem
                                                     collectionOfItems={
                                                         collectionOfItems
                                                     }
                                                     idOfEditedItem={
                                                         this.props
-                                                            .statusOfEditItem.idOfItem
+                                                            .statusOfEditItem
+                                                            .idOfItem
                                                     }
                                                     updateItem={this.props.actions.updateItem.bind(
                                                         this
@@ -274,37 +286,29 @@ export default class SheltersLayout extends Component {
                                                 />
                                             </Grid.Column>
                                             <Grid.Column width={7}>
-                                                <Need
+                                                <Item
                                                     isPreview={true}
                                                     description={
-                                                        this.state.userIsEditingItem
+                                                        this.state
+                                                            .userIsEditingItem && model
                                                             ? model.get(
                                                                   "description"
                                                               )
                                                             : null
                                                     }
                                                     nameOfItem={
-                                                        this.state.userIsEditingItem
+                                                        this.state
+                                                            .userIsEditingItem && model
                                                             ? model.get(
                                                                   "nameOfItem"
                                                               )
                                                             : null
                                                     }
-                                                    degreeOfNeed={
-                                                        this.state.userIsEditingItem
-                                                            ? model.get(
-                                                                  "degreeOfNeed"
-                                                              )
-                                                            : null
+                                                    idOfItem={
+                                                        this.props
+                                                            .statusOfEditItem
+                                                            .idOfItem
                                                     }
-                                                    numberOfPeople={
-                                                        this.state.userIsEditingItem
-                                                            ? model.get(
-                                                                  "numberOfPeople"
-                                                              )
-                                                            : null
-                                                    }
-                                                    idOfItem={statusOfEditItem.idOfItem}
                                                     collectionOfItems={
                                                         this.props
                                                             .collectionOfItems
@@ -358,7 +362,7 @@ export default class SheltersLayout extends Component {
                                         <Button
                                             onClick={() => {
                                                 this.props.actions.removeItem(
-                                                    statusOfRemoveItem.idOfItem,
+                                                    statusOfRemoveItemPrompt.idOfItem,
                                                     collectionOfItems,
                                                     false
                                                 );
@@ -368,7 +372,7 @@ export default class SheltersLayout extends Component {
                                             yes
                                         </Button>
 
-                                        {this.state.statusOfRemoveItem.error
+                                        {this.props.statusOfRemoveItem.error
                                             ? <Message negative>
                                                   something went wrong
                                               </Message>

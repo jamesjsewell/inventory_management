@@ -9,18 +9,15 @@ const Schema = mongoose.Schema;
 
 const ShelterSchema = new Schema(
     {
-        nameOfShelter: {
-            type: String,
-            required: true
+        nameOfItem: {
+            type: String
         },
         locationOfShelter: {
-            type: String,
-            required: true
+            type: String
         },
         postedBy: {
             type: String,
-            lowercase: true,
-            required: true
+            lowercase: true
         },
         occupants: { type: Number },
         volunteers: { type: Number },
