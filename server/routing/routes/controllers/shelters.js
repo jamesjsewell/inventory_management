@@ -3,12 +3,14 @@ const Shelter = require("../../../db/shelters/shelterSchema.js");
 exports.postShelter = function(req, res, next) {
 	const nameOfItem = req.body.nameOfItem,
 		postedBy = req.body.postedBy,
-		description = req.body.description
-
+		description = req.body.description,
+		members = req.body.members
+		console.log(req.body)
 	const shelter = new Shelter({
 		nameOfItem,
 		postedBy,
-		description
+		description,
+		members
 	});
 
 	shelter.save(err => {
@@ -23,7 +25,11 @@ exports.getShelters = function(req, res, next) {
 	Shelter.find(req.query, function(err, results) {
 		if (err) return res.json({ error: "internal server error" });
 		res.json(results);
-	}); //.populate("");
+	}).populate({path: 'members',
+    match: {},
+    select: ' -password',
+    options: { }
+  });
 };
 
 exports.updateShelter = function(req, res, next) {

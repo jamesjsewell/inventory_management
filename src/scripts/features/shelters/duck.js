@@ -35,12 +35,13 @@ export function createItem(values, postedById, itemCollection) {
 				}
 			}
 		});
-		console.log(values);
+		
 		itemCollection.create(
 			{
 				nameOfItem: values.nameOfItem,
 				postedBy: postedById,
-				description: values.description
+				description: values.description,
+				members: postedById
 			},
 			{ wait: true, success: successCallback, error: errorCallback }
 		);
@@ -457,7 +458,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem,
 	statusOfRemoveItem = state => state.shelters.statusOfRemoveItem,
 	statusOfRemoveItemPrompt = state => state.shelters.statusOfRemoveItemPrompt,
-	statusOfEditItem = state => state.shelters.statusOfEditItem;
+	statusOfEditItem = state => state.shelters.statusOfEditItem,
+	user = state => state.auth.userSession.user
 
 export const selector = createStructuredSelector({
 	collectionOfItems,
@@ -467,5 +469,6 @@ export const selector = createStructuredSelector({
 	statusOfUpdateItem,
 	statusOfRemoveItem,
 	statusOfRemoveItemPrompt,
-	statusOfEditItem
+	statusOfEditItem,
+	user
 });

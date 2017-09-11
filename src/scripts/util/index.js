@@ -7,9 +7,10 @@ export const API_URL = "/api";
 export const CLIENT_ROOT_URL = "https://localhost:8080";
 export const types = {
     FETCH_USER: "fetch_user",
-    GET_FILESTACK_API_KEY: "get_filestack_api_key"
+    GET_FILESTACK_API_KEY: "get_filestack_api_key",
+    GET_GOOGLE_MAPS_KEY: "get_google_maps_key"
 };
-const { FETCH_USER, GET_API_KEY, GET_FILESTACK_API_KEY } = types;
+const { FETCH_USER, GET_API_KEY, GET_FILESTACK_API_KEY, GET_GOOGLE_MAPS_KEY } = types;
 
 // reads cookies for an auth token and user
 const cookies = new Cookies();
@@ -137,14 +138,19 @@ export function deleteData(action, errorType, isAuthReq, url, dispatch) {
 
 // static page actions
 export function getAPIkey(key) {
+
     var dispatchType = "";
     if (key === "FILESTACK_KEY") {
         dispatchType = GET_FILESTACK_API_KEY;
     }
+
+    if(key === "GOOGLE_MAPS_KEY"){
+        dispatchType = GET_GOOGLE_MAPS_KEY
+    }
     return function(dispatch) {
         axios
             .post(`${API_URL}/env/request-api-key`, {
-                key
+                key: key
             })
             .then(response => {
                 dispatch({
@@ -175,12 +181,16 @@ export function sendContactForm({ name, emailAddress, message }) {
     };
 }
 
-const init_api_keys = { filestackApiKey: undefined };
+const init_api_keys = { filestackApiKey: undefined, googleMapsApiKey: undefined };
 function apiKeysReducer(state = init_api_keys, action) {
     switch (action.type) {
         case GET_FILESTACK_API_KEY:
             return _.extend({}, state, {
                 filestackApiKey: action.payload
+            });
+        case GET_GOOGLE_MAPS_KEY:
+            return _.extend({}, state, {
+                googleMapsApiKey: action.payload
             });
     }
 

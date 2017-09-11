@@ -64,7 +64,7 @@ class NewItemForm extends Component {
 
     handleFormSubmit(formProps) {
         var userInput = formProps;
-        console.log(userInput)
+
         if (
             Object.keys(formProps).length > 0 &&
             formProps.constructor === Object

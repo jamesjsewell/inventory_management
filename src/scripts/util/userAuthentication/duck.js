@@ -185,7 +185,7 @@ const init_auth = {
 function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
 		case AUTH_USER: {
-			
+		
 			return _.extend({}, state, {
 				authenticated: true,
 				user: action.payload,

@@ -95,6 +95,7 @@ export default class Item extends Component {
         } = this.props;
         return (
             <Segment raised={true} padded color="grey">
+                {this.props.members && this.props.members[0]? this.props.members[0].username : null}
                 {!this.props.isPreview
                     ? <Button
                           onClick={() => {

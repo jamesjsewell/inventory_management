@@ -45,6 +45,7 @@ import EditProfileView
 import NeedsPollView from "../features/needsPoll/components/NeedsPollView.jsx"
 import SheltersView from "../features/shelters/components/SheltersView.jsx"
 import Authentication from "../util/userAuthentication/components/Authentication.jsx"
+import SearchBarView from "../components/maps/components/SearchBarView.jsx"
 
 
 class Blank extends Component {
@@ -112,6 +113,7 @@ class RouterConfig extends Component {
                                 this.props.user ? EditProfileView : Blank
                             }
                         />
+                        <Route path="/map" component={SearchBarView} />
                         <Route path="/shelters" component={SheltersView} />
                         <Route path="/needs" component={NeedsPollView} />
                         <Route path="/login" component={UserSessionView} />

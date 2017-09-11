@@ -33,7 +33,8 @@ export default class SheltersLayout extends Component {
             successRemovingItem: false,
             errorRemovingItem: false,
             itemRemovalPromptOpen: false,
-            userIsEditingItem: false
+            userIsEditingItem: false,
+            loggedIn: false
         };
     }
     componentWillMount() {
@@ -71,6 +72,14 @@ export default class SheltersLayout extends Component {
 
         if (nextProps.statusOfRemoveItem.error) {
             this.handleMessage(false, "removeItem");
+        }
+
+        if(nextProps.user){
+            this.state.userId = nextProps.user._id
+            this.state.loggedIn = true
+        }
+        else{
+            this.state.loggedIn = false
         }
     }
 
@@ -146,6 +155,8 @@ export default class SheltersLayout extends Component {
             for (var i = 0; i < this.props.arrayOfItems.length; i++) {
                 arrayOfItemElements.push(
                     <Item
+                        userId={this.state.userId}
+                        isPreview={this.state.loggedIn? false : true}
                         updateItem={this.props.actions.updateItem.bind(this)}
                         removeItem={this.props.actions.removeItem.bind(this)}
                         editItem={this.props.actions.editItem.bind(this)}
@@ -155,6 +166,7 @@ export default class SheltersLayout extends Component {
                         descriptionOfItem={
                             this.props.arrayOfItems[i].attributes.description
                         }
+                        members={this.props.arrayOfItems[i].attributes.members}
                         idOfItem={this.props.arrayOfItems[i].attributes._id}
                         idOfUpdatedItem={this.props.statusOfUpdateItem.idOfItem}
                         collectionOfItems={this.props.collectionOfItems}
@@ -177,6 +189,7 @@ export default class SheltersLayout extends Component {
     }
 
     render() {
+        
         const asyncItems = this.props.statusOfFetchItems.inProgress ||
             this.props.statusOfCreateItem.inProgress
             ? true
@@ -189,7 +202,8 @@ export default class SheltersLayout extends Component {
             idOfEditedItem,
             idOfItemToRemove,
             statusOfRemoveItem,
-            statusOfRemoveItemPrompt
+            statusOfRemoveItemPrompt,
+            user
         } = this.props;
 
         if (this.state.errorLoadingItems) {
@@ -203,7 +217,7 @@ export default class SheltersLayout extends Component {
                 
             }
         }
-
+      
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -217,6 +231,7 @@ export default class SheltersLayout extends Component {
                         <Segment attached="bottom">
                             <Segment compact loading={asyncItems}>
                                 <NewItemForm
+                                    userId={this.state.userId}
                                     resetStatus={this.props.actions.resetStatus.bind(
                                         this
                                     )}
@@ -230,7 +245,7 @@ export default class SheltersLayout extends Component {
                                         if (userInput) {
                                             this.props.actions.createItem(
                                                 userInput,
-                                                "some_ID",
+                                                this.state.userId,
                                                 this.props.collectionOfItems
                                             );
                                         }
