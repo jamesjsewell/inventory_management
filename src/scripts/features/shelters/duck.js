@@ -20,9 +20,12 @@ const NEW_ITEM = "new_item",
 	REMOVE_ITEM = "remove_item",
 	REMOVE_ITEM_PROMPT = "remove_item_prompt",
 	UPDATE_ITEM = "update_item",
-	EDIT_ITEM = "edit_item";
+	EDIT_ITEM = "edit_item",
+	USER_CHOSE_LOCATION = "user_chose_location",
+	ITEM_EXISTS = "item_exists";
 
-export function createItem(values, postedById, itemCollection) {
+export { getAPIkey };
+export function createItem(values, postedById, itemCollection, place) {
 	return function(dispatch) {
 		dispatch({
 			type: NEW_ITEM,
@@ -35,13 +38,14 @@ export function createItem(values, postedById, itemCollection) {
 				}
 			}
 		});
-		
+
 		itemCollection.create(
 			{
 				nameOfItem: values.nameOfItem,
 				postedBy: postedById,
 				description: values.description,
-				members: postedById
+				members: postedById,
+				place: place
 			},
 			{ wait: true, success: successCallback, error: errorCallback }
 		);
@@ -150,8 +154,6 @@ export function updateItem(
 		var model = itemCollection.get(idOfItem);
 
 		var updatedInfo = {};
-
-	
 
 		if (updateType === "edit") {
 			updatedInfo.nameOfItem = userInput.nameOfItem;
@@ -330,6 +332,20 @@ export function resetStatus(statusOf) {
 				}
 			});
 		}
+
+		if (statusOf === "creating") {
+			dispatch({
+				type: USER_CHOSE_LOCATION,
+				payload: {
+					status: {
+						inProgress: false,
+						success: null,
+						error: null,
+						idOfItem: null
+					}
+				}
+			});
+		}
 	};
 }
 
@@ -358,6 +374,51 @@ export function editItem(idOfItem, close) {
 						idOfItem: idOfItem
 					}
 				}
+			});
+		}
+	};
+}
+
+export function userChoseLocation(place, userId) {
+	return function(dispatch) {
+		if (place && userId) {
+			dispatch({
+				type: USER_CHOSE_LOCATION,
+				payload: {
+					status: {
+						inProgress: true,
+						success: null,
+						error: null,
+						idOfItem: null
+					},
+					contents: {
+						place: place,
+						userId: userId
+					}
+				}
+			});
+		}
+	};
+}
+
+export function checkForExistingItem(collection, id) {
+	return function(dispatch) {
+		var lookfor = id;
+		var found = _.find(collection.models, item => {
+			if (item.attributes.place && item.attributes.place.id === lookfor) {
+				return true;
+			}
+		});
+
+		if (found) {
+			dispatch({
+				type: ITEM_EXISTS,
+				payload: true
+			});
+		} else {
+			dispatch({
+				type: ITEM_EXISTS,
+				payload: false
 			});
 		}
 	};
@@ -402,7 +463,14 @@ const init_needs_poll = {
 		success: false,
 		error: false,
 		idOfItem: ""
-	}
+	},
+	statusOfCreateShelter: {
+		inProgress: false,
+		success: false,
+		error: false,
+		idOfItem: ""
+	},
+	newShelterPlace: null
 };
 
 export default function sheltersReducer(state = init_needs_poll, action) {
@@ -446,6 +514,19 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 			extendObj.statusOfEditItem = action.payload.status;
 
 			return _.extend({}, state, extendObj);
+
+		case USER_CHOSE_LOCATION:
+			if (action.payload.contents && action.payload.contents.place) {
+				extendObj.newShelterPlace = action.payload.contents.place;
+			}
+			extendObj.statusOfCreateShelter = action.payload.status;
+
+			return _.extend({}, state, extendObj);
+
+		case ITEM_EXISTS:
+			extendObj.itemExists = action.payload;
+
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -459,9 +540,14 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	statusOfRemoveItem = state => state.shelters.statusOfRemoveItem,
 	statusOfRemoveItemPrompt = state => state.shelters.statusOfRemoveItemPrompt,
 	statusOfEditItem = state => state.shelters.statusOfEditItem,
-	user = state => state.auth.userSession.user
+	user = state => state.auth.userSession.user,
+	googleMapsApiKey = state => state.util.apiKeys.googleMapsApiKey,
+	statusOfCreateShelter = state => state.shelters.statusOfCreateShelter,
+	newShelterPlace = state => state.shelters.newShelterPlace,
+	itemExists = state => state.shelters.itemExists
 
 export const selector = createStructuredSelector({
+	googleMapsApiKey,
 	collectionOfItems,
 	arrayOfItems,
 	statusOfCreateItem,
@@ -470,5 +556,8 @@ export const selector = createStructuredSelector({
 	statusOfRemoveItem,
 	statusOfRemoveItemPrompt,
 	statusOfEditItem,
+	statusOfCreateShelter,
+	newShelterPlace,
+	itemExists,
 	user
 });

@@ -19,6 +19,7 @@ import {
 import EditItem from "./EditItem.jsx";
 import Item from "./Item.jsx";
 import NewItemForm from "./NewItemForm.jsx";
+import MapView from "./MapView.jsx"
 
 export default class SheltersLayout extends Component {
     constructor(props) {
@@ -34,6 +35,7 @@ export default class SheltersLayout extends Component {
             errorRemovingItem: false,
             itemRemovalPromptOpen: false,
             userIsEditingItem: false,
+            userIsCreatingItem: false,
             loggedIn: false
         };
     }
@@ -43,6 +45,21 @@ export default class SheltersLayout extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
+
+
+        if(nextProps.statusOfCreateShelter.inProgress === true){
+            this.handleUserAction("creating", nextProps.newShelterPlace)
+
+        }
+        else{
+            
+            
+        }
+
+        if(nextProps.statusOfCreateItem.success === true){
+            this.handleUserAction("doneCreating", nextProps.newShelterPlace)
+        }
+
         if (nextProps.statusOfEditItem.inProgress === true) {
             this.state.userIsEditingItem = true;
         }
@@ -80,6 +97,16 @@ export default class SheltersLayout extends Component {
         }
         else{
             this.state.loggedIn = false
+        }
+    }
+
+    handleUserAction(type, data){
+        if(type==="creating"){
+            this.state.userIsCreatingItem = true
+        }
+        if(type==="doneCreating"){
+            this.state.userIsCreatingItem = false
+            this.props.actions.resetStatus("creating")
         }
     }
 
@@ -219,17 +246,18 @@ export default class SheltersLayout extends Component {
         }
       
         return (
-            <Grid container columns="equal" stackable>
+              <Grid container columns="equal" stackable>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <Segment attached size="huge" textAlign="center">
-                            <Header.Content>
-                                items{" "}
-                            </Header.Content>
-                        </Segment>
+                        
 
-                        <Segment attached="bottom">
-                            <Segment compact loading={asyncItems}>
+                        <Segment basic>
+
+                            <MapView {...this.props} />
+
+                            <Modal open={this.state.userIsCreatingItem}>
+
+                            <Segment loading={asyncItems}>
                                 <NewItemForm
                                     userId={this.state.userId}
                                     resetStatus={this.props.actions.resetStatus.bind(
@@ -246,7 +274,8 @@ export default class SheltersLayout extends Component {
                                             this.props.actions.createItem(
                                                 userInput,
                                                 this.state.userId,
-                                                this.props.collectionOfItems
+                                                this.props.collectionOfItems,
+                                                this.props.newShelterPlace
                                             );
                                         }
                                     }}
@@ -257,13 +286,9 @@ export default class SheltersLayout extends Component {
 
                             </Segment>
 
-                            <Segment basic loading={asyncItems}>
+                            </Modal>
 
-                                {this.props.statusOfFetchItems.error
-                                    ? <Message negative>
-                                          internal server error
-                                      </Message>
-                                    : this.renderItems()}
+                            <Segment basic loading={asyncItems}>
 
                                 <Modal
                                     open={this.state.userIsEditingItem}
@@ -424,3 +449,9 @@ export default class SheltersLayout extends Component {
         );
     }
 }
+
+// {this.props.statusOfFetchItems.error
+// ? <Message negative>
+//       internal server error
+//   </Message>
+// : this.renderItems()}

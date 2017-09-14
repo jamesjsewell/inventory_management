@@ -4,13 +4,15 @@ exports.postShelter = function(req, res, next) {
 	const nameOfItem = req.body.nameOfItem,
 		postedBy = req.body.postedBy,
 		description = req.body.description,
-		members = req.body.members
-		console.log(req.body)
+		members = req.body.members,
+		place = req.body.place
+		
 	const shelter = new Shelter({
 		nameOfItem,
 		postedBy,
 		description,
-		members
+		members,
+		place
 	});
 
 	shelter.save(err => {

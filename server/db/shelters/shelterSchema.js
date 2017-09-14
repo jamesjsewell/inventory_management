@@ -21,10 +21,8 @@ const ShelterSchema = new Schema(
             type: String,
             lowercase: true
         },
-        occupants: { type: Number },
-        volunteers: { type: Number },
         description: { type: String },
-        shelter: { type: String },
+        place: { type: Object },
         members: [ {type: mongoose.Schema.Types.ObjectId, ref: 'User'} ],
         needs: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Need'} ]
     },

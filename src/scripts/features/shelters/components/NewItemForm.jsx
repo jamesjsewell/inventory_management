@@ -115,11 +115,11 @@ class NewItemForm extends Component {
 
                     <Segment>
                         <Field
-                            placeholder="name of item"
+                            placeholder="enter name of location"
                             name="nameOfItem"
                             component={FormField}
                             type="text"
-                            label={"name of item"}
+                            label={"name of location"}
                             validate={[required, alphaNumeric]}
                         />
 
@@ -139,7 +139,7 @@ class NewItemForm extends Component {
                             name="description"
                             value={this.state.description}
                             onChange={this.handleDescriptionChange.bind(this)}
-                            placeholder={"enter a description for this item"}
+                            placeholder={"enter a description for this location"}
                         />
 
                     </Segment>
