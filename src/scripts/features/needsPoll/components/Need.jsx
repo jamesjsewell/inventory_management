@@ -192,7 +192,7 @@ export default class Need extends Component {
                                       this.props.numberOfPeople
                                   );
                               }}
-                              basic
+                              
                               size="large"
                               positive
                           >
@@ -211,7 +211,7 @@ export default class Need extends Component {
                                             this.props.numberOfPeople
                                         );
                                     }}
-                                    basic
+                                    
                                     negative
                                 >
                                     I need this

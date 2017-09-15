@@ -37,7 +37,7 @@ export default class NeedsPollLayout extends Component {
     }
     componentWillMount() {
         if (!this.props.collectionOfNeeds) {
-            this.props.actions.fetchNeeds();
+            this.props.actions.fetchNeeds(this.props.currentShelterId);
         }
     }
     componentWillReceiveProps(nextProps) {
@@ -184,7 +184,7 @@ export default class NeedsPollLayout extends Component {
         if (editingNeed) {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
-
+        console.log(this.props.currentShelterId)
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -208,7 +208,8 @@ export default class NeedsPollLayout extends Component {
                                             this.props.actions.submitNewNeed(
                                                 userInput,
                                                 "some_ID",
-                                                this.props.collectionOfNeeds
+                                                this.props.collectionOfNeeds,
+                                                this.props.currentShelterId
                                             );
                                         }
                                     }}

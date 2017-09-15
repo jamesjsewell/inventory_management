@@ -31,7 +31,7 @@ exports.getShelters = function(req, res, next) {
     match: {},
     select: ' -password',
     options: { }
-  });
+  })
 };
 
 exports.updateShelter = function(req, res, next) {

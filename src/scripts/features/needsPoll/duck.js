@@ -21,27 +21,62 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 	UPDATE_NEED = "update_need",
 	EDIT_NEED = "edit_need";
 
-export function submitNewNeed(values, postedById, needsCollection) {
+export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
-		dispatch({
-			type: ADD_SUBMITTED_NEED,
-			payload: {
-				status: "active"
-			}
-		});
+		if (shelterId) {
+			dispatch({
+				type: ADD_SUBMITTED_NEED,
+				payload: {
+					status: "active"
+				}
+			});
 
-		needsCollection.create(
-			{
-				nameOfNeed: values.nameOfNeed,
-				postedBy: postedById,
-				degreeOfNeed: 0,
-				numberOfPeople: Number(values.numberOfPeople),
-				description: values.description
-			},
-			{ wait: true, success: successCallback, error: errorCallback }
-		);
+			needsCollection.create(
+				{
+					nameOfNeed: values.nameOfNeed,
+					postedBy: postedById,
+					degreeOfNeed: 0,
+					numberOfPeople: Number(values.numberOfPeople),
+					description: values.description,
+					shelter: shelterId
+				},
+				{ wait: true, success: successCallback, error: errorCallback }
+			);
+		} else {
+			dispatch({
+				type: ADD_SUBMITTED_NEED,
+				payload: {
+					status: "error"
+				}
+			});
+		}
 
 		function successCallback(response) {
+			// var shelter = sheltersCollection.get(shelterId);
+			// shelter.set({ needs: shelter.needs.push(response._id) });
+
+			// shelter
+			// 	.save()
+			// 	.done(() => {
+			// 		dispatch({
+			// 			type: ADD_SUBMITTED_NEED,
+			// 			payload: {
+			// 				collection: response.collection,
+			// 				arrayOfNeeds: response.collection.models,
+			// 				status: "success"
+			// 			}
+			// 		});
+			// 	})
+			// 	.fail(function(err) {
+			// 		dispatch({
+			// 			type: UPDATE_NEED,
+			// 			payload: {
+			// 				status: "error",
+			// 				idOfUpdatedNeed: idOfNeed
+			// 			}
+			// 		});
+			// 	});
+
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -63,51 +98,40 @@ export function submitNewNeed(values, postedById, needsCollection) {
 	};
 }
 
-export function removeNeed(idOfNeed, needsCollection, prompt) {
+export function fetchNeeds(shelterId) {
 	return function(dispatch) {
-		if (!prompt) {
-			dispatch({
-				type: REMOVE_NEED,
-				payload: {
-					status: "active"
-				}
-			});
+		var needsCollection = new CollectionOfNeeds();
 
-			var model = needsCollection.get(idOfNeed);
+		dispatch({
+			type: FETCH_NEEDS,
+			payload: { status: "active" }
+		});
 
-			model.destroy({
-				success: (response, something, somethingElse) => {
-					dispatch({
-						type: REMOVE_NEED,
-						payload: {
-							collection: needsCollection,
-							arrayOfNeeds: needsCollection.models,
-							status: "success"
-						}
-					});
-				},
-				error: onError,
-				wait: true
-			});
-		} else if (prompt) {
-			dispatch({
-				type: REMOVE_NEED,
-				payload: {
-					status: "prompt",
-					idOfNeedToRemove: idOfNeed
-				}
-			});
-		}
+		needsCollection.fetch({ data: { shelter: shelterId } }).then(
+			response => {
+				var status = "inactive";
 
-		function onError(response) {
-			
-			dispatch({
-				type: REMOVE_NEED,
-				payload: {
-					status: "error"
+				if (response.error) {
+					status = "error";
 				}
-			});
-		}
+				dispatch({
+					type: FETCH_NEEDS,
+					payload: {
+						collection: needsCollection,
+						arrayOfNeeds: needsCollection.models,
+						status: status
+					}
+				});
+			},
+			error => {
+				dispatch({
+					type: FETCH_NEEDS,
+					payload: {
+						status: "error"
+					}
+				});
+			}
+		);
 	};
 }
 
@@ -116,7 +140,8 @@ export function updateNeed(
 	needsCollection,
 	update,
 	people,
-	userInput
+	userInput,
+	sheltersCollection
 ) {
 	return function(dispatch) {
 		dispatch({
@@ -165,7 +190,6 @@ export function updateNeed(
 				});
 			})
 			.fail(function(err) {
-				
 				dispatch({
 					type: UPDATE_NEED,
 					payload: {
@@ -177,40 +201,50 @@ export function updateNeed(
 	};
 }
 
-export function fetchNeeds() {
+export function removeNeed(idOfNeed, needsCollection, prompt) {
 	return function(dispatch) {
-		var needsCollection = new CollectionOfNeeds();
-
-		dispatch({
-			type: FETCH_NEEDS,
-			payload: { status: "active" }
-		});
-
-		needsCollection.fetch().then(
-			response => {
-				var status = "inactive";
-
-				if (response.error) {
-					status = "error";
+		if (!prompt) {
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					status: "active"
 				}
-				dispatch({
-					type: FETCH_NEEDS,
-					payload: {
-						collection: needsCollection,
-						arrayOfNeeds: needsCollection.models,
-						status: status
-					}
-				});
-			},
-			error => {
-				dispatch({
-					type: FETCH_NEEDS,
-					payload: {
-						status: "error"
-					}
-				});
-			}
-		);
+			});
+
+			var model = needsCollection.get(idOfNeed);
+
+			model.destroy({
+				success: (response, something, somethingElse) => {
+					dispatch({
+						type: REMOVE_NEED,
+						payload: {
+							collection: needsCollection,
+							arrayOfNeeds: needsCollection.models,
+							status: "success"
+						}
+					});
+				},
+				error: onError,
+				wait: true
+			});
+		} else if (prompt) {
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					status: "prompt",
+					idOfNeedToRemove: idOfNeed
+				}
+			});
+		}
+
+		function onError(response) {
+			dispatch({
+				type: REMOVE_NEED,
+				payload: {
+					status: "error"
+				}
+			});
+		}
 	};
 }
 
@@ -410,7 +444,9 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	totalOfOccupants = state => state.needsPoll.totalOfOccupants,
 	editingNeed = state => state.needsPoll.editingNeed,
 	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed,
-	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed;
+	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed,
+	currentShelterId = state => state.shelters.currentShelterId,
+	collectionOfShelters = state => state.shelters.collectionOfItems;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -434,5 +470,7 @@ export const selector = createStructuredSelector({
 	totalOfOccupants,
 	editingNeed,
 	idOfEditedNeed,
-	idOfUpdatedNeed
+	idOfUpdatedNeed,
+	currentShelterId,
+	collectionOfShelters
 });

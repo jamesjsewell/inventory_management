@@ -22,7 +22,8 @@ const NEW_ITEM = "new_item",
 	UPDATE_ITEM = "update_item",
 	EDIT_ITEM = "edit_item",
 	USER_CHOSE_LOCATION = "user_chose_location",
-	ITEM_EXISTS = "item_exists";
+	ITEM_EXISTS = "item_exists",
+	USER_ENTERED_SHELTER = "user_entered_shelter";
 
 export { getAPIkey };
 export function createItem(values, postedById, itemCollection, place) {
@@ -424,6 +425,15 @@ export function checkForExistingItem(collection, id) {
 	};
 }
 
+export function userEnteredShelter(shelterId) {
+	return function(dispatch) {
+		dispatch({
+			type: USER_ENTERED_SHELTER,
+			payload: shelterId
+		});
+	};
+}
+
 // reducers
 const init_needs_poll = {
 	collectionOfItems: null,
@@ -470,7 +480,8 @@ const init_needs_poll = {
 		error: false,
 		idOfItem: ""
 	},
-	newShelterPlace: null
+	newShelterPlace: null,
+	currentShelterId: null
 };
 
 export default function sheltersReducer(state = init_needs_poll, action) {
@@ -527,6 +538,11 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 			extendObj.itemExists = action.payload;
 
 			return _.extend({}, state, extendObj);
+
+		case USER_ENTERED_SHELTER:
+			extendObj.currentShelterId = action.payload;
+
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -544,7 +560,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	googleMapsApiKey = state => state.util.apiKeys.googleMapsApiKey,
 	statusOfCreateShelter = state => state.shelters.statusOfCreateShelter,
 	newShelterPlace = state => state.shelters.newShelterPlace,
-	itemExists = state => state.shelters.itemExists
+	itemExists = state => state.shelters.itemExists,
+	currentShelterId = state => state.shelters.currentShelterId;
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -559,5 +576,6 @@ export const selector = createStructuredSelector({
 	statusOfCreateShelter,
 	newShelterPlace,
 	itemExists,
-	user
+	user,
+	currentShelterId
 });

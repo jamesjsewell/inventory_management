@@ -63,6 +63,9 @@ export default class MapLayout extends Component {
         if (nextProps.itemExists) {
             this.state.itemExists = true;
         }
+        if(nextProps.currentShelterId != this.props.currentShelterId){
+            this.props.history.push('/needs')
+        }
     }
 
     handleMapMounted(map) {
@@ -127,9 +130,13 @@ export default class MapLayout extends Component {
             placesRenderedArray.push(
                 shelter.place
                     ? <Amarker
+                          
                           place={shelter.place}
                           shelter={shelter}
                           position={shelter.place.geometry.location}
+                          userEntered={this.props.actions.userEnteredShelter.bind(
+                              this
+                          )}
                       />
                     : null
             );
@@ -139,6 +146,7 @@ export default class MapLayout extends Component {
     }
 
     render() {
+        console.log(this.props);
         return (
             <SearchBoxExampleGoogleMap
                 containerElement={
@@ -222,7 +230,7 @@ class Amarker extends Component {
                                       positive
                                       size="mini"
                                       onClick={() => {
-                                          console.log("clicked");
+                                          this.props.userEntered(shelter._id);
                                       }}
                                   >
                                       enter
