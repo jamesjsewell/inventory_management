@@ -60,11 +60,16 @@ export default class MapLayout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps)
         if (nextProps.itemExists) {
             this.state.itemExists = true;
         }
-        if(nextProps.currentShelterId != this.props.currentShelterId){
-            this.props.history.push('/needs')
+        if (nextProps.currentShelterId != this.props.currentShelterId) {
+            this.props.history.push("/needs");
+        }
+        if (nextProps.didEnterShelter) {
+           
+            this.props.history.push("/needs");
         }
     }
 
@@ -130,13 +135,13 @@ export default class MapLayout extends Component {
             placesRenderedArray.push(
                 shelter.place
                     ? <Amarker
-                          
                           place={shelter.place}
                           shelter={shelter}
                           position={shelter.place.geometry.location}
                           userEntered={this.props.actions.userEnteredShelter.bind(
                               this
                           )}
+                          user={this.props.user}
                       />
                     : null
             );
@@ -229,8 +234,12 @@ class Amarker extends Component {
                                   <Button
                                       positive
                                       size="mini"
-                                      onClick={() => {
-                                          this.props.userEntered(shelter._id);
+                                      onClick={e => {
+                                          e.preventDefault();
+                                          this.props.userEntered(
+                                              shelter._id,
+                                              this.props.user._id
+                                          );
                                       }}
                                   >
                                       enter

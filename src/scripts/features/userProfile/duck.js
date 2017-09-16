@@ -27,7 +27,7 @@ export function fetchUserProfile(uid) {
 	
     return function(dispatch) {
         axios
-            .get(`${API_URL}/user/${uid}`, {
+            .get(`${API_URL}/user/profile/${uid}`, {
                 headers: { Authorization: getToken() }
             })
             .then(response => {
@@ -56,7 +56,7 @@ export function updatePersonalInfo(userId, updatedInfo) {
 			UPDATE_USER_PROFILE,
 			{ success: false },
 			true,
-			`/user/${userId}`,
+			`/user/profile/${userId}`,
 			dispatch,
 			updatedInfo,
 			{ updating: false, success: true, error: undefined }

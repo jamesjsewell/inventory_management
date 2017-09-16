@@ -26,7 +26,7 @@ var user = cookies.get("user");
 export function fetchUser(uid) {
     return function(dispatch) {
         axios
-            .get(`${API_URL}/user/${uid}`, {
+            .get(`${API_URL}/user/profile/${uid}`, {
                 headers: { Authorization: getToken() }
             })
             .then(response => {

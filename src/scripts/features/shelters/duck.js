@@ -14,6 +14,7 @@ import {
 } from "../../util/index.js";
 
 import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
+import { CollectionOfUsers, UserModel } from "../../models/user/UserModel.js";
 
 const NEW_ITEM = "new_item",
 	FETCH_ITEMS = "fetch_items",
@@ -425,12 +426,60 @@ export function checkForExistingItem(collection, id) {
 	};
 }
 
-export function userEnteredShelter(shelterId) {
+export function userEnteredShelter(shelterId, userId) {
+	//takes user model
+	//set shelter id on user model
+	//perform save on user model
+	//on success then dispatch
+	//oh, and create an email confirmation system
+	//i wonder how this will work for people who are not signed in?
+	//maybe set a cookie for those people containing the current shelter id, YEAH!
+
 	return function(dispatch) {
-		dispatch({
-			type: USER_ENTERED_SHELTER,
-			payload: shelterId
-		});
+		var users = new CollectionOfUsers();
+		console.log(userId);
+		if (userId && shelterId) {
+			users.fetch({
+				data: userId,
+				wait: true,
+				headers: { Authorization: getToken() },
+				success: successFetching,
+				error: errorFetching
+			});
+		}
+
+		function successFetching(collection, response, options) {
+			var user = collection.models[0];
+
+			console.log(user.get("_id"));
+
+			user.set({ currentShelter: shelterId });
+
+			user.save(
+				{},
+				{
+					wait: true,
+					headers: { Authorization: getToken() },
+					success: successSaving,
+					error: errorSaving
+				}
+			);
+		}
+
+		function errorFetching() {
+			console.log("error");
+		}
+
+		function successSaving(model, response, options) {
+			dispatch({
+				type: USER_ENTERED_SHELTER,
+				payload: model.get("currentShelter")
+			});
+		}
+
+		function errorSaving() {
+			console.log("error");
+		}
 	};
 }
 
@@ -481,7 +530,8 @@ const init_needs_poll = {
 		idOfItem: ""
 	},
 	newShelterPlace: null,
-	currentShelterId: null
+	currentShelterId: null,
+	didEnterShelter: false
 };
 
 export default function sheltersReducer(state = init_needs_poll, action) {
@@ -541,6 +591,7 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 
 		case USER_ENTERED_SHELTER:
 			extendObj.currentShelterId = action.payload;
+			extendObj.didEnterShelter = true;
 
 			return _.extend({}, state, extendObj);
 	}
@@ -561,7 +612,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	statusOfCreateShelter = state => state.shelters.statusOfCreateShelter,
 	newShelterPlace = state => state.shelters.newShelterPlace,
 	itemExists = state => state.shelters.itemExists,
-	currentShelterId = state => state.shelters.currentShelterId;
+	currentShelterId = state => state.shelters.currentShelterId,
+	didEnterShelter = state => state.shelters.didEnterShelter;
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -577,5 +629,6 @@ export const selector = createStructuredSelector({
 	newShelterPlace,
 	itemExists,
 	user,
-	currentShelterId
+	currentShelterId,
+	didEnterShelter
 });

@@ -1,11 +1,12 @@
-import axios from "axios"
-import { combineReducers } from "redux"
-import { browserHistory } from "react-router"
-import Cookies from "universal-cookie"
-import _ from "underscore"
-import { API_URL, CLIENT_ROOT_URL, getToken } from "../index"
+import axios from "axios";
+import { combineReducers } from "redux";
+import { browserHistory } from "react-router";
+import Cookies from "universal-cookie";
+import _ from "underscore";
+import { API_URL, CLIENT_ROOT_URL, getToken } from "../index";
+import { CollectionOfUsers, UserModel } from "../../models/user/UserModel.js";
 
-import { createStructuredSelector } from "reselect"
+import { createStructuredSelector } from "reselect";
 
 export const types = {
 	AUTH_USER: "auth_user",
@@ -17,7 +18,7 @@ export const types = {
 	FORGOT_PASSWORD_REQUEST: "forgot_password_request",
 	RESET_PASSWORD_REQUEST: "reset_password_request",
 	PROTECTED_TEST: "protected_test"
-}
+};
 
 const {
 	AUTH_USER,
@@ -29,9 +30,9 @@ const {
 	FORGOT_PASSWORD_REQUEST,
 	RESET_PASSWORD_REQUEST,
 	PROTECTED_TEST
-} = types
+} = types;
 
-const cookies = new Cookies()
+const cookies = new Cookies();
 
 // actions
 // TO-DO: Add expiration to cookie
@@ -40,18 +41,18 @@ export function loginUser({ email, password }) {
 		axios
 			.post(`${API_URL}/auth/login`, { email, password })
 			.then(response => {
-				console.log(response)
-				cookies.set("token", response.data.token, { path: "/" })
-				cookies.set("user", response.data.user, { path: "/" })
-				dispatch({ type: AUTH_USER, payload: response.data.user })
+				console.log(response);
+				cookies.set("token", response.data.token, { path: "/" });
+				cookies.set("user", response.data.user, { path: "/" });
+				dispatch({ type: AUTH_USER, payload: response.data.user });
 			})
 			.catch(error => {
 				dispatch({
 					type: LOGIN_ERROR,
 					payload: "invalid email or password"
-				})
-			})
-	}
+				});
+			});
+	};
 }
 
 export function registerUser({ email, firstName, lastName, password }) {
@@ -64,28 +65,28 @@ export function registerUser({ email, firstName, lastName, password }) {
 				password
 			})
 			.then(response => {
-				console.log(response)
-				console.log(response.data)
-				cookies.set("token", response.data.token, { path: "/" })
-				cookies.set("user", response.data.user, { path: "/" })
-				dispatch({ type: AUTH_USER, payload: response.data.user })
+				console.log(response);
+				console.log(response.data);
+				cookies.set("token", response.data.token, { path: "/" });
+				cookies.set("user", response.data.user, { path: "/" });
+				dispatch({ type: AUTH_USER, payload: response.data.user });
 			})
 			.catch(error => {
 				dispatch({
 					type: REGISTER_ERROR,
 					payload: "unable to create account"
-				})
-			})
-	}
+				});
+			});
+	};
 }
 
 export function logoutUser(error) {
 	return function(dispatch) {
-		dispatch({ type: UNAUTH_USER, payload: error || "" })
-		cookies.remove("token", { path: "/" })
-		cookies.remove("user", { path: "/" })
-		console.log(cookies.get("user"))
-	}
+		dispatch({ type: UNAUTH_USER, payload: error || "" });
+		cookies.remove("token", { path: "/" });
+		cookies.remove("user", { path: "/" });
+		console.log(cookies.get("user"));
+	};
 }
 
 export function getForgotPasswordToken({ email }) {
@@ -97,7 +98,7 @@ export function getForgotPasswordToken({ email }) {
 				sending: true,
 				sendSuccessful: false
 			}
-		})
+		});
 
 		axios
 			.post(`${API_URL}/auth/forgot-password`, { email })
@@ -109,10 +110,10 @@ export function getForgotPasswordToken({ email }) {
 						sending: false,
 						sendSuccessful: true
 					}
-				})
+				});
 			})
 			.catch(error => {
-				console.log(error.response)
+				console.log(error.response);
 				dispatch({
 					type: FORGOT_PASSWORD_REQUEST,
 					payload: {
@@ -120,9 +121,9 @@ export function getForgotPasswordToken({ email }) {
 						sending: false,
 						sendSuccessful: false
 					}
-				})
-			})
-	}
+				});
+			});
+	};
 }
 
 export function resetPassword(token, { password }) {
@@ -136,7 +137,7 @@ export function resetPassword(token, { password }) {
 						message: response.data.message,
 						didReset: response.data.didReset
 					}
-				})
+				});
 				// Redirect to login page on successful password reset
 				//browserHistory.push('/login');
 			})
@@ -147,9 +148,9 @@ export function resetPassword(token, { password }) {
 						message: error.response.data.error,
 						didReset: false
 					}
-				})
-			})
-	}
+				});
+			});
+	};
 }
 
 export function authenticate(user) {
@@ -164,12 +165,12 @@ export function authenticate(user) {
 						dispatch({
 							type: AUTH_USER,
 							payload: user
-						})
+						});
 					}
 				}
 			})
-			.catch(error => {})
-	}
+			.catch(error => {});
+	};
 }
 
 // reducers
@@ -180,18 +181,17 @@ const init_auth = {
 	authenticated: undefined,
 	user: undefined,
 	profile: undefined
-}
+};
 
 function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
 		case AUTH_USER: {
-		
 			return _.extend({}, state, {
 				authenticated: true,
 				user: action.payload,
 				profile: action.payload.profile,
 				loginError: undefined
-			})
+			});
 		}
 
 		case UNAUTH_USER: {
@@ -200,26 +200,25 @@ function userSessionReducer(state = init_auth, action) {
 				loginError: undefined,
 				registerError: undefined,
 				user: undefined
-			})
+			});
 		}
 
 		case AUTH_ERROR: {
-			return _.extend({}, state, { auth_error: action.payload })
+			return _.extend({}, state, { auth_error: action.payload });
 		}
 
 		case LOGIN_ERROR: {
 			return _.extend({}, state, {
 				loginError: true
-			})
+			});
 		}
 
 		case REGISTER_ERROR: {
 			return _.extend({}, state, {
 				registerError: action.payload,
 				loginError: undefined
-			})
+			});
 		}
-
 
 		// case PROTECTED_TEST: {
 		//   return _.extend( {}, state, { content: action.payload.message } );
@@ -230,7 +229,7 @@ function userSessionReducer(state = init_auth, action) {
 		// }
 	}
 
-	return state
+	return state;
 }
 
 const init_forgot_password = {
@@ -239,7 +238,7 @@ const init_forgot_password = {
 	sendingEmail: undefined,
 	didPasswordReset: undefined,
 	stateOfReset: undefined
-}
+};
 
 function forgotPasswordReducer(state = init_forgot_password, action) {
 	switch (action.type) {
@@ -248,32 +247,32 @@ function forgotPasswordReducer(state = init_forgot_password, action) {
 				stateOfEmailSend: action.payload.stateOfSend,
 				sendingEmail: action.payload.sending,
 				emailSendSuccessful: action.payload.sendSuccessful
-			})
+			});
 		}
 
 		case RESET_PASSWORD_REQUEST: {
 			return _.extend({}, state, {
 				didPasswordReset: action.payload.didReset,
 				stateOfReset: action.payload.message
-			})
+			});
 		}
 	}
 
-	return state
+	return state;
 }
 
 export default combineReducers({
 	userSession: userSessionReducer,
 	forgotPassword: forgotPasswordReducer
-})
+});
 
 const routes = state => state.nav.navLink.routes,
 	user = state => state.auth.userSession.user,
 	authenticated = state => state.auth.userSession.authenticated,
-	auths = state => state.auth
+	auths = state => state.auth;
 
 export const selector = createStructuredSelector({
 	routes,
 	user,
 	authenticated
-})
+});
