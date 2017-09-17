@@ -24,10 +24,36 @@ import {
     alphaNumeric,
     number,
     required,
-    asyncValidate,
     shouldAsyncValidate
 } from "../../../util/formValidation/formValidation.js";
 import { FormField } from "../../../components/forms/fields/formField.js";
+import { API_URL } from "../../../util/index.js";
+import axios from "axios";
+var shelter = "";
+//for async validation with redux form
+const asyncValidate = (values, dispatch, validationType) => {
+    if (values.nameOfNeed) {
+        values.shelter = shelter;
+        var request = axios.post(`${API_URL}/needsPoll/newNeedForm`, {
+            values
+        });
+    } else {
+        var request = axios.post(`${API_URL}/forms/validate`, {
+            values
+        });
+    }
+
+    return request
+        .then(response => {
+            return;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            if (error.response.data) {
+                return error.response.data;
+            }
+        });
+};
 
 class NeedForm extends Component {
     constructor(props) {
@@ -39,17 +65,23 @@ class NeedForm extends Component {
         };
     }
 
-    componentWillMount() {}
+    componentWillMount() {
+        shelter = this.props.currentShelterId;
+    }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.addedNeed){
-            this.handleOpenMessage()
-            this.state.message="added item"
+        if (nextProps.addedNeed) {
+            this.handleOpenMessage();
+            this.state.message = "added item";
         }
 
-        if(nextProps.errorAddingNeed){
-            this.handleOpenMessage()
-            this.state.message="something went wrong"
+        if (nextProps.errorAddingNeed) {
+            this.handleOpenMessage();
+            this.state.message = "something went wrong";
+        }
+
+        if(nextProps.currentShelterId){
+            shelter = this.props.currentShelterId
         }
     }
 
@@ -57,14 +89,18 @@ class NeedForm extends Component {
         this.state.messageIsOpen = true;
 
         this.state.messageIsOpen = setTimeout(() => {
-            this.props.resetStatus('addingNeed')
-            this.setState({ messageIsOpen: false, message: null, description: null });
+            this.props.resetStatus("addingNeed");
+            this.setState({
+                messageIsOpen: false,
+                message: null,
+                description: null
+            });
         }, 5000);
     }
 
     handleFormSubmit(formProps) {
         var userInput = formProps;
-    
+
         if (
             Object.keys(formProps).length > 0 &&
             formProps.constructor === Object
@@ -132,8 +168,13 @@ class NeedForm extends Component {
                             validate={[number, required, alphaNumeric]}
                         />
                         {this.state.messageIsOpen
-                    ? <Message positive={this.props.addedNeed} negative={this.props.errorAddingNeed}> {this.state.message}</Message>
-                    : null}
+                            ? <Message
+                                  positive={this.props.addedNeed}
+                                  negative={this.props.errorAddingNeed}
+                              >
+                                  {" "}{this.state.message}
+                              </Message>
+                            : null}
                     </Segment>
 
                     <Segment>
@@ -153,13 +194,9 @@ class NeedForm extends Component {
                     </Segment>
                 </Segment.Group>
 
-                <Button
-                    basic
-                    type="submit"
-                >
+                <Button basic type="submit">
                     submit
                 </Button>
-
 
             </Form>
         );

@@ -67,8 +67,10 @@ exports.deleteNeed = function(req, res, next) {
 
 exports.validateNewNeed = function(req, res, next) {
 	var nameOfNeed = req.body.values.nameOfNeed;
+	var shelter = req.body.values.shelter
+	console.log(shelter)
 
-	Need.findOne({ nameOfNeed }, (err, existingNeed) => {
+	Need.findOne({ nameOfNeed, shelter }, (err, existingNeed) => {
 		if (err) {
 		}
 		var errors = {};

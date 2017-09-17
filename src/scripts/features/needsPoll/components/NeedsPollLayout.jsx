@@ -208,7 +208,6 @@ export default class NeedsPollLayout extends Component {
     }
 
     render() {
-        console.log(this.props.currentShelterId, this.props.visitorShelterId);
         const asyncNeeds = this.props.loadingNeeds || this.props.addingNeed
             ? true
             : false;
@@ -247,6 +246,9 @@ export default class NeedsPollLayout extends Component {
                           <Segment attached="bottom">
                               <Segment compact loading={asyncNeeds}>
                                   <NeedForm
+                                      currentShelterId={
+                                          this.props.currentShelterId
+                                      }
                                       resetStatus={this.props.actions.resetStatus.bind(
                                           this
                                       )}
