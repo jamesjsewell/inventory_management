@@ -20,6 +20,7 @@ import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 
 const ADD_SUBMITTED_NEED = "add_submitted_need",
 	FETCH_NEEDS = "fetch_needs",
+	FETCH_NEEDS_VISITOR = "fetch_needs_visitor",
 	REMOVE_NEED = "remove_need",
 	UPDATE_NEED = "update_need",
 	EDIT_NEED = "edit_need",
@@ -102,7 +103,7 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	};
 }
 
-export function fetchNeeds(shelterId) {
+export function fetchNeeds(shelterId, notLoggedIn) {
 	return function(dispatch) {
 		if (shelterId) {
 			var needsCollection = new CollectionOfNeeds();
@@ -122,15 +123,28 @@ export function fetchNeeds(shelterId) {
 			function fetchedNeeds(collection, response, options) {
 				var status = "inactive";
 				console.log("done");
+				console.log(collection, needsCollection);
+				if (notLoggedIn) {
 
-				dispatch({
-					type: FETCH_NEEDS,
-					payload: {
-						collection: needsCollection,
-						arrayOfNeeds: needsCollection.models,
-						status: status
-					}
-				});
+					dispatch({
+						type: FETCH_NEEDS_VISITOR,
+						payload: {
+							currentShelterId: shelterId,
+							collection: needsCollection,
+							arrayOfNeeds: needsCollection.models,
+							status: status
+						}
+					});
+				} else {
+					dispatch({
+						type: FETCH_NEEDS,
+						payload: {
+							collection: needsCollection,
+							arrayOfNeeds: needsCollection.models,
+							status: status
+						}
+					});
+				}
 			}
 
 			function didNotFetchNeeds(collection, response, options) {
@@ -322,12 +336,25 @@ const init_needs_poll = {
 	editingNeed: false,
 	idOfEditedNeed: null,
 	idOfUpdatedNeed: null,
-	currentShelterId: null,
+	visitorShelterId: null,
 	userInfo: null
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
 	switch (action.type) {
+		case FETCH_NEEDS_VISITOR:
+		
+			return _.extend({}, state, {
+				visitorShelterId: action.payload.currentShelterId,
+				collectionOfNeeds: action.payload.collection,
+				arrayOfNeeds: action.payload.arrayOfNeeds,
+				statusOfFetchNeeds: action.payload.status,
+				loadingNeeds: action.payload.status == "active" ? true : false,
+				errorLoadingNeeds: action.payload.status == "error"
+					? true
+					: false
+			});
+
 		case FETCH_NEEDS:
 			return _.extend({}, state, {
 				collectionOfNeeds: action.payload.collection,
@@ -459,6 +486,7 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed,
 	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed,
 	currentShelterId = state => state.shelters.currentShelterId,
+	visitorShelterId = state => state.needsPoll.visitorShelterId,
 	collectionOfShelters = state => state.shelters.collectionOfItems,
 	user = state => state.auth.userSession.user;
 
@@ -487,5 +515,6 @@ export const selector = createStructuredSelector({
 	idOfUpdatedNeed,
 	currentShelterId,
 	collectionOfShelters,
-	user
+	user,
+	visitorShelterId
 });

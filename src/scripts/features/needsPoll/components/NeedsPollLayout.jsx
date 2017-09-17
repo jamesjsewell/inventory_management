@@ -35,7 +35,8 @@ export default class NeedsPollLayout extends Component {
             errorUpdatingNeed: false,
             needRemovalPrompt: false,
             errorRemovingNeed: false,
-            fetchNeeds: false
+            fetchNeeds: false,
+            currentShelterCookie: null
         };
     }
     componentWillMount() {
@@ -47,14 +48,27 @@ export default class NeedsPollLayout extends Component {
             this.props.actions.getEntireUser(this.props.user._id);
         }
 
-        if (!this.props.user) {
-            var currentShelter = cookies.get("currentShelter");
-            console.log(currentShelter)
-            if (currentShelter && !this.state.fetchedNeeds) {
-                this.state.fetchedNeeds = true;
-                
-                this.props.actions.fetchNeeds(currentShelter);
-            }
+        if (this.state.currentShelterCookie && !this.props.user) {
+            var notLoggedIn = true;
+            this.props.actions.fetchNeeds(
+                this.state.currentShelterCookie,
+                notLoggedIn
+            );
+        }
+
+        this.state.currentShelterCookie = cookies.get("currentShelter");
+
+        if (
+            this.state.currentShelterCookie &&
+            !this.props.visitorShelterId &&
+            !this.props.currentShelterId
+        ) {
+            this.state.fetchedNeeds = true;
+            var notLoggedIn = true;
+            this.props.actions.fetchNeeds(
+                this.state.currentShelterCookie,
+                notLoggedIn
+            );
         }
     }
     componentWillReceiveProps(nextProps) {
@@ -87,7 +101,15 @@ export default class NeedsPollLayout extends Component {
         if (nextProps.currentShelterId != this.props.currentShelterId) {
             this.props.actions.fetchNeeds(nextProps.currentShelterId);
         }
-       
+
+        if (!nextProps.currentShelterId && !nextProps.visitorShelterId) {
+            this.state.fetchedNeeds = true;
+            var notLoggedIn = true;
+            this.props.actions.fetchNeeds(
+                this.state.currentShelterCookie,
+                notLoggedIn
+            );
+        }
     }
 
     handleMessage(success, type) {
@@ -186,7 +208,7 @@ export default class NeedsPollLayout extends Component {
     }
 
     render() {
-        
+        console.log(this.props.currentShelterId, this.props.visitorShelterId);
         const asyncNeeds = this.props.loadingNeeds || this.props.addingNeed
             ? true
             : false;
@@ -212,7 +234,7 @@ export default class NeedsPollLayout extends Component {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
 
-        return this.props.currentShelterId
+        return this.props.currentShelterId || this.props.visitorShelterId
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>

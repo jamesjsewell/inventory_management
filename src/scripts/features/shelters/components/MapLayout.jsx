@@ -60,14 +60,13 @@ export default class MapLayout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
+       
         if (nextProps.itemExists) {
             this.state.itemExists = true;
         }
-        if (nextProps.currentShelterId != this.props.currentShelterId) {
-            this.props.history.push("/needs");
-        }
+        
         if (nextProps.didEnterShelter) {
+
             this.props.history.push("/needs");
         }
     }
@@ -150,7 +149,7 @@ export default class MapLayout extends Component {
     }
 
     render() {
-        console.log(this.props);
+        
         return (
             <SearchBoxExampleGoogleMap
                 containerElement={

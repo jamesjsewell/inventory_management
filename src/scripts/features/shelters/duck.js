@@ -3,6 +3,7 @@ import { createStructuredSelector } from "reselect";
 import _ from "underscore";
 import axios from "axios";
 import Cookies from "universal-cookie";
+const cookies = new Cookies();
 import {
 	API_URL,
 	fetchUser,
@@ -32,20 +33,22 @@ export { getAPIkey };
 
 export function getEntireUser(uid) {
 	return function(dispatch) {
-		axios
-			.get(`${API_URL}/user/${uid}`, {
-				headers: { Authorization: getToken() }
-			})
-			.then(response => {
-				console.log(response);
-				dispatch({
-					type: FETCH_USER,
-					payload: response.data
+		if (uid) {
+			axios
+				.get(`${API_URL}/user/${uid}`, {
+					headers: { Authorization: getToken() }
+				})
+				.then(response => {
+					console.log(response);
+					dispatch({
+						type: FETCH_USER,
+						payload: response.data
+					});
+				})
+				.catch(error => {
+					console.log(error);
 				});
-			})
-			.catch(error => {
-				console.log(error);
-			});
+		}
 	};
 }
 
@@ -471,8 +474,6 @@ export function userEnteredShelter(shelterId, userId) {
 		}
 
 		if (!userId && shelterId) {
-			const cookies = new Cookies();
-
 			cookies.set("currentShelter", shelterId, { path: "/" });
 
 			dispatch({
