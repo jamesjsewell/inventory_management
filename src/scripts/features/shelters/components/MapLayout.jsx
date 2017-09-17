@@ -60,13 +60,11 @@ export default class MapLayout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-       
         if (nextProps.itemExists) {
             this.state.itemExists = true;
         }
-        
-        if (nextProps.didEnterShelter) {
 
+        if (nextProps.didEnterShelter) {
             this.props.history.push("/needs");
         }
     }
@@ -149,7 +147,6 @@ export default class MapLayout extends Component {
     }
 
     render() {
-        
         return (
             <SearchBoxExampleGoogleMap
                 containerElement={
@@ -185,6 +182,8 @@ export default class MapLayout extends Component {
                 {...this.props}
                 renderedPlaces={this.renderPlaces()}
                 itemExists={this.props.itemExists}
+                user={this.props.user}
+                userChoseLocation={this.props.actions.userChoseLocation.bind(this)}
             />
         );
     }
@@ -305,7 +304,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                       positive
                                       size="mini"
                                       onClick={() => {
-                                          console.log("clicked");
+                                          props.userChoseLocation(props.places[0], props.user._id)
                                       }}
                                   >
                                       create

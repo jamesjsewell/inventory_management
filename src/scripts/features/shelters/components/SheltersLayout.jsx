@@ -48,6 +48,7 @@ export default class SheltersLayout extends Component {
 
 
         if(nextProps.statusOfCreateShelter.inProgress === true){
+            console.log('got in progress of createItem')
             this.handleUserAction("creating", nextProps.newShelterPlace)
 
         }
@@ -102,6 +103,7 @@ export default class SheltersLayout extends Component {
 
     handleUserAction(type, data){
         if(type==="creating"){
+            console.log('creating')
             this.state.userIsCreatingItem = true
         }
         if(type==="doneCreating"){

@@ -408,7 +408,9 @@ export function editItem(idOfItem, close) {
 
 export function userChoseLocation(place, userId) {
 	return function(dispatch) {
+		
 		if (place && userId) {
+
 			dispatch({
 				type: USER_CHOSE_LOCATION,
 				payload: {
