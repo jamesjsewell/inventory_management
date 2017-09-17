@@ -24,9 +24,30 @@ const NEW_ITEM = "new_item",
 	EDIT_ITEM = "edit_item",
 	USER_CHOSE_LOCATION = "user_chose_location",
 	ITEM_EXISTS = "item_exists",
-	USER_ENTERED_SHELTER = "user_entered_shelter";
+	USER_ENTERED_SHELTER = "user_entered_shelter",
+	FETCH_USER = "fetch_user"
 
 export { getAPIkey };
+
+export function getEntireUser(uid) {
+	return function(dispatch) {
+		axios
+			.get(`${API_URL}/user/${uid}`, {
+				headers: { Authorization: getToken() }
+			})
+			.then(response => {
+				console.log(response)
+				dispatch({
+					type: FETCH_USER,
+					payload: response.data
+				});
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	};
+}
+
 export function createItem(values, postedById, itemCollection, place) {
 	return function(dispatch) {
 		dispatch({
@@ -546,6 +567,12 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 	}
 
 	switch (action.type) {
+		case FETCH_USER: {
+			if(action.payload.currentShelter){
+				extendObj.currentShelterId = action.payload.currentShelter
+			}
+			return _.extend({}, state, extendObj);
+		}
 		case NEW_ITEM:
 			extendObj.statusOfCreateItem = action.payload.status;
 

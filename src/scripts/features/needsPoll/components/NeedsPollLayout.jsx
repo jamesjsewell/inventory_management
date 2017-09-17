@@ -39,6 +39,12 @@ export default class NeedsPollLayout extends Component {
         if (!this.props.collectionOfNeeds) {
             this.props.actions.fetchNeeds(this.props.currentShelterId);
         }
+
+        if(this.props.user){
+           
+            this.props.actions.getEntireUser(this.props.user._id)
+        }
+        
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.editingNeed) {
@@ -61,6 +67,14 @@ export default class NeedsPollLayout extends Component {
 
         if (nextProps.errorRemovingNeed) {
             this.handleMessage(false, "errorRemovingNeed");
+        }
+
+        if(nextProps.user && !this.props.currentShelterId){
+            this.props.actions.getEntireUser(nextProps.user._id)
+        }
+
+        if(nextProps.currentShelterId != this.props.currentShelterId){
+            this.props.actions.fetchNeeds(nextProps.currentShelterId)
         }
     }
 
@@ -184,7 +198,7 @@ export default class NeedsPollLayout extends Component {
         if (editingNeed) {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
-        console.log(this.props.currentShelterId);
+        
         return this.props.currentShelterId
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>

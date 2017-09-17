@@ -13,13 +13,19 @@ import {
 	getToken
 } from "../../util/index.js";
 
+import { getEntireUser } from "../shelters/duck.js"
+export { getEntireUser }
+
 import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 
 const ADD_SUBMITTED_NEED = "add_submitted_need",
 	FETCH_NEEDS = "fetch_needs",
 	REMOVE_NEED = "remove_need",
 	UPDATE_NEED = "update_need",
-	EDIT_NEED = "edit_need";
+	EDIT_NEED = "edit_need",
+	FETCH_USER = "fetch_user"
+
+
 
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
@@ -310,11 +316,14 @@ const init_needs_poll = {
 	totalOfOccupants: 20,
 	editingNeed: false,
 	idOfEditedNeed: null,
-	idOfUpdatedNeed: null
+	idOfUpdatedNeed: null,
+	currentShelterId: null,
+	userInfo: null
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
 	switch (action.type) {
+		
 		case FETCH_NEEDS:
 			return _.extend({}, state, {
 				collectionOfNeeds: action.payload.collection,
@@ -446,7 +455,8 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed,
 	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed,
 	currentShelterId = state => state.shelters.currentShelterId,
-	collectionOfShelters = state => state.shelters.collectionOfItems;
+	collectionOfShelters = state => state.shelters.collectionOfItems,
+	user = state => state.auth.userSession.user
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -472,5 +482,6 @@ export const selector = createStructuredSelector({
 	idOfEditedNeed,
 	idOfUpdatedNeed,
 	currentShelterId,
-	collectionOfShelters
+	collectionOfShelters,
+	user
 });
