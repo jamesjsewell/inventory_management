@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import { createStructuredSelector } from "reselect";
 import _ from "underscore";
 import axios from "axios";
+import Cookies from "universal-cookie";
 import {
 	API_URL,
 	fetchUser,
@@ -25,7 +26,7 @@ const NEW_ITEM = "new_item",
 	USER_CHOSE_LOCATION = "user_chose_location",
 	ITEM_EXISTS = "item_exists",
 	USER_ENTERED_SHELTER = "user_entered_shelter",
-	FETCH_USER = "fetch_user"
+	FETCH_USER = "fetch_user";
 
 export { getAPIkey };
 
@@ -36,7 +37,7 @@ export function getEntireUser(uid) {
 				headers: { Authorization: getToken() }
 			})
 			.then(response => {
-				console.log(response)
+				console.log(response);
 				dispatch({
 					type: FETCH_USER,
 					payload: response.data
@@ -458,7 +459,7 @@ export function userEnteredShelter(shelterId, userId) {
 
 	return function(dispatch) {
 		var users = new CollectionOfUsers();
-		console.log(userId);
+
 		if (userId && shelterId) {
 			users.fetch({
 				data: userId,
@@ -466,6 +467,17 @@ export function userEnteredShelter(shelterId, userId) {
 				headers: { Authorization: getToken() },
 				success: successFetching,
 				error: errorFetching
+			});
+		}
+
+		if (!userId && shelterId) {
+			const cookies = new Cookies();
+
+			cookies.set("currentShelter", shelterId, { path: "/" });
+
+			dispatch({
+				type: USER_ENTERED_SHELTER,
+				payload: shelterId
 			});
 		}
 
@@ -568,8 +580,8 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 
 	switch (action.type) {
 		case FETCH_USER: {
-			if(action.payload.currentShelter){
-				extendObj.currentShelterId = action.payload.currentShelter
+			if (action.payload.currentShelter) {
+				extendObj.currentShelterId = action.payload.currentShelter;
 			}
 			return _.extend({}, state, extendObj);
 		}

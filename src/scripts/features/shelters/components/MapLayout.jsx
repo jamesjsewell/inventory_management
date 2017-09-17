@@ -60,7 +60,7 @@ export default class MapLayout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
+        console.log(nextProps);
         if (nextProps.itemExists) {
             this.state.itemExists = true;
         }
@@ -68,7 +68,6 @@ export default class MapLayout extends Component {
             this.props.history.push("/needs");
         }
         if (nextProps.didEnterShelter) {
-           
             this.props.history.push("/needs");
         }
     }
@@ -238,7 +237,9 @@ class Amarker extends Component {
                                           e.preventDefault();
                                           this.props.userEntered(
                                               shelter._id,
-                                              this.props.user._id
+                                              this.props.user
+                                                  ? this.props.user._id
+                                                  : undefined
                                           );
                                       }}
                                   >

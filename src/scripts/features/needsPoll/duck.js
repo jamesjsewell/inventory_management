@@ -13,8 +13,8 @@ import {
 	getToken
 } from "../../util/index.js";
 
-import { getEntireUser } from "../shelters/duck.js"
-export { getEntireUser }
+import { getEntireUser } from "../shelters/duck.js";
+export { getEntireUser };
 
 import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 
@@ -23,9 +23,7 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 	REMOVE_NEED = "remove_need",
 	UPDATE_NEED = "update_need",
 	EDIT_NEED = "edit_need",
-	FETCH_USER = "fetch_user"
-
-
+	FETCH_USER = "fetch_user";
 
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
@@ -106,20 +104,25 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 
 export function fetchNeeds(shelterId) {
 	return function(dispatch) {
-		var needsCollection = new CollectionOfNeeds();
+		if (shelterId) {
+			var needsCollection = new CollectionOfNeeds();
 
-		dispatch({
-			type: FETCH_NEEDS,
-			payload: { status: "active" }
-		});
+			dispatch({
+				type: FETCH_NEEDS,
+				payload: { status: "active" }
+			});
 
-		needsCollection.fetch({ data: { shelter: shelterId } }).then(
-			response => {
+			needsCollection.fetch({
+				data: { currentShelter: shelterId },
+				wait: true,
+				success: fetchedNeeds,
+				error: didNotFetchNeeds
+			});
+
+			function fetchedNeeds(collection, response, options) {
 				var status = "inactive";
+				console.log("done");
 
-				if (response.error) {
-					status = "error";
-				}
 				dispatch({
 					type: FETCH_NEEDS,
 					payload: {
@@ -128,8 +131,10 @@ export function fetchNeeds(shelterId) {
 						status: status
 					}
 				});
-			},
-			error => {
+			}
+
+			function didNotFetchNeeds(collection, response, options) {
+				console.log(response);
 				dispatch({
 					type: FETCH_NEEDS,
 					payload: {
@@ -137,7 +142,7 @@ export function fetchNeeds(shelterId) {
 					}
 				});
 			}
-		);
+		}
 	};
 }
 
@@ -323,7 +328,6 @@ const init_needs_poll = {
 
 export default function needsPollReducer(state = init_needs_poll, action) {
 	switch (action.type) {
-		
 		case FETCH_NEEDS:
 			return _.extend({}, state, {
 				collectionOfNeeds: action.payload.collection,
@@ -456,7 +460,7 @@ const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed,
 	currentShelterId = state => state.shelters.currentShelterId,
 	collectionOfShelters = state => state.shelters.collectionOfItems,
-	user = state => state.auth.userSession.user
+	user = state => state.auth.userSession.user;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,

@@ -6,7 +6,7 @@ exports.postNeed = function(req, res, next) {
 		degreeOfNeed = req.body.degreeOfNeed,
 		numberOfPeople = req.body.numberOfPeople,
 		description = req.body.description;
-		shelter = req.body.shelter
+	shelter = req.body.shelter;
 
 	const need = new Need({
 		nameOfNeed,
@@ -26,11 +26,15 @@ exports.postNeed = function(req, res, next) {
 };
 
 exports.getNeeds = function(req, res, next) {
-	console.log(req.query)
-	Need.find(req.query, function(err, results) {
+	var queryObj = {};
+	if (req.params.theNeedId) {
+		queryObj.shelter = { _id: req.params.theNeedId };
+	}
+
+	Need.find(queryObj, function(err, results) {
 		if (err) return res.json({ error: "internal server error" });
 		res.json(results);
-	})
+	});
 };
 
 exports.updateNeed = function(req, res, next) {

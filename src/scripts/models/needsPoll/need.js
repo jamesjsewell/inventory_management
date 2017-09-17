@@ -16,6 +16,13 @@ export const CollectionOfNeeds = Backbone.Collection.extend({
 	comparator: function(mod) {
 		return new Date(mod.get("createdAt")).getTime() * -1;
 	},
-	model: NeedModel,
-	url: "/api/needsPoll/needs"
+	fetch: function(options) {
+		
+		if (options.data) {
+			options.url = "/api/needsPoll/needs/" + options.data.currentShelter;
+		 	delete options.data
+		}
+		Backbone.Collection.prototype.fetch.call(this, options);
+	},
+	model: NeedModel
 });

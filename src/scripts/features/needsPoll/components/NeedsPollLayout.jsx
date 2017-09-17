@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 import {
     Button,
@@ -32,7 +34,8 @@ export default class NeedsPollLayout extends Component {
             updatedNeed: false,
             errorUpdatingNeed: false,
             needRemovalPrompt: false,
-            errorRemovingNeed: false
+            errorRemovingNeed: false,
+            fetchNeeds: false
         };
     }
     componentWillMount() {
@@ -40,11 +43,19 @@ export default class NeedsPollLayout extends Component {
             this.props.actions.fetchNeeds(this.props.currentShelterId);
         }
 
-        if(this.props.user){
-           
-            this.props.actions.getEntireUser(this.props.user._id)
+        if (this.props.user) {
+            this.props.actions.getEntireUser(this.props.user._id);
         }
-        
+
+        if (!this.props.user) {
+            var currentShelter = cookies.get("currentShelter");
+            console.log(currentShelter)
+            if (currentShelter && !this.state.fetchedNeeds) {
+                this.state.fetchedNeeds = true;
+                
+                this.props.actions.fetchNeeds(currentShelter);
+            }
+        }
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.editingNeed) {
@@ -69,13 +80,14 @@ export default class NeedsPollLayout extends Component {
             this.handleMessage(false, "errorRemovingNeed");
         }
 
-        if(nextProps.user && !this.props.currentShelterId){
-            this.props.actions.getEntireUser(nextProps.user._id)
+        if (nextProps.user && !this.props.currentShelterId) {
+            this.props.actions.getEntireUser(nextProps.user._id);
         }
 
-        if(nextProps.currentShelterId != this.props.currentShelterId){
-            this.props.actions.fetchNeeds(nextProps.currentShelterId)
+        if (nextProps.currentShelterId != this.props.currentShelterId) {
+            this.props.actions.fetchNeeds(nextProps.currentShelterId);
         }
+       
     }
 
     handleMessage(success, type) {
@@ -174,6 +186,7 @@ export default class NeedsPollLayout extends Component {
     }
 
     render() {
+        
         const asyncNeeds = this.props.loadingNeeds || this.props.addingNeed
             ? true
             : false;
@@ -198,7 +211,7 @@ export default class NeedsPollLayout extends Component {
         if (editingNeed) {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
-        
+
         return this.props.currentShelterId
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
