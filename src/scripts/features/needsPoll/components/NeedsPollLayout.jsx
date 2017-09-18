@@ -49,44 +49,6 @@ export default class NeedsPollLayout extends Component {
             this.props.actions.fetchShelter(this.props.currentShelterId);
             return;
         }
-        // if(!this.props.user && this.state.currentShelterCookie){
-        //     this.props.actions.fetchShelter(this.state.currentShelterCookie)
-        // }
-        // } else if (this.state.currentShelterCookie) {
-
-        //     this.props.actions.fetchShelter(this.state.currentShelterCookie);
-        // }
-
-        // if (!this.props.collectionOfNeeds && this.props.currentShelterId) {
-        //     this.props.actions.fetchNeeds(this.props.currentShelterId);
-        // }
-
-        // if (this.props.user) {
-        //     this.props.actions.getEntireUser(this.props.user._id);
-        // }
-
-        // if (this.state.currentShelterCookie && !this.props.user) {
-        //     var notLoggedIn = true;
-        //     this.props.actions.fetchNeeds(
-        //         this.state.currentShelterCookie,
-        //         notLoggedIn
-        //     );
-        // }
-
-        // this.state.currentShelterCookie = cookies.get("currentShelter");
-
-        // if (
-        //     this.state.currentShelterCookie &&
-        //     !this.props.visitorShelterId &&
-        //     !this.props.currentShelterId
-        // ) {
-        //     this.state.fetchedNeeds = true;
-        //     var notLoggedIn = true;
-        //     this.props.actions.fetchNeeds(
-        //         this.state.currentShelterCookie,
-        //         notLoggedIn
-        //     );
-        // }
     }
 
     componentDidMount() {
@@ -163,23 +125,6 @@ export default class NeedsPollLayout extends Component {
                 this.state.fetchedNeeds = true;
             }
         }
-
-        // if (nextProps.user && !this.props.currentShelterId) {
-        //     this.props.actions.getEntireUser(nextProps.user._id);
-        // }
-
-        // if (nextProps.currentShelterId != this.props.currentShelterId) {
-        //     this.props.actions.fetchNeeds(nextProps.currentShelterId);
-        // }
-
-        // if (!nextProps.currentShelterId && !nextProps.visitorShelterId) {
-        //     this.state.fetchedNeeds = true;
-        //     var notLoggedIn = true;
-        //     this.props.actions.fetchNeeds(
-        //         this.state.currentShelterCookie,
-        //         notLoggedIn
-        //     );
-        // }
     }
 
     handleMessage(success, type) {
@@ -240,7 +185,7 @@ export default class NeedsPollLayout extends Component {
             for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
                 arrayOfNeedElements.push(
                     <Need
-                        isPreview={false}
+                        isPreview={this.props.fullUser? false : true}
                         updateNeed={this.props.actions.updateNeed.bind(this)}
                         removeNeed={this.props.actions.removeNeed.bind(this)}
                         nameOfNeed={
@@ -309,11 +254,13 @@ export default class NeedsPollLayout extends Component {
                       <Grid.Column width={16}>
                           <Segment attached size="huge" textAlign="center">
                               <Header size="huge">
-                                  {this.props.shelter.place.name}
+                                  {this.props.shelter.nameOfItem}
 
                               </Header>
 
                               <Header.Subheader>
+                                  {this.props.shelter.place.name}
+                                  <Divider />
                                   {this.props.shelter.place.formatted_address}
                               </Header.Subheader>
                           </Segment>

@@ -46,7 +46,6 @@ export default class Need extends Component {
         }
 
         if (nextProps.errorRemovingNeed) {
-            
             this.handleMessage(false, "remove");
         }
     }
@@ -70,7 +69,6 @@ export default class Need extends Component {
             }, 5000);
 
             if (type === "remove") {
-                
                 this.state.errorRemovingNeed = true;
 
                 this.state.errorRemovingNeed = setTimeout(() => {
@@ -80,7 +78,7 @@ export default class Need extends Component {
             }
         }
     }
-    
+
     render() {
         const {
             degreeOfNeed,
@@ -108,7 +106,6 @@ export default class Need extends Component {
                           size="tiny"
                           onClick={() => {
                               removeNeed(idOfNeed, null, true);
-                              
                           }}
                       />
                     : null}
@@ -131,47 +128,35 @@ export default class Need extends Component {
                     progress="ratio"
                 />
 
-                {!this.props.isPreview
-                    ? <Header attached="top">
-                          <Button
-                              type="button"
-                              onClick={e => {
-                                  e.preventDefault();
-                                  if (this.state.openedDescription === false) {
-                                      this.setState({
-                                          openedDescription: true
-                                      });
-                                  } else {
-                                      this.setState({
-                                          openedDescription: false
-                                      });
-                                  }
-                              }}
-                              size="tiny"
-                              basic
-                              icon={
-                                  this.state.openedDescription ? "minus" : "add"
-                              }
-                          /> description
-                      </Header>
-                    : null}
+                <Header attached="top">
+                    <Button
+                        type="button"
+                        onClick={e => {
+                            e.preventDefault();
+                            if (this.state.openedDescription === false) {
+                                this.setState({
+                                    openedDescription: true
+                                });
+                            } else {
+                                this.setState({
+                                    openedDescription: false
+                                });
+                            }
+                        }}
+                        size="tiny"
+                        basic
+                        icon={this.state.openedDescription ? "minus" : "add"}
+                    /> description
+                </Header>
 
-                {!this.props.isPreview
-                    ? <Segment attached="bottom" size="small">
+                <Segment attached="bottom" size="small">
 
-                          {this.state.openedDescription
-                              ? <Container fluid text textAlign="left">
-                                    {this.props.description}
-                                </Container>
-                              : null}
-                      </Segment>
-                    : null}
-
-                {this.props.isPreview
-                    ? <Container fluid text textAlign="left">
-                          {this.props.description}
-                      </Container>
-                    : null}
+                    {this.state.openedDescription
+                        ? <Container fluid text textAlign="left">
+                              {this.props.description}
+                          </Container>
+                        : null}
+                </Segment>
 
                 {!this.props.isPreview
                     ? <Segment size="large" attached="top">
@@ -192,7 +177,6 @@ export default class Need extends Component {
                                       this.props.numberOfPeople
                                   );
                               }}
-                              
                               size="large"
                               positive
                           >
@@ -211,7 +195,6 @@ export default class Need extends Component {
                                             this.props.numberOfPeople
                                         );
                                     }}
-                                    
                                     negative
                                 >
                                     I need this
