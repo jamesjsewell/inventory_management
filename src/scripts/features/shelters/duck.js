@@ -18,6 +18,7 @@ import {
 import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
 import { CollectionOfUsers, UserModel } from "../../models/user/UserModel.js";
 
+
 const NEW_ITEM = "new_item",
 	FETCH_ITEMS = "fetch_items",
 	REMOVE_ITEM = "remove_item",
@@ -78,9 +79,12 @@ export function createItem(values, postedById, itemCollection, place) {
 		);
 
 		function successCallback(response) {
+
 			dispatch({
 				type: NEW_ITEM,
 				payload: {
+
+					newShelterId: response.attributes._id,
 					collection: response.collection,
 					arrayOfItems: response.collection.models,
 					status: {
@@ -125,36 +129,43 @@ export function fetchItems() {
 			}
 		});
 
-		itemCollection.fetch().then(
-			response => {
-				dispatch({
-					type: FETCH_ITEMS,
-					payload: {
-						collection: itemCollection,
-						arrayOfItems: itemCollection.models,
-						status: {
-							inProgress: false,
-							success: response.error ? false : true,
-							error: response.error ? true : false,
-							idOfItem: null
-						}
+		itemCollection.fetch({
+			wait: true,
+			success: successFetchingItems,
+			error: errorFetchingItems
+		});
+
+		function successFetchingItems(collection, response, options) {
+			
+			dispatch({
+				type: FETCH_ITEMS,
+				payload: {
+					collection: collection,
+					arrayOfItems: collection.models,
+					status: {
+						inProgress: false,
+						success: response.error ? false : true,
+						error: response.error ? true : false,
+						idOfItem: null
 					}
-				});
-			},
-			error => {
-				dispatch({
-					type: FETCH_ITEMS,
-					payload: {
-						status: {
-							inProgress: false,
-							success: false,
-							error: true,
-							idOfItem: null
-						}
+				}
+			});
+		}
+
+		function errorFetchingItems() {
+			console.log("fuck");
+			dispatch({
+				type: FETCH_ITEMS,
+				payload: {
+					status: {
+						inProgress: false,
+						success: false,
+						error: true,
+						idOfItem: null
 					}
-				});
-			}
-		);
+				}
+			});
+		}
 	};
 }
 
@@ -304,7 +315,7 @@ export function removeItem(idOfItem, itemCollection, prompt) {
 	};
 }
 
-export function resetStatus(statusOf) {
+export function resetStatus(statusOf, data) {
 	return function(dispatch) {
 		if (statusOf === "addingItem") {
 			dispatch({
@@ -408,7 +419,6 @@ export function editItem(idOfItem, close) {
 
 export function userChoseLocation(place, userId) {
 	return function(dispatch) {
-		
 		if (place && userId) {
 
 			dispatch({
@@ -432,23 +442,28 @@ export function userChoseLocation(place, userId) {
 
 export function checkForExistingItem(collection, id) {
 	return function(dispatch) {
-		var lookfor = id;
-		var found = _.find(collection.models, item => {
-			if (item.attributes.place && item.attributes.place.id === lookfor) {
-				return true;
-			}
-		});
+		if (collection && collection.models) {
+			var lookfor = id;
+			var found = _.find(collection.models, item => {
+				if (
+					item.attributes.place &&
+					item.attributes.place.id === lookfor
+				) {
+					return true;
+				}
+			});
 
-		if (found) {
-			dispatch({
-				type: ITEM_EXISTS,
-				payload: true
-			});
-		} else {
-			dispatch({
-				type: ITEM_EXISTS,
-				payload: false
-			});
+			if (found) {
+				dispatch({
+					type: ITEM_EXISTS,
+					payload: true
+				});
+			} else {
+				dispatch({
+					type: ITEM_EXISTS,
+					payload: false
+				});
+			}
 		}
 	};
 }
@@ -461,7 +476,7 @@ export function userEnteredShelter(shelterId, userId) {
 	//oh, and create an email confirmation system
 	//i wonder how this will work for people who are not signed in?
 	//maybe set a cookie for those people containing the current shelter id, YEAH!
-
+	console.log(shelterId)
 	return function(dispatch) {
 		var users = new CollectionOfUsers();
 
@@ -475,19 +490,17 @@ export function userEnteredShelter(shelterId, userId) {
 			});
 		}
 
-		if (!userId && shelterId) {
-			cookies.set("currentShelter", shelterId, { path: "/" });
+		// if (!userId && shelterId) {
+		// 	cookies.set("currentShelter", shelterId, { path: "/" });
 
-			dispatch({
-				type: USER_ENTERED_SHELTER,
-				payload: shelterId
-			});
-		}
+		// 	dispatch({
+		// 		type: USER_ENTERED_SHELTER,
+		// 		payload: shelterId
+		// 	});
+		// }
 
 		function successFetching(collection, response, options) {
 			var user = collection.models[0];
-
-			console.log(user.get("_id"));
 
 			user.set({ currentShelter: shelterId });
 
@@ -590,6 +603,7 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 		}
 		case NEW_ITEM:
 			extendObj.statusOfCreateItem = action.payload.status;
+			extendObj.newShelterId = action.payload.newShelterId
 
 			return _.extend({}, state, extendObj);
 
@@ -655,7 +669,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	newShelterPlace = state => state.shelters.newShelterPlace,
 	itemExists = state => state.shelters.itemExists,
 	currentShelterId = state => state.shelters.currentShelterId,
-	didEnterShelter = state => state.shelters.didEnterShelter;
+	didEnterShelter = state => state.shelters.didEnterShelter,
+	newShelterId = state => state.shelters.newShelterId
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -672,5 +687,6 @@ export const selector = createStructuredSelector({
 	itemExists,
 	user,
 	currentShelterId,
-	didEnterShelter
+	didEnterShelter,
+	newShelterId
 });

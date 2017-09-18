@@ -19,7 +19,7 @@ import {
 import EditItem from "./EditItem.jsx";
 import Item from "./Item.jsx";
 import NewItemForm from "./NewItemForm.jsx";
-import MapView from "./MapView.jsx"
+import MapView from "./MapView.jsx";
 
 export default class SheltersLayout extends Component {
     constructor(props) {
@@ -45,27 +45,22 @@ export default class SheltersLayout extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
-
-
-        if(nextProps.statusOfCreateShelter.inProgress === true){
-            console.log('got in progress of createItem')
-            this.handleUserAction("creating", nextProps.newShelterPlace)
-
-        }
-        else{
-            
-            
+        if (nextProps.statusOfCreateShelter.inProgress === true) {
+            this.handleUserAction("creating", nextProps.newShelterPlace);
         }
 
-        if(nextProps.statusOfCreateItem.success === true){
-            this.handleUserAction("doneCreating", nextProps.newShelterPlace)
+        if (nextProps.statusOfCreateItem.success && nextProps.newShelterId) {
+            this.handleUserAction("doneCreating", nextProps.newShelterId);
+        }
+
+        if (nextProps.didEnterShelter) {
+            this.handleUserAction("savedShelterOnUser");
         }
 
         if (nextProps.statusOfEditItem.inProgress === true) {
             this.state.userIsEditingItem = true;
-        }
-        else{
-            this.state.userIsEditingItem = false
+        } else {
+            this.state.userIsEditingItem = false;
         }
 
         if (
@@ -92,23 +87,31 @@ export default class SheltersLayout extends Component {
             this.handleMessage(false, "removeItem");
         }
 
-        if(nextProps.user){
-            this.state.userId = nextProps.user._id
-            this.state.loggedIn = true
-        }
-        else{
-            this.state.loggedIn = false
+        if (nextProps.user) {
+            this.state.userId = nextProps.user._id;
+            this.state.loggedIn = true;
+        } else {
+            this.state.loggedIn = false;
         }
     }
 
-    handleUserAction(type, data){
-        if(type==="creating"){
-            console.log('creating')
-            this.state.userIsCreatingItem = true
+    handleUserAction(type, data) {
+        if (type === "creating") {
+            this.state.userIsCreatingItem = true;
         }
-        if(type==="doneCreating"){
-            this.state.userIsCreatingItem = false
-            this.props.actions.resetStatus("creating")
+        if (type === "doneCreating") {
+
+            var shelterId = data;
+            console.log(data);
+            this.props.actions.userEnteredShelter(
+                shelterId,
+                this.props.user._id
+            );
+        }
+
+        if (type == "savedShelterOnUser") {
+            this.props.history.push("/needs");
+            this.props.actions.resetStatus("creating");
         }
     }
 
@@ -185,7 +188,7 @@ export default class SheltersLayout extends Component {
                 arrayOfItemElements.push(
                     <Item
                         userId={this.state.userId}
-                        isPreview={this.state.loggedIn? false : true}
+                        isPreview={this.state.loggedIn ? false : true}
                         updateItem={this.props.actions.updateItem.bind(this)}
                         removeItem={this.props.actions.removeItem.bind(this)}
                         editItem={this.props.actions.editItem.bind(this)}
@@ -218,7 +221,6 @@ export default class SheltersLayout extends Component {
     }
 
     render() {
-        
         const asyncItems = this.props.statusOfFetchItems.inProgress ||
             this.props.statusOfCreateItem.inProgress
             ? true
@@ -243,15 +245,13 @@ export default class SheltersLayout extends Component {
                 var model = this.props.collectionOfItems.get(
                     this.props.statusOfEditItem.idOfItem
                 );
-                
             }
         }
-      
+
         return (
-              <Grid container columns="equal" stackable>
+            <Grid container columns="equal" stackable>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        
 
                         <Segment basic>
 
@@ -259,34 +259,38 @@ export default class SheltersLayout extends Component {
 
                             <Modal open={this.state.userIsCreatingItem}>
 
-                            <Segment loading={asyncItems}>
-                                <NewItemForm
-                                    userId={this.state.userId}
-                                    resetStatus={this.props.actions.resetStatus.bind(
-                                        this
-                                    )}
-                                    errorAddingItem={
-                                        this.props.statusOfCreateItem.error
-                                    }
-                                    successAddingItem={
-                                        this.props.statusOfCreateItem.success
-                                    }
-                                    doThisOnSubmit={userInput => {
-                                        if (userInput) {
-                                            this.props.actions.createItem(
-                                                userInput,
-                                                this.state.userId,
-                                                this.props.collectionOfItems,
-                                                this.props.newShelterPlace
-                                            );
+                                <Segment loading={asyncItems}>
+                                    <NewItemForm
+                                        userId={this.state.userId}
+                                        resetStatus={this.props.actions.resetStatus.bind(
+                                            this
+                                        )}
+                                        errorAddingItem={
+                                            this.props.statusOfCreateItem.error
                                         }
-                                    }}
-                                />
-                                {this.state.successAddingItem
-                                    ? <Message positive>added item!</Message>
-                                    : null}
+                                        successAddingItem={
+                                            this.props.statusOfCreateItem
+                                                .success
+                                        }
+                                        doThisOnSubmit={userInput => {
+                                            if (userInput) {
+                                                this.props.actions.createItem(
+                                                    userInput,
+                                                    this.state.userId,
+                                                    this.props
+                                                        .collectionOfItems,
+                                                    this.props.newShelterPlace
+                                                );
+                                            }
+                                        }}
+                                    />
+                                    {this.state.successAddingItem
+                                        ? <Message positive>
+                                              added item!
+                                          </Message>
+                                        : null}
 
-                            </Segment>
+                                </Segment>
 
                             </Modal>
 
@@ -332,7 +336,8 @@ export default class SheltersLayout extends Component {
                                                     isPreview={true}
                                                     description={
                                                         this.state
-                                                            .userIsEditingItem && model
+                                                            .userIsEditingItem &&
+                                                            model
                                                             ? model.get(
                                                                   "description"
                                                               )
@@ -340,7 +345,8 @@ export default class SheltersLayout extends Component {
                                                     }
                                                     nameOfItem={
                                                         this.state
-                                                            .userIsEditingItem && model
+                                                            .userIsEditingItem &&
+                                                            model
                                                             ? model.get(
                                                                   "nameOfItem"
                                                               )

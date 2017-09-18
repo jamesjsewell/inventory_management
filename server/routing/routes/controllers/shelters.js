@@ -5,8 +5,8 @@ exports.postShelter = function(req, res, next) {
 		postedBy = req.body.postedBy,
 		description = req.body.description,
 		members = req.body.members,
-		place = req.body.place
-		
+		place = req.body.place;
+
 	const shelter = new Shelter({
 		nameOfItem,
 		postedBy,
@@ -24,30 +24,53 @@ exports.postShelter = function(req, res, next) {
 };
 
 exports.getShelters = function(req, res, next) {
+	console.log(req.query)
 	Shelter.find(req.query, function(err, results) {
 		if (err) return res.json({ error: "internal server error" });
+		
 		res.json(results);
-	}).populate({path: 'members',
-    match: {},
-    select: ' -password',
-    options: { }
-  })
+	})//.populate({
+	// 	path: "members",
+	// 	match: {},
+	// 	select: " -password",
+	// 	options: {}
+	// });
 };
 
+exports.getShelter = function(req, res, next) {
+	var query = {};
+	if (req.params.theShelterId) {
+		query._id = req.params.theShelterId;
+	}
+	
+	Shelter.find(query, function(err, results) {
+		if (err) return res.json({ error: "internal server error" });
+		console.log(results);
+		res.status(201).json(results);
+	})//.populate({
+	// 	path: "members",
+	// 	match: {},
+	// 	select: " -password",
+	// 	options: {}
+	// });
+};
+
+
 exports.updateShelter = function(req, res, next) {
-	Shelter.findByIdAndUpdate({ _id: req.params.theShelterId }, req.body, function(
-		err,
-		record
-	) {
-		if (err) {
-			console.log(err);
-			res.status(400).send(err);
-		} else if (!record) {
-			res.status(400).send("did not find shelter");
-		} else {
-			res.json(req.body);
+	Shelter.findByIdAndUpdate(
+		{ _id: req.params.theShelterId },
+		req.body,
+		function(err, record) {
+			if (err) {
+				console.log(err);
+				res.status(400).send(err);
+			} else if (!record) {
+				res.status(400).send("did not find shelter");
+			} else {
+				res.json(req.body);
+			}
 		}
-	});
+	);
 };
 
 exports.deleteShelter = function(req, res, next) {
@@ -68,7 +91,7 @@ exports.validateNewShelter = function(req, res, next) {
 	Shelter.findOne({ nameOfItem }, (err, existingShelter) => {
 		if (err) {
 		}
-		var errors = {'null': null};
+		var errors = { null: null };
 		// If user is not unique, return error
 		if (existingShelter) {
 			errors["nameOfItem"] = "already exists";

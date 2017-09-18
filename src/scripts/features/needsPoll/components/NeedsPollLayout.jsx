@@ -36,40 +36,48 @@ export default class NeedsPollLayout extends Component {
             needRemovalPrompt: false,
             errorRemovingNeed: false,
             fetchNeeds: false,
+            fetchedNeeds: false,
             currentShelterCookie: null
         };
     }
     componentWillMount() {
-        if (!this.props.collectionOfNeeds) {
-            this.props.actions.fetchNeeds(this.props.currentShelterId);
-        }
 
-        if (this.props.user) {
-            this.props.actions.getEntireUser(this.props.user._id);
+        if(this.props.currentShelterId){
+            this.props.actions.fetchShelter(this.props.currentShelterId)
         }
+        
+        // if (!this.props.collectionOfNeeds && this.props.currentShelterId) {
+        //     this.props.actions.fetchNeeds(this.props.currentShelterId);
+        // }
 
-        if (this.state.currentShelterCookie && !this.props.user) {
-            var notLoggedIn = true;
-            this.props.actions.fetchNeeds(
-                this.state.currentShelterCookie,
-                notLoggedIn
-            );
-        }
+        // if (this.props.user) {
+        //     this.props.actions.getEntireUser(this.props.user._id);
+        // }
 
-        this.state.currentShelterCookie = cookies.get("currentShelter");
+        // if (this.state.currentShelterCookie && !this.props.user) {
+        //     var notLoggedIn = true;
+        //     this.props.actions.fetchNeeds(
+        //         this.state.currentShelterCookie,
+        //         notLoggedIn
+        //     );
+        // }
 
-        if (
-            this.state.currentShelterCookie &&
-            !this.props.visitorShelterId &&
-            !this.props.currentShelterId
-        ) {
-            this.state.fetchedNeeds = true;
-            var notLoggedIn = true;
-            this.props.actions.fetchNeeds(
-                this.state.currentShelterCookie,
-                notLoggedIn
-            );
-        }
+        // this.state.currentShelterCookie = cookies.get("currentShelter");
+
+        // if (
+        //     this.state.currentShelterCookie &&
+        //     !this.props.visitorShelterId &&
+        //     !this.props.currentShelterId
+        // ) {
+        //     this.state.fetchedNeeds = true;
+        //     var notLoggedIn = true;
+        //     this.props.actions.fetchNeeds(
+        //         this.state.currentShelterCookie,
+        //         notLoggedIn
+        //     );
+        // }
+
+        console.log(this.props.user ? "yes" : "");
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.editingNeed) {
@@ -94,22 +102,38 @@ export default class NeedsPollLayout extends Component {
             this.handleMessage(false, "errorRemovingNeed");
         }
 
-        if (nextProps.user && !this.props.currentShelterId) {
-            this.props.actions.getEntireUser(nextProps.user._id);
+        if (nextProps.user) {
+            console.log("wtf");
+            if (!nextProps.currentShelterId) {
+                this.props.actions.getEntireUser(nextProps.user._id);
+            }
+            if (!nextProps.shelter) {
+                this.props.actions.fetchShelter(nextProps.currentShelterId);
+            }
+            if (!this.state.fetchedNeeds && nextProps.shelter) {
+                this.props.actions.fetchNeeds(nextProps.currentShelterId);
+                this.state.fetchedNeeds = true;
+            }
+        } else {
+            console.log("someone is just a visitor");
         }
 
-        if (nextProps.currentShelterId != this.props.currentShelterId) {
-            this.props.actions.fetchNeeds(nextProps.currentShelterId);
-        }
+        // if (nextProps.user && !this.props.currentShelterId) {
+        //     this.props.actions.getEntireUser(nextProps.user._id);
+        // }
 
-        if (!nextProps.currentShelterId && !nextProps.visitorShelterId) {
-            this.state.fetchedNeeds = true;
-            var notLoggedIn = true;
-            this.props.actions.fetchNeeds(
-                this.state.currentShelterCookie,
-                notLoggedIn
-            );
-        }
+        // if (nextProps.currentShelterId != this.props.currentShelterId) {
+        //     this.props.actions.fetchNeeds(nextProps.currentShelterId);
+        // }
+
+        // if (!nextProps.currentShelterId && !nextProps.visitorShelterId) {
+        //     this.state.fetchedNeeds = true;
+        //     var notLoggedIn = true;
+        //     this.props.actions.fetchNeeds(
+        //         this.state.currentShelterCookie,
+        //         notLoggedIn
+        //     );
+        // }
     }
 
     handleMessage(success, type) {
@@ -233,14 +257,17 @@ export default class NeedsPollLayout extends Component {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
 
-        return this.props.currentShelterId || this.props.visitorShelterId
+        return this.props.shelter && this.props.arrayOfNeeds
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>
                           <Segment attached size="huge" textAlign="center">
-                              <Header.Content>
-                                  needs{" "}
-                              </Header.Content>
+                              <Header size="huge">
+                                {this.props.shelter.place.name}
+
+                              </Header>
+
+                              <Header.Subheader>{this.props.shelter.place.formatted_address}</Header.Subheader>
                           </Segment>
 
                           <Segment attached="bottom">

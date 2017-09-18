@@ -17,6 +17,8 @@ import { getEntireUser } from "../shelters/duck.js";
 export { getEntireUser };
 
 import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
+import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
+import { CollectionOfOneItem } from "../../models/shelters/oneShelter.js";
 
 const ADD_SUBMITTED_NEED = "add_submitted_need",
 	FETCH_NEEDS = "fetch_needs",
@@ -24,7 +26,8 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 	REMOVE_NEED = "remove_need",
 	UPDATE_NEED = "update_need",
 	EDIT_NEED = "edit_need",
-	FETCH_USER = "fetch_user";
+	FETCH_USER = "fetch_user",
+	FETCH_SHELTERS = "fetch_shelters";
 
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
@@ -81,7 +84,7 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 			// 			}
 			// 		});
 			// 	});
-
+			console.log(response)
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -99,6 +102,48 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 					status: "error"
 				}
 			});
+		}
+	};
+}
+
+export function fetchShelter(shelterId) {
+	return function(dispatch) {
+		
+		if (shelterId) {
+			console.log(shelterId)
+			dispatch({
+				type: FETCH_SHELTERS,
+				payload: { status: "active" }
+			});
+			var sheltersCollection = new CollectionOfOneItem()
+			sheltersCollection.fetch({
+				data: shelterId,
+				wait: true,
+				success: fetchedShelter,
+				error: didNotFetchShelter
+			});
+
+			function fetchedShelter(collection, response, options) {
+				var shelter = response[0]
+				
+				dispatch({
+					type: FETCH_SHELTERS,
+					payload: {
+						status: "success",
+						shelter: shelter
+					}
+				});
+			}
+
+			function didNotFetchShelter(collection, response, options) {
+				console.log(response);
+				dispatch({
+					type: FETCH_SHELTERS,
+					payload: {
+						status: "error"
+					}
+				});
+			}
 		}
 	};
 }
@@ -125,7 +170,6 @@ export function fetchNeeds(shelterId, notLoggedIn) {
 				console.log("done");
 				console.log(collection, needsCollection);
 				if (notLoggedIn) {
-
 					dispatch({
 						type: FETCH_NEEDS_VISITOR,
 						payload: {
@@ -317,6 +361,8 @@ export function editNeed(idOfNeed, close) {
 // reducers
 
 const init_needs_poll = {
+	statusOfFetchShelters: null,
+	shelter: null,
 	collectionOfNeeds: null,
 	arrayOfNeeds: null,
 	statusOfFetchNeeds: "inactive",
@@ -342,8 +388,17 @@ const init_needs_poll = {
 
 export default function needsPollReducer(state = init_needs_poll, action) {
 	switch (action.type) {
+		case FETCH_SHELTERS:
+			var extendObj = {};
+
+			if (action.payload.status === "success") {
+				extendObj.shelter = action.payload.shelter;
+				extendObj.statusOfFetchShelters;
+			}
+
+			return _.extend({}, state, extendObj);
+
 		case FETCH_NEEDS_VISITOR:
-		
 			return _.extend({}, state, {
 				visitorShelterId: action.payload.currentShelterId,
 				collectionOfNeeds: action.payload.collection,
@@ -462,7 +517,9 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 
 // selectors
 
-const collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
+const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
+	shelter = state => state.needsPoll.shelter,
+	collectionOfNeeds = state => state.needsPoll.collectionOfNeeds,
 	arrayOfNeeds = state => state.needsPoll.arrayOfNeeds,
 	statusOfFetchNeeds = state => state.needsPoll.statusOfFetchNeeds,
 	loadingNeeds = state => state.needsPoll.loadingNeeds,
@@ -516,5 +573,6 @@ export const selector = createStructuredSelector({
 	currentShelterId,
 	collectionOfShelters,
 	user,
-	visitorShelterId
+	visitorShelterId,
+	shelter
 });

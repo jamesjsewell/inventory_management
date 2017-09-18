@@ -33,6 +33,7 @@ exports.getNeeds = function(req, res, next) {
 
 	Need.find(queryObj, function(err, results) {
 		if (err) return res.json({ error: "internal server error" });
+		
 		res.json(results);
 	});
 };

@@ -55,7 +55,8 @@ export default class MapLayout extends Component {
                 lng: -95.369802
             },
             markers: [],
-            itemExists: null
+            itemExists: null,
+            entered: false
         };
     }
 
@@ -64,9 +65,19 @@ export default class MapLayout extends Component {
             this.state.itemExists = true;
         }
 
-        if (nextProps.didEnterShelter) {
-            this.props.history.push("/needs");
-        }
+        // if (nextProps.newShelterPlace && !this.state.entered) {
+            
+        //     this.props.actions.userEnteredShelter(
+        //         this.props.shelter? this.props.shelter._id : undefined,
+        //         this.props.user ? this.props.user._id : undefined
+        //     );
+
+        //     this.state.entered = true
+        // }
+
+        // if(nextProps.didEnterShelter){
+        //     this.props.history.push("/needs");
+        // }
     }
 
     handleMapMounted(map) {
@@ -183,7 +194,9 @@ export default class MapLayout extends Component {
                 renderedPlaces={this.renderPlaces()}
                 itemExists={this.props.itemExists}
                 user={this.props.user}
-                userChoseLocation={this.props.actions.userChoseLocation.bind(this)}
+                userChoseLocation={this.props.actions.userChoseLocation.bind(
+                    this
+                )}
             />
         );
     }
@@ -304,7 +317,10 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                       positive
                                       size="mini"
                                       onClick={() => {
-                                          props.userChoseLocation(props.places[0], props.user._id)
+                                          props.userChoseLocation(
+                                              props.places[0],
+                                              props.user._id
+                                          );
                                       }}
                                   >
                                       create
