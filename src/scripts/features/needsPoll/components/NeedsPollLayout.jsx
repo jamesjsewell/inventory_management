@@ -37,15 +37,26 @@ export default class NeedsPollLayout extends Component {
             errorRemovingNeed: false,
             fetchNeeds: false,
             fetchedNeeds: false,
+            fetchedShelter: false,
+            fetchedUser: false,
             currentShelterCookie: null
         };
+
+        this.state.currentShelterCookie = cookies.get("currentShelter");
     }
     componentWillMount() {
-
-        if(this.props.currentShelterId){
-            this.props.actions.fetchShelter(this.props.currentShelterId)
+        if (this.props.currentShelterId && this.props.user) {
+            this.props.actions.fetchShelter(this.props.currentShelterId);
+            return;
         }
-        
+        // if(!this.props.user && this.state.currentShelterCookie){
+        //     this.props.actions.fetchShelter(this.state.currentShelterCookie)
+        // }
+        // } else if (this.state.currentShelterCookie) {
+
+        //     this.props.actions.fetchShelter(this.state.currentShelterCookie);
+        // }
+
         // if (!this.props.collectionOfNeeds && this.props.currentShelterId) {
         //     this.props.actions.fetchNeeds(this.props.currentShelterId);
         // }
@@ -76,9 +87,14 @@ export default class NeedsPollLayout extends Component {
         //         notLoggedIn
         //     );
         // }
-
-        console.log(this.props.user ? "yes" : "");
     }
+
+    componentDidMount() {
+        if (!this.props.user && this.state.currentShelterCookie) {
+            this.props.actions.fetchShelter(this.state.currentShelterCookie);
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.editingNeed) {
             this.state.editingNeed = true;
@@ -102,20 +118,50 @@ export default class NeedsPollLayout extends Component {
             this.handleMessage(false, "errorRemovingNeed");
         }
 
+        if (!this.props.user && nextProps.user) {
+            this.state.fetchedNeeds = false;
+            this.props.actions.getEntireUser(nextProps.user._id);
+        }
+
         if (nextProps.user) {
-            console.log("wtf");
-            if (!nextProps.currentShelterId) {
-                this.props.actions.getEntireUser(nextProps.user._id);
+            if (!this.state.fetchedUser) {
+                if (nextProps.user._id) {
+                    this.props.actions.getEntireUser(nextProps.user._id);
+                    this.state.fetchedUser = true;
+                }
             }
-            if (!nextProps.shelter) {
-                this.props.actions.fetchShelter(nextProps.currentShelterId);
+
+            if (!this.props.fullUser && nextProps.fullUser) {
+                this.props.actions.fetchShelter(
+                    nextProps.fullUser.currentShelter
+                );
+                this.state.fetchedShelter = true;
             }
-            if (!this.state.fetchedNeeds && nextProps.shelter) {
-                this.props.actions.fetchNeeds(nextProps.currentShelterId);
-                this.state.fetchedNeeds = true;
+
+            if (nextProps.fullUser) {
+                if (
+                    nextProps.fullUser.currentShelter &&
+                    nextProps.currentShelterId &&
+                    !this.state.fetchedNeeds
+                ) {
+                    this.props.actions.fetchNeeds(nextProps.currentShelterId);
+                    this.state.fetchedNeeds = true;
+                }
             }
         } else {
-            console.log("someone is just a visitor");
+            if (!nextProps.shelter && this.state.currentShelterCookie) {
+                this.props.actions.fetchShelter(
+                    this.state.currentShelterCookie
+                );
+            }
+            if (!this.state.fetchedNeeds && nextProps.shelter) {
+                var notLoggedIn = true;
+                this.props.actions.fetchNeeds(
+                    this.state.currentShelterCookie,
+                    notLoggedIn
+                );
+                this.state.fetchedNeeds = true;
+            }
         }
 
         // if (nextProps.user && !this.props.currentShelterId) {
@@ -257,17 +303,19 @@ export default class NeedsPollLayout extends Component {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
 
-        return this.props.shelter && this.props.arrayOfNeeds
+        return this.props.shelter
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>
                           <Segment attached size="huge" textAlign="center">
                               <Header size="huge">
-                                {this.props.shelter.place.name}
+                                  {this.props.shelter.place.name}
 
                               </Header>
 
-                              <Header.Subheader>{this.props.shelter.place.formatted_address}</Header.Subheader>
+                              <Header.Subheader>
+                                  {this.props.shelter.place.formatted_address}
+                              </Header.Subheader>
                           </Segment>
 
                           <Segment attached="bottom">

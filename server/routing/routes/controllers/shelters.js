@@ -45,7 +45,6 @@ exports.getShelter = function(req, res, next) {
 	
 	Shelter.find(query, function(err, results) {
 		if (err) return res.json({ error: "internal server error" });
-		console.log(results);
 		res.status(201).json(results);
 	})//.populate({
 	// 	path: "members",

@@ -110,7 +110,7 @@ export function fetchShelter(shelterId) {
 	return function(dispatch) {
 		
 		if (shelterId) {
-			console.log(shelterId)
+			
 			dispatch({
 				type: FETCH_SHELTERS,
 				payload: { status: "active" }
@@ -171,9 +171,8 @@ export function fetchNeeds(shelterId, notLoggedIn) {
 				console.log(collection, needsCollection);
 				if (notLoggedIn) {
 					dispatch({
-						type: FETCH_NEEDS_VISITOR,
+						type: FETCH_NEEDS,
 						payload: {
-							currentShelterId: shelterId,
 							collection: needsCollection,
 							arrayOfNeeds: needsCollection.models,
 							status: status
@@ -383,7 +382,8 @@ const init_needs_poll = {
 	idOfEditedNeed: null,
 	idOfUpdatedNeed: null,
 	visitorShelterId: null,
-	userInfo: null
+	userInfo: null,
+	fullUser: null
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
@@ -545,7 +545,8 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	currentShelterId = state => state.shelters.currentShelterId,
 	visitorShelterId = state => state.needsPoll.visitorShelterId,
 	collectionOfShelters = state => state.shelters.collectionOfItems,
-	user = state => state.auth.userSession.user;
+	user = state => state.auth.userSession.user,
+	fullUser = state => state.shelters.fullUser
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -574,5 +575,6 @@ export const selector = createStructuredSelector({
 	collectionOfShelters,
 	user,
 	visitorShelterId,
-	shelter
+	shelter,
+	fullUser
 });

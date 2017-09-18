@@ -319,7 +319,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                       onClick={() => {
                                           props.userChoseLocation(
                                               props.places[0],
-                                              props.user._id
+                                              props.user? props.user._id : null
                                           );
                                       }}
                                   >
