@@ -45,16 +45,27 @@ export default class SheltersLayout extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
-        if (nextProps.statusOfCreateShelter.inProgress === true) {
+        if (
+            nextProps.statusOfCreateShelter.inProgress === true &&
+            !this.state.userIsCreatingItem
+        ) {
             this.handleUserAction("creating", nextProps.newShelterPlace);
         }
 
-        if (nextProps.statusOfCreateItem.success && nextProps.newShelterId) {
+        if (!this.props.newShelterId && nextProps.newShelterId) {
             this.handleUserAction("doneCreating", nextProps.newShelterId);
         }
 
-        if (nextProps.didEnterShelter) {
-            this.handleUserAction("savedShelterOnUser");
+        if (nextProps.user && this.props.user) {
+            console.log(
+                nextProps.user.currentShelter,
+                this.props.user.currentShelter
+            );
+            if (
+                nextProps.user.currentShelter != this.props.user.currentShelter
+            ) {
+                this.handleUserAction("savedShelterOnUser");
+            }
         }
 
         if (nextProps.statusOfEditItem.inProgress === true) {
@@ -100,18 +111,18 @@ export default class SheltersLayout extends Component {
             this.state.userIsCreatingItem = true;
         }
         if (type === "doneCreating") {
-
+            this.state.userIsCreatingItem = false;
             var shelterId = data;
-            console.log(data);
-            this.props.actions.userEnteredShelter(
-                shelterId,
-                this.props.user._id
-            );
+
+            this.props.actions.openShelter(shelterId, this.props.user._id);
+
+            this.props.actions.resetStatus("addingItem");
         }
 
         if (type == "savedShelterOnUser") {
-            this.props.history.push("/needs");
+           
             this.props.actions.resetStatus("creating");
+            this.props.history.push(this.props.homeLink);
         }
     }
 

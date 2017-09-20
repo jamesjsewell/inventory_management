@@ -545,8 +545,8 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	currentShelterId = state => state.shelters.currentShelterId,
 	visitorShelterId = state => state.needsPoll.visitorShelterId,
 	collectionOfShelters = state => state.shelters.collectionOfItems,
-	user = state => state.auth.userSession.user,
-	fullUser = state => state.shelters.fullUser
+	user = state => state.auth.userSession.user
+	
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -574,7 +574,5 @@ export const selector = createStructuredSelector({
 	currentShelterId,
 	collectionOfShelters,
 	user,
-	visitorShelterId,
-	shelter,
-	fullUser
+	shelter
 });

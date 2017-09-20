@@ -17,7 +17,11 @@ export default class MapView extends Component {
 		this.state = { hasKey: false };
 	}
 	componentWillMount() {
-		this.props.actions.getAPIkey("GOOGLE_MAPS_KEY");
+		if (!this.props.googleMapsApiKey) {
+			this.props.actions.getAPIkey("GOOGLE_MAPS_KEY");
+		} else {
+			this.state.hasKey = true;
+		}
 	}
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.googleMapsApiKey) {

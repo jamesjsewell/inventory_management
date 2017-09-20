@@ -25,9 +25,21 @@ export default class NavbarLayout extends Component {
 								<Menu.Item
 									header
 									id={routes.homePath} //the url
-									name="home"
+									name="shelter"
 									active={currentUrl.includes(
 										routes.homePath
+									)}
+									onClick={action_onClickLink.bind(this)}
+								/>
+							</Menu.Menu>
+
+							<Menu.Menu>
+								<Menu.Item
+									header
+									id={routes.sheltersMapPath} //the url
+									name="interactive map"
+									active={currentUrl.includes(
+										routes.sheltersMapPath
 									)}
 									onClick={action_onClickLink.bind(this)}
 								/>

@@ -33,7 +33,8 @@ export function hideSidebar() {
 const init_nav = {
 	activeNavTab: "",
 	routes: {
-		homePath: "home",
+		homePath: "shelter",
+		sheltersMapPath: "interactive_map",
 		loginPath: "login",
 		logoutPath: "logout",
 		profilePath: "profile"

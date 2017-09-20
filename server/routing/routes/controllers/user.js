@@ -9,7 +9,7 @@ exports.viewProfile = function(req, res, next) {
             error: "You are not authorized to view this user profile."
         });
     }
-    User.findById(userId, (err, user) => {
+    User.findById(userId, "-password", (err, user) => {
         if (err) {
             res
                 .status(400)
@@ -17,9 +17,7 @@ exports.viewProfile = function(req, res, next) {
             return next(err);
         }
 
-        const userToReturn = setUserInfo(user);
-
-        return res.status(200).json({ user: userToReturn });
+        return res.status(200).json({ user: user });
     });
 };
 
@@ -61,24 +59,30 @@ exports.getUsers = function(req, res, next) {
         }
 
         return res.status(200).json(user);
-    });
+    })
 };
 
 exports.updateUser = function(req, res, next) {
     const userId = req.params.userId;
-
+   
     if (req.user._id.toString() !== userId) {
         return res.status(401).json({
             error: "You are not authorized to view this user."
         });
     }
-    User.findByIdAndUpdate(userId, req.body, function(err, record) {
+    User.findByIdAndUpdate(userId, req.body, function(
+        err,
+        record
+    ) {
         if (err) {
             res.status(400).json({ error: "server error, cannot update user" });
         } else if (!record) {
             res.status(400).json({ error: "no user found with that id" });
         } else {
-            return res.status(200).json({});
+           
+            var sanitizedUser = _.omit(record.toObject(), 'password')
+            var updatedUser = _.extend(sanitizedUser, req.body)
+            return res.status(200).json(updatedUser);
         }
     });
 };

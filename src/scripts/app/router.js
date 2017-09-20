@@ -113,9 +113,9 @@ class RouterConfig extends Component {
                                 this.props.user ? EditProfileView : Blank
                             }
                         />
-                        <Route path="/map" component={SearchBarView} />
-                        <Route path="/shelters" component={SheltersView} />
-                        <Route path="/needs" component={NeedsPollView} />
+                       
+                        <Route path="/interactive_map" component={SheltersView} />
+                        <Route path="/shelter" component={NeedsPollView} />
                         <Route path="/login" component={UserSessionView} />
                         <Route path="/register" component={Blank} />
                         <Route exact path="/" component={HomeView} />

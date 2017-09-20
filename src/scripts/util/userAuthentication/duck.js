@@ -65,8 +65,6 @@ export function registerUser({ email, firstName, lastName, password }) {
 				password
 			})
 			.then(response => {
-				console.log(response);
-				console.log(response.data);
 				cookies.set("token", response.data.token, { path: "/" });
 				cookies.set("user", response.data.user, { path: "/" });
 				dispatch({ type: AUTH_USER, payload: response.data.user });
@@ -156,17 +154,15 @@ export function resetPassword(token, { password }) {
 export function authenticate(user) {
 	return function(dispatch) {
 		axios
-			.get(`${API_URL}/auth/authenticate`, {
+			.get(`${API_URL}/user/${user._id}`, {
 				headers: { Authorization: cookies.get("token") }
 			})
 			.then(response => {
 				if (response.data) {
-					if (response.data.authenticated) {
-						dispatch({
-							type: AUTH_USER,
-							payload: user
-						});
-					}
+					dispatch({
+						type: AUTH_USER,
+						payload: response.data
+					});
 				}
 			})
 			.catch(error => {});
@@ -186,7 +182,6 @@ const init_auth = {
 function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
 		case AUTH_USER: {
-		
 			return _.extend({}, state, {
 				authenticated: true,
 				user: action.payload,
@@ -269,8 +264,7 @@ export default combineReducers({
 
 const routes = state => state.nav.navLink.routes,
 	user = state => state.auth.userSession.user,
-	authenticated = state => state.auth.userSession.authenticated,
-	auths = state => state.auth;
+	authenticated = state => state.auth.userSession.authenticated;
 
 export const selector = createStructuredSelector({
 	routes,

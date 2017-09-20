@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Cookies from "universal-cookie";
-const cookies = new Cookies();
 
 import {
     Button,
@@ -39,22 +38,25 @@ export default class NeedsPollLayout extends Component {
             fetchedNeeds: false,
             fetchedShelter: false,
             fetchedUser: false,
-            currentShelterCookie: null
+            currentShelterCookie: null,
+            description: false
         };
-
-        this.state.currentShelterCookie = cookies.get("currentShelter");
     }
+
     componentWillMount() {
-        if (this.props.currentShelterId && this.props.user) {
-            this.props.actions.fetchShelter(this.props.currentShelterId);
-            return;
+        if (this.props.user) {
+            if (this.props.user.currentShelter) {
+                this.props.actions.fetchShelter(this.props.user.currentShelter);
+            }
         }
     }
 
     componentDidMount() {
-        if (!this.props.user && this.state.currentShelterCookie) {
-            this.props.actions.fetchShelter(this.state.currentShelterCookie);
-        }
+
+
+        // if (!this.props.user && this.state.currentShelterCookie) {
+        //     this.props.actions.fetchShelter(this.state.currentShelterCookie);
+        // }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -80,51 +82,76 @@ export default class NeedsPollLayout extends Component {
             this.handleMessage(false, "errorRemovingNeed");
         }
 
-        if (!this.props.user && nextProps.user) {
-            this.state.fetchedNeeds = false;
-            this.props.actions.getEntireUser(nextProps.user._id);
+        if (this.state.fetchedShelter && nextProps.shelterr) {
+            this.state.fetchedNeeds = true;
+            this.sttae.fetchedShelter = false;
+            this.props.actions.fetchNeeds(nexProps.shelter._id);
         }
 
-        if (nextProps.user) {
-            if (!this.state.fetchedUser) {
-                if (nextProps.user._id) {
-                    this.props.actions.getEntireUser(nextProps.user._id);
-                    this.state.fetchedUser = true;
-                }
-            }
-
-            if (!this.props.fullUser && nextProps.fullUser) {
-                this.props.actions.fetchShelter(
-                    nextProps.fullUser.currentShelter
-                );
+        if (nextProps.user && !this.state.fetchedShelter) {
+            console.log(nextProps.user)
+            if (nextProps.user.currentShelter) {
                 this.state.fetchedShelter = true;
-            }
-
-            if (nextProps.fullUser) {
-                if (
-                    nextProps.fullUser.currentShelter &&
-                    nextProps.currentShelterId &&
-                    !this.state.fetchedNeeds
-                ) {
-                    this.props.actions.fetchNeeds(nextProps.currentShelterId);
-                    this.state.fetchedNeeds = true;
-                }
-            }
-        } else {
-            if (!nextProps.shelter && this.state.currentShelterCookie) {
-                this.props.actions.fetchShelter(
-                    this.state.currentShelterCookie
-                );
-            }
-            if (!this.state.fetchedNeeds && nextProps.shelter) {
-                var notLoggedIn = true;
-                this.props.actions.fetchNeeds(
-                    this.state.currentShelterCookie,
-                    notLoggedIn
-                );
-                this.state.fetchedNeeds = true;
+                this.state.fetchedNeeds = false;
+                this.props.actions.fetchShelter(nextProps.user.currentShelter);
             }
         }
+
+        // if (!this.props.user && nextProps.user) {
+        //     this.state.fetchedNeeds = false;
+        //     this.props.actions.getEntireUser(nextProps.user._id);
+        // }
+
+        // if (nextProps.user) {
+        //     if (!this.state.fetchedUser) {
+        //         if (nextProps.user._id) {
+        //             this.props.actions.getEntireUser(nextProps.user._id);
+        //             this.state.fetchedUser = true;
+        //         }
+        //     }
+
+        //     if (!this.props.fullUser && nextProps.fullUser) {
+        //         this.props.actions.fetchShelter(
+        //             nextProps.fullUser.currentShelter
+        //         );
+        //         this.state.fetchedShelter = true;
+        //     }
+
+        //     if (nextProps.fullUser) {
+        //         if (
+        //             nextProps.fullUser.currentShelter &&
+        //             nextProps.currentShelterId &&
+        //             !this.state.fetchedNeeds
+        //         ) {
+        //             this.props.actions.fetchNeeds(nextProps.currentShelterId);
+        //             this.state.fetchedNeeds = true;
+        //         }
+        //     }
+        // } else {
+        //     if (!nextProps.shelter && this.state.currentShelterCookie) {
+        //         this.props.actions.fetchShelter(
+        //             this.state.currentShelterCookie
+        //         );
+        //     }
+        //     if (!this.state.fetchedNeeds && nextProps.shelter) {
+        //         var notLoggedIn = true;
+        //         this.props.actions.fetchNeeds(
+        //             this.state.currentShelterCookie,
+        //             notLoggedIn
+        //         );
+        //         this.state.fetchedNeeds = true;
+        //     }
+        // }
+        // console.log(this.props.user);
+        // console.log(this.props.fullUser, nextProps.fullUser);
+        // if (this.props.fullUser && nexProps.fullUser) {
+        //     console.log(this.props.fullUser, nexProps.fullUser);
+        //     if (this.props.fullUser._id != nextProps.fullUser._id) {
+        //         this.state.fetchedNeeds = false;
+        //         this.state.fetchedShelter = false;
+        //         this.state.fetchedUser = false;
+        //     }
+        // }
     }
 
     handleMessage(success, type) {
@@ -185,7 +212,7 @@ export default class NeedsPollLayout extends Component {
             for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
                 arrayOfNeedElements.push(
                     <Need
-                        isPreview={this.props.fullUser? false : true}
+                        isPreview={false}
                         updateNeed={this.props.actions.updateNeed.bind(this)}
                         removeNeed={this.props.actions.removeNeed.bind(this)}
                         nameOfNeed={
@@ -252,7 +279,7 @@ export default class NeedsPollLayout extends Component {
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>
-                          <Segment attached size="huge" textAlign="center">
+                          <Segment compact size="huge" textAlign="center">
                               <Header size="huge">
                                   {this.props.shelter.nameOfItem}
 
@@ -263,37 +290,78 @@ export default class NeedsPollLayout extends Component {
                                   <Divider />
                                   {this.props.shelter.place.formatted_address}
                               </Header.Subheader>
+                              <Segment compact attached="top">
+                                  <Button
+                                      type="button"
+                                      onClick={e => {
+                                          e.preventDefault();
+                                          if (
+                                              this.state.description === false
+                                          ) {
+                                              this.setState({
+                                                  description: true
+                                              });
+                                          } else {
+                                              this.setState({
+                                                  description: false
+                                              });
+                                          }
+                                      }}
+                                      basic
+                                      size="tiny"
+                                      icon={
+                                          this.state.description
+                                              ? "minus"
+                                              : "add"
+                                      }
+                                  /> description
+                              </Segment>
+
+                              <Segment attached="bottom" size="small">
+
+                                  {this.state.description
+                                      ? <Container fluid text textAlign="left">
+                                            {this.props.shelter.description}
+                                        </Container>
+                                      : null}
+                              </Segment>
                           </Segment>
 
                           <Segment attached="bottom">
-                              <Segment compact loading={asyncNeeds}>
-                                  <NeedForm
-                                      currentShelterId={
-                                          this.props.currentShelterId
-                                      }
-                                      resetStatus={this.props.actions.resetStatus.bind(
-                                          this
-                                      )}
-                                      errorAddingNeed={
-                                          this.props.errorAddingNeed
-                                      }
-                                      addedNeed={this.props.addedNeed}
-                                      doThisOnSubmit={userInput => {
-                                          if (userInput) {
-                                              this.props.actions.submitNewNeed(
-                                                  userInput,
-                                                  "some_ID",
-                                                  this.props.collectionOfNeeds,
-                                                  this.props.currentShelterId
-                                              );
-                                          }
-                                      }}
-                                  />
-                                  {this.state.successAddingNeed
-                                      ? <Message positive>added need!</Message>
-                                      : null}
+                              {true
+                                  ? <Segment compact loading={asyncNeeds}>
+                                        <NeedForm
+                                            currentShelterId={
+                                                this.props.currentShelterId
+                                            }
+                                            resetStatus={this.props.actions.resetStatus.bind(
+                                                this
+                                            )}
+                                            errorAddingNeed={
+                                                this.props.errorAddingNeed
+                                            }
+                                            addedNeed={this.props.addedNeed}
+                                            doThisOnSubmit={userInput => {
+                                                if (userInput) {
+                                                    this.props.actions.submitNewNeed(
+                                                        userInput,
+                                                        "some_ID",
+                                                        this.props
+                                                            .collectionOfNeeds,
+                                                        this.props
+                                                            .currentShelterId
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                        {this.state.successAddingNeed
+                                            ? <Message positive>
+                                                  added need!
+                                              </Message>
+                                            : null}
 
-                              </Segment>
+                                    </Segment>
+                                  : null}
                               <Segment secondary as={Grid} columns={3} streched>
                                   <Grid.Column textAlign="left">
                                       not enough

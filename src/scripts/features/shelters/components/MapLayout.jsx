@@ -64,20 +64,6 @@ export default class MapLayout extends Component {
         if (nextProps.itemExists) {
             this.state.itemExists = true;
         }
-
-        // if (nextProps.newShelterPlace && !this.state.entered) {
-            
-        //     this.props.actions.userEnteredShelter(
-        //         this.props.shelter? this.props.shelter._id : undefined,
-        //         this.props.user ? this.props.user._id : undefined
-        //     );
-
-        //     this.state.entered = true
-        // }
-
-        // if(nextProps.didEnterShelter){
-        //     this.props.history.push("/needs");
-        // }
     }
 
     handleMapMounted(map) {
@@ -145,7 +131,7 @@ export default class MapLayout extends Component {
                           place={shelter.place}
                           shelter={shelter}
                           position={shelter.place.geometry.location}
-                          userEntered={this.props.actions.userEnteredShelter.bind(
+                          openShelter={this.props.actions.openShelter.bind(
                               this
                           )}
                           user={this.props.user}
@@ -194,7 +180,7 @@ export default class MapLayout extends Component {
                 renderedPlaces={this.renderPlaces()}
                 itemExists={this.props.itemExists}
                 user={this.props.user}
-                userChoseLocation={this.props.actions.userChoseLocation.bind(
+                addThisNewShelter={this.props.actions.addThisNewShelter.bind(
                     this
                 )}
             />
@@ -237,6 +223,8 @@ class Amarker extends Component {
 
                               <Segment basic size="mini" compact>
                                   <Header.Subheader>
+                                      {place.name}
+                                      <Divider />
                                       {place.formatted_address}
 
                                   </Header.Subheader>
@@ -246,7 +234,7 @@ class Amarker extends Component {
                                       size="mini"
                                       onClick={e => {
                                           e.preventDefault();
-                                          this.props.userEntered(
+                                          this.props.openShelter(
                                               shelter._id,
                                               this.props.user
                                                   ? this.props.user._id
@@ -317,9 +305,9 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                       positive
                                       size="mini"
                                       onClick={() => {
-                                          props.userChoseLocation(
+                                          props.addThisNewShelter(
                                               props.places[0],
-                                              props.user? props.user._id : null
+                                              props.user ? props.user._id : null
                                           );
                                       }}
                                   >
@@ -340,7 +328,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
 // //<Segment basic>
 // <Button
 // onClick={() => {
-// props.actions.userChoseLocation(
+// props.actions.addThisNewShelter(
 // props.places[0],
 // props.user._id
 // );

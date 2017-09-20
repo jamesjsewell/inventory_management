@@ -15,6 +15,9 @@ import {
 	getToken
 } from "../../util/index.js";
 
+import { types } from "../../util/userAuthentication/duck.js"
+const AUTH_USER = types.AUTH_USER
+
 import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
 import { CollectionOfUsers, UserModel } from "../../models/user/UserModel.js";
 
@@ -24,33 +27,11 @@ const NEW_ITEM = "new_item",
 	REMOVE_ITEM_PROMPT = "remove_item_prompt",
 	UPDATE_ITEM = "update_item",
 	EDIT_ITEM = "edit_item",
-	USER_CHOSE_LOCATION = "user_chose_location",
+	NEW_SHELTER_PLACE = "new_user_place",
 	ITEM_EXISTS = "item_exists",
-	USER_ENTERED_SHELTER = "user_entered_shelter",
-	FETCH_USER = "fetch_user";
+	USER_ENTERED_SHELTER = "user_entered_shelter";
 
 export { getAPIkey };
-
-export function getEntireUser(uid) {
-	return function(dispatch) {
-		if (uid) {
-			axios
-				.get(`${API_URL}/user/${uid}`, {
-					headers: { Authorization: getToken() }
-				})
-				.then(response => {
-					console.log(response);
-					dispatch({
-						type: FETCH_USER,
-						payload: response.data
-					});
-				})
-				.catch(error => {
-					console.log(error);
-				});
-		}
-	};
-}
 
 export function createItem(values, postedById, itemCollection, place) {
 	return function(dispatch) {
@@ -149,7 +130,6 @@ export function fetchItems() {
 		}
 
 		function errorFetchingItems() {
-			
 			dispatch({
 				type: FETCH_ITEMS,
 				payload: {
@@ -369,7 +349,7 @@ export function resetStatus(statusOf, data) {
 
 		if (statusOf === "creating") {
 			dispatch({
-				type: USER_CHOSE_LOCATION,
+				type: NEW_SHELTER_PLACE,
 				payload: {
 					status: {
 						inProgress: false,
@@ -413,11 +393,11 @@ export function editItem(idOfItem, close) {
 	};
 }
 
-export function userChoseLocation(place, userId) {
+export function addThisNewShelter(place, userId) {
 	return function(dispatch) {
 		if (place && userId) {
 			dispatch({
-				type: USER_CHOSE_LOCATION,
+				type: NEW_SHELTER_PLACE,
 				payload: {
 					status: {
 						inProgress: true,
@@ -432,23 +412,105 @@ export function userChoseLocation(place, userId) {
 				}
 			});
 		}
-		if (!userId && place) {
-			dispatch({
-				type: USER_CHOSE_LOCATION,
-				payload: {
-					status: {
-						inProgress: true,
-						success: null,
-						error: null,
-						idOfItem: null
-					},
-					contents: {
-						place: place,
-						userId: null
-					}
-				}
+		// if (!userId && place) {
+		// 	dispatch({
+		// 		type: NEW_SHELTER_PLACE,
+		// 		payload: {
+		// 			status: {
+		// 				inProgress: true,
+		// 				success: null,
+		// 				error: null,
+		// 				idOfItem: null
+		// 			},
+		// 			contents: {
+		// 				place: place,
+		// 				userId: null
+		// 			}
+		// 		}
+		// 	});
+		// }
+	};
+}
+
+export function openShelter(shelterId, userId) {
+	//takes user model
+	//set shelter id on user model
+	//perform save on user model
+	//on success then dispatch
+
+	return function(dispatch) {
+		// var users = new CollectionOfUsers();
+
+		// if (userId && shelterId) {
+		// 	users.fetch({
+		// 		data: userId,
+		// 		wait: true,
+		// 		headers: { Authorization: getToken() },
+		// 		success: successFetching,
+		// 		error: errorFetching
+		// 	});
+		// }
+
+		// if (!userId && shelterId) {
+		// 	cookies.set("currentShelter", shelterId, { path: "/" });
+
+		// 	dispatch({
+		// 		type: USER_ENTERED_SHELTER,
+		// 		payload: shelterId
+		// 	});
+		// }
+
+		// function successFetching(collection, response, options) {
+		// 	var user = collection.models[0];
+
+		// 	user.set({ currentShelter: shelterId });
+
+		// 	user.save(
+		// 		{},
+		// 		{
+		// 			wait: true,
+		// 			headers: { Authorization: getToken() },
+		// 			success: successSaving,
+		// 			error: errorSaving
+		// 		}
+		// 	);
+		// }
+
+		// function errorFetching() {
+		// 	console.log("error");
+		// }
+
+		// function successSaving(model, response, options) {
+		// 	dispatch({
+		// 		type: USER_ENTERED_SHELTER,
+		// 		payload: model.get("currentShelter")
+		// 	});
+		// }
+
+		// function errorSaving() {
+		// 	console.log("error");
+		// }
+
+		axios
+			.put(
+				`${API_URL}/user/${userId}`,
+				{ currentShelter: shelterId },
+				{ headers: { Authorization: cookies.get("token") } }
+			)
+			.then(response => {
+				console.log(response)
+				dispatch({ type: AUTH_USER, payload: response.data });
+				
+			})
+			.catch(error => {
+				
+				// dispatch({
+				// 	type: LOGIN_ERROR,
+				// 	payload: "invalid email or password"
+				// });
 			});
-		}
+
+		//cookies.get("currentShelter");
 	};
 }
 
@@ -476,70 +538,6 @@ export function checkForExistingItem(collection, id) {
 					payload: false
 				});
 			}
-		}
-	};
-}
-
-export function userEnteredShelter(shelterId, userId) {
-	//takes user model
-	//set shelter id on user model
-	//perform save on user model
-	//on success then dispatch
-	//oh, and create an email confirmation system
-	//i wonder how this will work for people who are not signed in?
-	//maybe set a cookie for those people containing the current shelter id, YEAH!
-
-	return function(dispatch) {
-		var users = new CollectionOfUsers();
-
-		if (userId && shelterId) {
-			users.fetch({
-				data: userId,
-				wait: true,
-				headers: { Authorization: getToken() },
-				success: successFetching,
-				error: errorFetching
-			});
-		}
-
-		if (!userId && shelterId) {
-			cookies.set("currentShelter", shelterId, { path: "/" });
-
-			dispatch({
-				type: USER_ENTERED_SHELTER,
-				payload: shelterId
-			});
-		}
-
-		function successFetching(collection, response, options) {
-			var user = collection.models[0];
-
-			user.set({ currentShelter: shelterId });
-
-			user.save(
-				{},
-				{
-					wait: true,
-					headers: { Authorization: getToken() },
-					success: successSaving,
-					error: errorSaving
-				}
-			);
-		}
-
-		function errorFetching() {
-			console.log("error");
-		}
-
-		function successSaving(model, response, options) {
-			dispatch({
-				type: USER_ENTERED_SHELTER,
-				payload: model.get("currentShelter")
-			});
-		}
-
-		function errorSaving() {
-			console.log("error");
 		}
 	};
 }
@@ -590,7 +588,6 @@ const init_needs_poll = {
 		error: false,
 		idOfItem: ""
 	},
-	newShelterPlace: null,
 	currentShelterId: null,
 	didEnterShelter: false,
 	fullUser: null
@@ -608,13 +605,6 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 	}
 
 	switch (action.type) {
-		case FETCH_USER: {
-			if (action.payload.currentShelter) {
-				extendObj.fullUser = action.payload
-				extendObj.currentShelterId = action.payload.currentShelter;
-			}
-			return _.extend({}, state, extendObj);
-		}
 		case NEW_ITEM:
 			extendObj.statusOfCreateItem = action.payload.status;
 			extendObj.newShelterId = action.payload.newShelterId;
@@ -646,7 +636,7 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 
 			return _.extend({}, state, extendObj);
 
-		case USER_CHOSE_LOCATION:
+		case NEW_SHELTER_PLACE:
 			if (action.payload.contents && action.payload.contents.place) {
 				extendObj.newShelterPlace = action.payload.contents.place;
 			}
@@ -681,11 +671,11 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	googleMapsApiKey = state => state.util.apiKeys.googleMapsApiKey,
 	statusOfCreateShelter = state => state.shelters.statusOfCreateShelter,
 	newShelterPlace = state => state.shelters.newShelterPlace,
+	newShelterId = state => state.shelters.newShelterId,
 	itemExists = state => state.shelters.itemExists,
 	currentShelterId = state => state.shelters.currentShelterId,
 	didEnterShelter = state => state.shelters.didEnterShelter,
-	newShelterId = state => state.shelters.newShelterId,
-	fullUser = state => state.shelters.fullUser
+	homeLink = state => state.nav.navLink.routes.homePath;
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -697,12 +687,12 @@ export const selector = createStructuredSelector({
 	statusOfRemoveItem,
 	statusOfRemoveItemPrompt,
 	statusOfEditItem,
-	statusOfCreateShelter,
-	newShelterPlace,
 	itemExists,
 	user,
+	statusOfCreateShelter,
 	currentShelterId,
+	newShelterPlace,
 	didEnterShelter,
 	newShelterId,
-	fullUser
+	homeLink
 });

@@ -22,7 +22,8 @@ const UserSchema = new Schema(
         username: { type: String, default: "" },
         password: {
             type: String,
-            required: true
+            required: true,
+            select: true 
         },
         profile: {
             firstName: { type: String },

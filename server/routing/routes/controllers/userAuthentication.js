@@ -5,6 +5,7 @@ const User = require("../../../db/userSchema.js")
 const setUserInfo = require("../../../config/helpers").setUserInfo
 const getRole = require("../../../config/helpers").getRole
 const nodemailer = require("nodemailer")
+const _ = require("underscore");
 
 // Generate JWT
 // TO-DO Add issuer and audience
@@ -17,10 +18,11 @@ function generateToken(user) {
 // Login Route
 exports.login = function(req, res, next) {
     const userInfo = setUserInfo(req.user)
+    var sanitizedUser = _.omit(req.user.toObject(), 'password')
 
     res.status(200).json({
         token: `JWT ${generateToken(userInfo)}`,
-        user: userInfo
+        user: sanitizedUser
     })
 }
 
