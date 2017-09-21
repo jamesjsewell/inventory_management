@@ -32,7 +32,6 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
 		if (shelterId) {
-
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -52,7 +51,7 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 				{ wait: true, success: successCallback, error: errorCallback }
 			);
 		} else {
-			console.log(shelterId)
+			console.log(shelterId);
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -86,7 +85,7 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 			// 			}
 			// 		});
 			// 	});
-			console.log(response)
+			console.log(response);
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -110,14 +109,12 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 
 export function fetchShelter(shelterId) {
 	return function(dispatch) {
-		
 		if (shelterId) {
-			
 			dispatch({
 				type: FETCH_SHELTERS,
 				payload: { status: "active" }
 			});
-			var sheltersCollection = new CollectionOfOneItem()
+			var sheltersCollection = new CollectionOfOneItem();
 			sheltersCollection.fetch({
 				data: shelterId,
 				wait: true,
@@ -126,8 +123,8 @@ export function fetchShelter(shelterId) {
 			});
 
 			function fetchedShelter(collection, response, options) {
-				var shelter = response[0]
-				
+				var shelter = response[0];
+
 				dispatch({
 					type: FETCH_SHELTERS,
 					payload: {
@@ -340,6 +337,15 @@ export function resetStatus(type) {
 				payload: { status: "inactive" }
 			});
 		}
+
+		if (type === "shelter") {
+			dispatch({
+				type: FETCH_SHELTERS,
+				payload: {
+					status: "clear"
+				}
+			});
+		}
 	};
 }
 
@@ -395,7 +401,13 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 
 			if (action.payload.status === "success") {
 				extendObj.shelter = action.payload.shelter;
-				extendObj.statusOfFetchShelters;
+				extendObj.statusOfFetchShelters = action.payload.status;
+			}
+
+			if (action.payload.status === "clear") {
+				extendObj.shelterDidReset = true
+				extendObj.shelter = undefined;
+				extendObj.statusOfFetchShelters = action.payload.status;
 			}
 
 			return _.extend({}, state, extendObj);
@@ -547,8 +559,9 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	currentShelterId = state => state.shelters.currentShelterId,
 	collectionOfShelters = state => state.shelters.collectionOfItems,
 	user = state => state.auth.userSession.user,
-	shelterCookie = state => state.auth.userSession.shelterCookie
-	
+	shelterCookie = state => state.auth.userSession.shelterCookie,
+	shelterDidReset = state => state.needsPoll.shelterDidReset,
+	didEnterShelter = state => state.shelters.didEnterShelter
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -577,5 +590,7 @@ export const selector = createStructuredSelector({
 	collectionOfShelters,
 	user,
 	shelter,
-	shelterCookie
+	shelterCookie,
+	shelterDidReset,
+	didEnterShelter
 });

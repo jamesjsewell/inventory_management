@@ -115,6 +115,7 @@ class RouterConfig extends Component {
                         />
                        
                         <Route path="/interactive_map" component={SheltersView} />
+                        <Route path="/shelter/:openedShelter" component={NeedsPollView} />
                         <Route path="/shelter" component={NeedsPollView} />
                         <Route path="/login" component={UserSessionView} />
                         <Route path="/register" component={Blank} />

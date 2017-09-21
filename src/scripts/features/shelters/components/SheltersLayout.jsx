@@ -60,7 +60,11 @@ export default class SheltersLayout extends Component {
             if (
                 nextProps.user.currentShelter != this.props.user.currentShelter
             ) {
-                this.handleUserAction("savedShelterOnUser");
+                if (nextProps.user.currentShelter) {
+                    this.props.history.push(
+                        `${this.props.homeLink}/${nextProps.user.currentShelter}`
+                    );
+                }
             }
         }
 
@@ -128,7 +132,7 @@ export default class SheltersLayout extends Component {
             this.props.history.push(this.props.homeLink);
         }
 
-        if(type === "newShelterCookie"){
+        if (type === "newShelterCookie") {
             this.props.history.push(this.props.homeLink);
         }
     }

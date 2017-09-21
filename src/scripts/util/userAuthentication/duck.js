@@ -72,6 +72,11 @@ export function registerUser({ email, firstName, lastName, password }) {
 				cookies.set("token", response.data.token, { path: "/" });
 				cookies.set("user", response.data.user, { path: "/" });
 				dispatch({ type: AUTH_USER, payload: response.data.user });
+
+				dispatch({
+					type: REMOVE_SHELTER_COOKIE,
+					payload: ""
+				});
 			})
 			.catch(error => {
 				dispatch({
@@ -87,11 +92,14 @@ export function logoutUser(error) {
 		var shelterCookie = cookies.get("currentShelter");
 		dispatch({
 			type: UNAUTH_USER,
-			payload: error || { cookie: shelterCookie }
+			payload: error
+		});
+		dispatch({
+			type: ADD_SHELTER_COOKIE,
+			payload: shelterCookie
 		});
 		cookies.remove("token", { path: "/" });
 		cookies.remove("user", { path: "/" });
-		console.log(cookies.get("user"));
 	};
 }
 
@@ -203,7 +211,10 @@ const init_auth = {
 function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
 		case ADD_SHELTER_COOKIE:
-			return _.extend({}, state, { shelterCookie: action.payload });
+			return _.extend({}, state, {
+				shelterCookie: action.payload,
+				user: undefined
+			});
 
 		case REMOVE_SHELTER_COOKIE:
 			return _.extend({}, state, { shelterCookie: undefined });
@@ -223,8 +234,7 @@ function userSessionReducer(state = init_auth, action) {
 				authenticated: false,
 				loginError: undefined,
 				registerError: undefined,
-				user: undefined,
-				shelterCookie: action.payload.cookie
+				user: undefined
 			});
 		}
 

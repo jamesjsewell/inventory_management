@@ -39,27 +39,26 @@ export default class NeedsPollLayout extends Component {
             fetchedShelter: false,
             fetchedUser: false,
             currentShelterCookie: null,
-            description: false
+            description: false,
+            noShelter: false,
+            didReset: false
         };
     }
 
     componentWillMount() {
-        if (this.props.user) {
-            if (this.props.user.currentShelter) {
-                this.props.actions.fetchShelter(this.props.user.currentShelter);
-            }
-        } else {
-            if (this.props.shelterCookie) {
-                this.props.actions.fetchShelter(this.props.shelterCookie);
-            }
+        if (this.props.shelterCookie) {
+            this.props.actions.fetchShelter(this.props.shelterCookie);
+        }
+
+        if (this.props.match.params.openedShelter) {
+            this.props.actions.fetchShelter(
+                this.props.match.params.openedShelter
+            );
+            this.state.noShelter = false;
         }
     }
 
-    componentDidMount() {
-        // if (!this.props.user && this.state.currentShelterCookie) {
-        //     this.props.actions.fetchShelter(this.state.currentShelterCookie);
-        // }
-    }
+    componentDidMount() {}
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.editingNeed) {
@@ -84,6 +83,7 @@ export default class NeedsPollLayout extends Component {
             this.handleMessage(false, "errorRemovingNeed");
         }
 
+        // gets needs
         if (
             this.state.fetchedShelter &&
             nextProps.shelter &&
@@ -93,77 +93,30 @@ export default class NeedsPollLayout extends Component {
             this.props.actions.fetchNeeds(nextProps.shelter._id);
         }
 
-        if (nextProps.user && !this.state.fetchedShelter) {
-            if (nextProps.user.currentShelter) {
-                this.state.fetchedShelter = true;
-                this.props.actions.fetchShelter(nextProps.user.currentShelter);
+        //gets shelter from route
+        if (!this.props.match.params.openedShelter) {
+            if (nextProps.user && !this.state.fetchedShelter) {
+                if (nextProps.user.currentShelter) {
+                    this.state.noShelter = false;
+                    this.state.fetchedShelter = true;
+                    this.state.fetchedNeeds = false;
+                    this.props.actions.fetchShelter(
+                        nextProps.user.currentShelter
+                    );
+                }
             }
         }
 
+        //gets needs from sheltercookie if no one is logged in
         if (
             !this.state.fetchedNeeds &&
             nextProps.shelterCookie &&
             nextProps.shelter
         ) {
+            this.state.noShelter = false;
             this.state.fetchedNeeds = true;
             this.props.actions.fetchNeeds(nextProps.shelter._id);
         }
-
-        // if (!this.props.user && nextProps.user) {
-        //     this.state.fetchedNeeds = false;
-        //     this.props.actions.getEntireUser(nextProps.user._id);
-        // }
-
-        // if (nextProps.user) {
-        //     if (!this.state.fetchedUser) {
-        //         if (nextProps.user._id) {
-        //             this.props.actions.getEntireUser(nextProps.user._id);
-        //             this.state.fetchedUser = true;
-        //         }
-        //     }
-
-        //     if (!this.props.fullUser && nextProps.fullUser) {
-        //         this.props.actions.fetchShelter(
-        //             nextProps.fullUser.currentShelter
-        //         );
-        //         this.state.fetchedShelter = true;
-        //     }
-
-        //     if (nextProps.fullUser) {
-        //         if (
-        //             nextProps.fullUser.currentShelter &&
-        //             nextProps.currentShelterId &&
-        //             !this.state.fetchedNeeds
-        //         ) {
-        //             this.props.actions.fetchNeeds(nextProps.currentShelterId);
-        //             this.state.fetchedNeeds = true;
-        //         }
-        //     }
-        // } else {
-        //     if (!nextProps.shelter && this.state.currentShelterCookie) {
-        //         this.props.actions.fetchShelter(
-        //             this.state.currentShelterCookie
-        //         );
-        //     }
-        //     if (!this.state.fetchedNeeds && nextProps.shelter) {
-        //         var notLoggedIn = true;
-        //         this.props.actions.fetchNeeds(
-        //             this.state.currentShelterCookie,
-        //             notLoggedIn
-        //         );
-        //         this.state.fetchedNeeds = true;
-        //     }
-        // }
-        // console.log(this.props.user);
-        // console.log(this.props.fullUser, nextProps.fullUser);
-        // if (this.props.fullUser && nexProps.fullUser) {
-        //     console.log(this.props.fullUser, nexProps.fullUser);
-        //     if (this.props.fullUser._id != nextProps.fullUser._id) {
-        //         this.state.fetchedNeeds = false;
-        //         this.state.fetchedShelter = false;
-        //         this.state.fetchedUser = false;
-        //     }
-        // }
     }
 
     handleMessage(success, type) {
@@ -224,7 +177,7 @@ export default class NeedsPollLayout extends Component {
             for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
                 arrayOfNeedElements.push(
                     <Need
-                        isPreview={false}
+                        isPreview={this.props.user ? false : true}
                         updateNeed={this.props.actions.updateNeed.bind(this)}
                         removeNeed={this.props.actions.removeNeed.bind(this)}
                         nameOfNeed={
@@ -287,7 +240,7 @@ export default class NeedsPollLayout extends Component {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
 
-        return this.props.shelter
+        return !this.state.noShelter && this.props.shelter
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>
@@ -302,7 +255,7 @@ export default class NeedsPollLayout extends Component {
                                   <Divider />
                                   {this.props.shelter.place.formatted_address}
                               </Header.Subheader>
-                              <Segment compact attached="top">
+                              <Segment attached="top">
                                   <Button
                                       type="button"
                                       onClick={e => {
