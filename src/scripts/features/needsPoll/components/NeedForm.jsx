@@ -66,7 +66,12 @@ class NeedForm extends Component {
     }
 
     componentWillMount() {
-        shelter = this.props.currentShelterId;
+        if (this.props.user) {
+            if (this.props.user.currentShelter) {
+                shelter = this.props.user.currentShelter;
+                console.log(shelter)
+            }
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -80,8 +85,10 @@ class NeedForm extends Component {
             this.state.message = "something went wrong";
         }
 
-        if(nextProps.currentShelterId){
-            shelter = this.props.currentShelterId
+        if (nextProps.user) {
+            if (nextProps.user.currentShelter) {
+                shelter = nextProps.user.currentShelter;
+            }
         }
     }
 
@@ -148,7 +155,7 @@ class NeedForm extends Component {
                 {this.renderAlert()}
 
                 <Header>
-                    make a request 
+                    make a request{" "}
                 </Header>
 
                 <Segment.Group horizontal>

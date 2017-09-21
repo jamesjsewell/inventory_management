@@ -183,7 +183,7 @@ export default class Need extends Component {
                               I have this{" "}
                           </Button>
 
-                          {degreeOfNeed > 1
+                          {degreeOfNeed > 0
                               ? <Button
                                     size="large"
                                     icon="plus"

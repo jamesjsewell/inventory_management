@@ -15,8 +15,9 @@ import {
 	getToken
 } from "../../util/index.js";
 
-import { types } from "../../util/userAuthentication/duck.js"
-const AUTH_USER = types.AUTH_USER
+import { types } from "../../util/userAuthentication/duck.js";
+const ADD_SHELTER_COOKIE = types.ADD_SHELTER_COOKIE,
+	AUTH_USER = types.AUTH_USER;
 
 import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
 import { CollectionOfUsers, UserModel } from "../../models/user/UserModel.js";
@@ -491,26 +492,35 @@ export function openShelter(shelterId, userId) {
 		// 	console.log("error");
 		// }
 
-		axios
-			.put(
-				`${API_URL}/user/${userId}`,
-				{ currentShelter: shelterId },
-				{ headers: { Authorization: cookies.get("token") } }
-			)
-			.then(response => {
-				console.log(response)
-				dispatch({ type: AUTH_USER, payload: response.data });
-				
-			})
-			.catch(error => {
-				
-				// dispatch({
-				// 	type: LOGIN_ERROR,
-				// 	payload: "invalid email or password"
-				// });
+		if (userId) {
+			axios
+				.put(
+					`${API_URL}/user/${userId}`,
+					{ currentShelter: shelterId },
+					{ headers: { Authorization: cookies.get("token") } }
+				)
+				.then(response => {
+					console.log(response);
+					if (response.data) {
+						dispatch({ type: AUTH_USER, payload: response.data });
+					}
+				})
+				.catch(error => {
+					// dispatch({
+					// 	type: LOGIN_ERROR,
+					// 	payload: "invalid email or password"
+					// });
+				});
+		} else {
+			cookies.set('currentShelter', shelterId, { path: '/' })
+			
+			dispatch({
+				type: ADD_SHELTER_COOKIE,
+				payload: cookies.get("currentShelter")
 			});
+		}
 
-		//cookies.get("currentShelter");
+		//;
 	};
 }
 
@@ -675,7 +685,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	itemExists = state => state.shelters.itemExists,
 	currentShelterId = state => state.shelters.currentShelterId,
 	didEnterShelter = state => state.shelters.didEnterShelter,
-	homeLink = state => state.nav.navLink.routes.homePath;
+	homeLink = state => state.nav.navLink.routes.homePath,
+	shelterCookie = state => state.auth.userSession.shelterCookie;
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -694,5 +705,6 @@ export const selector = createStructuredSelector({
 	newShelterPlace,
 	didEnterShelter,
 	newShelterId,
-	homeLink
+	homeLink,
+	shelterCookie
 });

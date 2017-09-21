@@ -17,7 +17,9 @@ export const types = {
 	REGISTER_ERROR: "register_error",
 	FORGOT_PASSWORD_REQUEST: "forgot_password_request",
 	RESET_PASSWORD_REQUEST: "reset_password_request",
-	PROTECTED_TEST: "protected_test"
+	PROTECTED_TEST: "protected_test",
+	ADD_SHELTER_COOKIE: "add_shelter_cookie",
+	REMOVE_SHELTER_COOKIE: "remove_shelter_cookie"
 };
 
 const {
@@ -29,7 +31,9 @@ const {
 	REGISTER_ERROR,
 	FORGOT_PASSWORD_REQUEST,
 	RESET_PASSWORD_REQUEST,
-	PROTECTED_TEST
+	PROTECTED_TEST,
+	ADD_SHELTER_COOKIE,
+	REMOVE_SHELTER_COOKIE
 } = types;
 
 const cookies = new Cookies();
@@ -80,7 +84,11 @@ export function registerUser({ email, firstName, lastName, password }) {
 
 export function logoutUser(error) {
 	return function(dispatch) {
-		dispatch({ type: UNAUTH_USER, payload: error || "" });
+		var shelterCookie = cookies.get("currentShelter");
+		dispatch({
+			type: UNAUTH_USER,
+			payload: error || { cookie: shelterCookie }
+		});
 		cookies.remove("token", { path: "/" });
 		cookies.remove("user", { path: "/" });
 		console.log(cookies.get("user"));
@@ -169,6 +177,18 @@ export function authenticate(user) {
 	};
 }
 
+export function setShelterCookie() {
+	return function(dispatch) {
+		var shelterCookie = cookies.get("currentShelter");
+		if (shelterCookie) {
+			dispatch({
+				type: ADD_SHELTER_COOKIE,
+				payload: shelterCookie
+			});
+		}
+	};
+}
+
 // reducers
 const init_auth = {
 	loginError: undefined,
@@ -176,17 +196,25 @@ const init_auth = {
 	authError: undefined,
 	authenticated: undefined,
 	user: undefined,
-	profile: undefined
+	profile: undefined,
+	shelterCookie: undefined
 };
 
 function userSessionReducer(state = init_auth, action) {
 	switch (action.type) {
+		case ADD_SHELTER_COOKIE:
+			return _.extend({}, state, { shelterCookie: action.payload });
+
+		case REMOVE_SHELTER_COOKIE:
+			return _.extend({}, state, { shelterCookie: undefined });
+
 		case AUTH_USER: {
 			return _.extend({}, state, {
 				authenticated: true,
 				user: action.payload,
 				profile: action.payload.profile,
-				loginError: undefined
+				loginError: undefined,
+				shelterCookie: undefined
 			});
 		}
 
@@ -195,7 +223,8 @@ function userSessionReducer(state = init_auth, action) {
 				authenticated: false,
 				loginError: undefined,
 				registerError: undefined,
-				user: undefined
+				user: undefined,
+				shelterCookie: action.payload.cookie
 			});
 		}
 
@@ -233,7 +262,8 @@ const init_forgot_password = {
 	stateOfEmailSend: undefined,
 	sendingEmail: undefined,
 	didPasswordReset: undefined,
-	stateOfReset: undefined
+	stateOfReset: undefined,
+	shelterCookie: undefined
 };
 
 function forgotPasswordReducer(state = init_forgot_password, action) {
@@ -264,10 +294,12 @@ export default combineReducers({
 
 const routes = state => state.nav.navLink.routes,
 	user = state => state.auth.userSession.user,
-	authenticated = state => state.auth.userSession.authenticated;
+	authenticated = state => state.auth.userSession.authenticated,
+	shelterCookie = state => state.auth.userSession.shelterCookie;
 
 export const selector = createStructuredSelector({
 	routes,
 	user,
-	authenticated
+	authenticated,
+	shelterCookie
 });

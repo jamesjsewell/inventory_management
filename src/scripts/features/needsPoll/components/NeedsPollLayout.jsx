@@ -48,12 +48,14 @@ export default class NeedsPollLayout extends Component {
             if (this.props.user.currentShelter) {
                 this.props.actions.fetchShelter(this.props.user.currentShelter);
             }
+        } else {
+            if (this.props.shelterCookie) {
+                this.props.actions.fetchShelter(this.props.shelterCookie);
+            }
         }
     }
 
     componentDidMount() {
-
-
         // if (!this.props.user && this.state.currentShelterCookie) {
         //     this.props.actions.fetchShelter(this.state.currentShelterCookie);
         // }
@@ -82,19 +84,29 @@ export default class NeedsPollLayout extends Component {
             this.handleMessage(false, "errorRemovingNeed");
         }
 
-        if (this.state.fetchedShelter && nextProps.shelterr) {
+        if (
+            this.state.fetchedShelter &&
+            nextProps.shelter &&
+            !this.state.fetchedNeeds
+        ) {
             this.state.fetchedNeeds = true;
-            this.sttae.fetchedShelter = false;
-            this.props.actions.fetchNeeds(nexProps.shelter._id);
+            this.props.actions.fetchNeeds(nextProps.shelter._id);
         }
 
         if (nextProps.user && !this.state.fetchedShelter) {
-            console.log(nextProps.user)
             if (nextProps.user.currentShelter) {
                 this.state.fetchedShelter = true;
-                this.state.fetchedNeeds = false;
                 this.props.actions.fetchShelter(nextProps.user.currentShelter);
             }
+        }
+
+        if (
+            !this.state.fetchedNeeds &&
+            nextProps.shelterCookie &&
+            nextProps.shelter
+        ) {
+            this.state.fetchedNeeds = true;
+            this.props.actions.fetchNeeds(nextProps.shelter._id);
         }
 
         // if (!this.props.user && nextProps.user) {
@@ -328,9 +340,10 @@ export default class NeedsPollLayout extends Component {
                           </Segment>
 
                           <Segment attached="bottom">
-                              {true
+                              {this.props.user
                                   ? <Segment compact loading={asyncNeeds}>
                                         <NeedForm
+                                            user={this.props.user}
                                             currentShelterId={
                                                 this.props.currentShelterId
                                             }
@@ -348,8 +361,8 @@ export default class NeedsPollLayout extends Component {
                                                         "some_ID",
                                                         this.props
                                                             .collectionOfNeeds,
-                                                        this.props
-                                                            .currentShelterId
+                                                        this.props.user
+                                                            .currentShelter
                                                     );
                                                 }
                                             }}

@@ -32,6 +32,7 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
 		if (shelterId) {
+
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -51,6 +52,7 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 				{ wait: true, success: successCallback, error: errorCallback }
 			);
 		} else {
+			console.log(shelterId)
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -543,9 +545,9 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	idOfEditedNeed = state => state.needsPoll.idOfEditedNeed,
 	idOfUpdatedNeed = state => state.needsPoll.idOfUpdatedNeed,
 	currentShelterId = state => state.shelters.currentShelterId,
-	visitorShelterId = state => state.needsPoll.visitorShelterId,
 	collectionOfShelters = state => state.shelters.collectionOfItems,
-	user = state => state.auth.userSession.user
+	user = state => state.auth.userSession.user,
+	shelterCookie = state => state.auth.userSession.shelterCookie
 	
 
 export const selector = createStructuredSelector({
@@ -574,5 +576,6 @@ export const selector = createStructuredSelector({
 	currentShelterId,
 	collectionOfShelters,
 	user,
-	shelter
+	shelter,
+	shelterCookie
 });

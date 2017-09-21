@@ -57,14 +57,18 @@ export default class SheltersLayout extends Component {
         }
 
         if (nextProps.user && this.props.user) {
-            console.log(
-                nextProps.user.currentShelter,
-                this.props.user.currentShelter
-            );
             if (
                 nextProps.user.currentShelter != this.props.user.currentShelter
             ) {
                 this.handleUserAction("savedShelterOnUser");
+            }
+        }
+
+        //////
+
+        if (this.props.shelterCookie) {
+            if (this.props.shelterCookie != nextProps.shelterCookie) {
+                this.handleUserAction("newShelterCookie");
             }
         }
 
@@ -120,8 +124,11 @@ export default class SheltersLayout extends Component {
         }
 
         if (type == "savedShelterOnUser") {
-           
             this.props.actions.resetStatus("creating");
+            this.props.history.push(this.props.homeLink);
+        }
+
+        if(type === "newShelterCookie"){
             this.props.history.push(this.props.homeLink);
         }
     }
