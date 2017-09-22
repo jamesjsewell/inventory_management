@@ -41,20 +41,29 @@ export default class NeedsPollLayout extends Component {
             currentShelterCookie: null,
             description: false,
             noShelter: false,
-            didReset: false
+            didReset: false,
+            currentShelter: null,
+            user: null
         };
     }
 
     componentWillMount() {
+        this.props.actions.resetStatus("shelter")
+        this.state.fetchedShelter = false
+        this.state.fetchedNeeds = false
+        this.state.noShelter = false
+        
         if (this.props.shelterCookie) {
             this.props.actions.fetchShelter(this.props.shelterCookie);
         }
 
         if (this.props.match.params.openedShelter) {
+
             this.props.actions.fetchShelter(
                 this.props.match.params.openedShelter
             );
             this.state.noShelter = false;
+            this.state.fetchedShelter = true
         }
     }
 
@@ -88,14 +97,17 @@ export default class NeedsPollLayout extends Component {
             this.state.fetchedShelter &&
             nextProps.shelter &&
             !this.state.fetchedNeeds
-        ) {
+        ) { 
+            
+            this.state.noShelter = false
             this.state.fetchedNeeds = true;
+            this.state.currentShelter = nextProps.shelter._id;
             this.props.actions.fetchNeeds(nextProps.shelter._id);
+            this.state.user = this.props.user
         }
 
-        //gets shelter from route
         if (!this.props.match.params.openedShelter) {
-            if (nextProps.user && !this.state.fetchedShelter) {
+            if (!this.state.fetchedShelter && nextProps.user) {
                 if (nextProps.user.currentShelter) {
                     this.state.noShelter = false;
                     this.state.fetchedShelter = true;
@@ -105,6 +117,13 @@ export default class NeedsPollLayout extends Component {
                     );
                 }
             }
+        }
+
+        if (nextProps.user) {
+            if(!nextProps.user.currentShelter){
+                this.state.noShelter = true
+            }
+            
         }
 
         //gets needs from sheltercookie if no one is logged in
@@ -244,7 +263,9 @@ export default class NeedsPollLayout extends Component {
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>
-                          <Segment compact size="huge" textAlign="center">
+
+                          <Segment size="huge" textAlign="center">
+
                               <Header size="huge">
                                   {this.props.shelter.nameOfItem}
 

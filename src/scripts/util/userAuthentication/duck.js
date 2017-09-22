@@ -49,6 +49,7 @@ export function loginUser({ email, password }) {
 				cookies.set("token", response.data.token, { path: "/" });
 				cookies.set("user", response.data.user, { path: "/" });
 				dispatch({ type: AUTH_USER, payload: response.data.user });
+				dispatch({ type: REMOVE_SHELTER_COOKIE, payload: "" });
 			})
 			.catch(error => {
 				dispatch({

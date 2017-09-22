@@ -342,7 +342,8 @@ export function resetStatus(type) {
 			dispatch({
 				type: FETCH_SHELTERS,
 				payload: {
-					status: "clear"
+					status: "clear",
+					shelter: undefined
 				}
 			});
 		}
@@ -407,7 +408,7 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			if (action.payload.status === "clear") {
 				extendObj.shelterDidReset = true
 				extendObj.shelter = undefined;
-				extendObj.statusOfFetchShelters = action.payload.status;
+				extendObj.statusOfFetchShelters = "inactive";
 			}
 
 			return _.extend({}, state, extendObj);
