@@ -52,7 +52,10 @@ export default class NeedsPollLayout extends Component {
             shelterDescription: null,
             shelterPlace: null,
             errorUpdatingItem: null,
-            successUpdatingItem: null
+            successUpdatingItem: null,
+            itemRemovalPrompt: false,
+            errorRemovingItem: false,
+            successRemovingItem: false
         };
 
         this.props.actions.fetchItems();
@@ -177,6 +180,19 @@ export default class NeedsPollLayout extends Component {
                 this.handleMessage(false, "updateItem");
             }
         }
+
+        if (nextProps.statusOfRemoveItem) {
+            if (
+                nextProps.statusOfRemoveItem.success &&
+                !this.props.statusOfRemoveItem.success
+            ) {
+                this.handleMessage(true, "removeItem");
+            }
+
+            if (nextProps.statusOfRemoveItem.error) {
+                this.handleMessage(false, "removeItem");
+            }
+        }
     }
 
     handleMessage(success, type) {
@@ -236,15 +252,24 @@ export default class NeedsPollLayout extends Component {
                     this.props.actions.resetStatus("updatingItem");
                     this.setState({ successUpdatingItem: false });
                 }, 5000);
-            }
-        }
-
-        if (type === "updateItem") {
-            if (!success) {
+            } else {
                 this.state.errorUpdatingItem = true;
                 this.state.errorUpdatingItem = setTimeout(() => {
                     this.props.actions.resetStatus("updatingItem");
                     this.setState({ errorUpdatingItem: false });
+                }, 5000);
+            }
+        }
+
+        if (type === "removeItem") {
+            if (success) {
+                
+                this.props.history.replace(`../${this.props.sheltersMapPath}`)
+            } else {
+                this.state.errorRemovingItem = true;
+                this.state.errorRemovingItem = setTimeout(() => {
+                    this.props.actions.resetStatus("removingItem");
+                    this.setState({ errorRemovingItem: false });
                 }, 5000);
             }
         }
@@ -346,6 +371,11 @@ export default class NeedsPollLayout extends Component {
                                         floated="right"
                                         icon="remove"
                                         size="small"
+                                        onClick={() => {
+                                            this.setState({
+                                                itemRemovalPrompt: true
+                                            });
+                                        }}
                                     />
                                   : null}
                               <Header size="huge">
@@ -406,7 +436,7 @@ export default class NeedsPollLayout extends Component {
                                         <NeedForm
                                             user={this.props.user}
                                             currentShelterId={
-                                                this.props.currentShelterId
+                                                this.props.shelter._id
                                             }
                                             resetStatus={this.props.actions.resetStatus.bind(
                                                 this
@@ -681,6 +711,57 @@ export default class NeedsPollLayout extends Component {
                                           </Grid>
 
                                       </Modal.Content>
+                                  </Modal>
+
+                                  <Modal open={this.state.itemRemovalPrompt}>
+                                      <Button
+                                          icon="close"
+                                          basic
+                                          floated="right"
+                                          onClick={() => {
+                                              this.setState({
+                                                  itemRemovalPrompt: false
+                                              });
+                                          }}
+                                      />
+
+                                      <Modal.Header>
+                                          are you sure you want to delete this shelter?
+                                      </Modal.Header>
+                                      <Modal.Content>
+
+                                          <Button
+                                              onClick={() => {
+                                                  this.setState({
+                                                      itemRemovalPrompt: false
+                                                  });
+                                              }}
+                                              positive
+                                          >
+                                              no
+                                          </Button>
+
+                                          <Button
+                                              onClick={() => {
+                                                  this.props.actions.removeItem(
+                                                      this.props.shelter._id,
+                                                      this.props
+                                                          .collectionOfShelters
+                                                  );
+                                              }}
+                                              negative
+                                          >
+                                              yes
+                                          </Button>
+
+                                          {this.state.errorRemovingItem
+                                              ? <Message negative>
+                                                    something went wrong
+                                                </Message>
+                                              : null}
+
+                                      </Modal.Content>
+
                                   </Modal>
 
                                   <Modal open={this.state.needRemovalPrompt}>

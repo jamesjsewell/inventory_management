@@ -569,7 +569,9 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	shelterDidReset = state => state.needsPoll.shelterDidReset,
 	didEnterShelter = state => state.shelters.didEnterShelter,
 	shelterModel = state => state.needsPoll.shelterModel,
-	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem
+	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem,
+	statusOfRemoveItem = state => state.shelters.statusOfRemoveItem,
+	sheltersMapPath = state => state.nav.navLink.routes.sheltersMapPath
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -602,5 +604,7 @@ export const selector = createStructuredSelector({
 	shelterDidReset,
 	didEnterShelter,
 	shelterModel,
-	statusOfUpdateItem
+	statusOfUpdateItem,
+	statusOfRemoveItem,
+	sheltersMapPath
 });

@@ -277,6 +277,7 @@ export function removeItem(idOfItem, itemCollection, prompt) {
 		}
 
 		function onError(response) {
+			
 			dispatch({
 				type: REMOVE_ITEM,
 				payload: {
