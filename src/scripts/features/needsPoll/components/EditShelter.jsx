@@ -38,23 +38,13 @@ var formDefaults = {};
 const asyncValidate = (values, dispatch) => {
     var checkAsync = true;
 
-    if (values.nameOfNeed === formDefaults.nameOfNeed) {
+    if (values.nameOfItem === formDefaults.nameOfItem) {
         checkAsync = false;
     }
 
-    var request = axios.post(`${API_URL}/needsPoll/newNeedForm`, {
+    var request = axios.post(`${API_URL}/sheltersFeature/newShelterForm`, {
         values
     });
-  
-    if (Number(values.degreeOfNeed) > Number(values.numberOfPeople)) {
-       
-        return new Promise((resolve, reject) => {
-            
-            resolve({
-                degreeOfNeed: "more people have this than there are people"
-            });
-        });
-    }
 
     if (checkAsync) {
         return request
@@ -62,7 +52,6 @@ const asyncValidate = (values, dispatch) => {
                 return;
             })
             .catch(error => {
-               
                 if (error.response.data) {
                     return error.response.data;
                 }
@@ -74,24 +63,31 @@ const asyncValidate = (values, dispatch) => {
     }
 };
 
-class EditNeed extends Component {
+class EditItem extends Component {
     constructor(props) {
         super(props);
         this.state = { description: null };
-        var model = this.props.needsCollection.get(this.props.idOfEditedNeed);
-        this.state.model = model;
-        formDefaults.nameOfNeed = this.state.model.get("nameOfNeed");
-        formDefaults.numberOfPeople = this.state.model.get("numberOfPeople");
-        formDefaults.degreeOfNeed = this.state.model.get("degreeOfNeed");
-        this.state.description = this.state.model.get("description");
+        if (this.props.itemModel) {
+            var model = this.props.itemModel
+            this.state.model = model;
+            this.state.name = this.state.model.get("nameOfItem");
+            this.state.description = this.state.model.get("description");
+            this.state.itemId = this.state.model.get("_id");
+            formDefaults.nameOfItem = this.state.name;
+        }
     }
 
     componentWillMount() {}
 
     componentWillReceiveProps(nextProps) {
-        var model = nextProps.needsCollection.get(this.props.idOfEditedNeed);
-        this.state.model = model;
-        formDefaults.nameOfNeed = this.state.model.get("nameOfNeed");
+        if (nextProps.itemsCollection) {
+            var model = nextProps.itemsCollection.get(
+                this.props.idOfEditedItem
+            );
+            this.state.model = model;
+        }
+
+        formDefaults.nameOfItem = this.state.name;
     }
 
     handleDescriptionChange(event) {
@@ -114,9 +110,9 @@ class EditNeed extends Component {
             userInput["description"] = this.state.description;
         }
 
-        this.props.updateNeed(
-            this.props.idOfEditedNeed,
-            this.props.needsCollection,
+        this.props.updateItem(
+            this.state.itemId,
+            this.props.itemsCollection,
             "edit",
             null,
             userInput
@@ -154,33 +150,15 @@ class EditNeed extends Component {
                     {this.renderAlert()}
 
                     <Field
-                        placeholder="enter name of item"
-                        name="nameOfNeed"
+                        placeholder="enter name of shelter"
+                        name="nameOfItem"
                         component={FormField}
                         type="text"
-                        label="item name"
+                        label="shelter name"
                         validate={[alphaNumeric]}
                         initialValues={{
-                            nameOfNeed: this.state.model.get("nameOfNeed")
+                            nameOfItem: this.state.name
                         }}
-                    />
-
-                    <Field
-                        placeholder="estimated number of people who need"
-                        name="numberOfPeople"
-                        component={FormField}
-                        type="text"
-                        label="people who need"
-                        validate={[alphaNumeric, number]}
-                    />
-
-                    <Field
-                        placeholder="estimated number of people who have"
-                        name="degreeOfNeed"
-                        component={FormField}
-                        type="text"
-                        label="people who have"
-                        validate={[alphaNumeric, number]}
                     />
 
                     <textarea
@@ -192,7 +170,7 @@ class EditNeed extends Component {
                         name="description"
                         value={this.state.description}
                         onChange={this.handleDescriptionChange.bind(this)}
-                        placeholder={"enter a description for this item"}
+                        placeholder={"enter a description for this shelter"}
                     />
 
                     <Segment>
@@ -213,9 +191,9 @@ class EditNeed extends Component {
 }
 
 export default reduxForm({
-    form: "editNeedForm",
+    form: "editItemForm",
     asyncValidate,
-    asyncBlurFields: ["nameOfNeed", "degreeOfNeed", "numberOfPeople"],
+    asyncBlurFields: ["nameOfItem"],
     shouldAsyncValidate,
     initialValues: formDefaults
-})(EditNeed);
+})(EditItem);

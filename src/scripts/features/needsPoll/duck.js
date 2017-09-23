@@ -13,8 +13,8 @@ import {
 	getToken
 } from "../../util/index.js";
 
-import { getEntireUser } from "../shelters/duck.js";
-export { getEntireUser };
+import { updateItem, removeItem, fetchItems } from "../shelters/duck.js";
+export { updateItem, removeItem, fetchItems};
 
 import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
@@ -124,12 +124,14 @@ export function fetchShelter(shelterId) {
 
 			function fetchedShelter(collection, response, options) {
 				var shelter = response[0];
+				var shelterModel = collection.get(shelterId)
 
 				dispatch({
 					type: FETCH_SHELTERS,
 					payload: {
 						status: "success",
-						shelter: shelter
+						shelter: shelter,
+						shelterModel: shelterModel
 					}
 				});
 			}
@@ -403,6 +405,9 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			if (action.payload.status === "success") {
 				extendObj.shelter = action.payload.shelter;
 				extendObj.statusOfFetchShelters = action.payload.status;
+				if(action.payload.shelterModel){
+					extendObj.shelterModel = action.payload.shelterModel
+				}
 			}
 
 			if (action.payload.status === "clear") {
@@ -562,7 +567,9 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	user = state => state.auth.userSession.user,
 	shelterCookie = state => state.auth.userSession.shelterCookie,
 	shelterDidReset = state => state.needsPoll.shelterDidReset,
-	didEnterShelter = state => state.shelters.didEnterShelter
+	didEnterShelter = state => state.shelters.didEnterShelter,
+	shelterModel = state => state.needsPoll.shelterModel,
+	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -593,5 +600,7 @@ export const selector = createStructuredSelector({
 	shelter,
 	shelterCookie,
 	shelterDidReset,
-	didEnterShelter
+	didEnterShelter,
+	shelterModel,
+	statusOfUpdateItem
 });

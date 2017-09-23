@@ -23,6 +23,8 @@ import Need from "./Need.jsx";
 
 import EditNeed from "./EditNeed.jsx";
 
+import EditItem from "./EditShelter.jsx";
+
 export default class NeedsPollLayout extends Component {
     constructor(props) {
         super(props);
@@ -43,27 +45,35 @@ export default class NeedsPollLayout extends Component {
             noShelter: false,
             didReset: false,
             currentShelter: null,
-            user: null
+            user: null,
+            shelterMode: null,
+            shelterName: null,
+            shelterId: null,
+            shelterDescription: null,
+            shelterPlace: null,
+            errorUpdatingItem: null,
+            successUpdatingItem: null
         };
+
+        this.props.actions.fetchItems();
     }
 
     componentWillMount() {
-        this.props.actions.resetStatus("shelter")
-        this.state.fetchedShelter = false
-        this.state.fetchedNeeds = false
-        this.state.noShelter = false
-        
+        this.props.actions.resetStatus("shelter");
+        this.state.fetchedShelter = false;
+        this.state.fetchedNeeds = false;
+        this.state.noShelter = false;
+
         if (this.props.shelterCookie) {
             this.props.actions.fetchShelter(this.props.shelterCookie);
         }
 
         if (this.props.match.params.openedShelter) {
-
             this.props.actions.fetchShelter(
                 this.props.match.params.openedShelter
             );
             this.state.noShelter = false;
-            this.state.fetchedShelter = true
+            this.state.fetchedShelter = true;
         }
     }
 
@@ -97,13 +107,12 @@ export default class NeedsPollLayout extends Component {
             this.state.fetchedShelter &&
             nextProps.shelter &&
             !this.state.fetchedNeeds
-        ) { 
-            
-            this.state.noShelter = false
+        ) {
+            this.state.noShelter = false;
             this.state.fetchedNeeds = true;
             this.state.currentShelter = nextProps.shelter._id;
             this.props.actions.fetchNeeds(nextProps.shelter._id);
-            this.state.user = this.props.user
+            this.state.user = this.props.user;
         }
 
         if (!this.props.match.params.openedShelter) {
@@ -120,10 +129,9 @@ export default class NeedsPollLayout extends Component {
         }
 
         if (nextProps.user) {
-            if(!nextProps.user.currentShelter){
-                this.state.noShelter = true
+            if (!nextProps.user.currentShelter) {
+                this.state.noShelter = true;
             }
-            
         }
 
         //gets needs from sheltercookie if no one is logged in
@@ -135,6 +143,39 @@ export default class NeedsPollLayout extends Component {
             this.state.noShelter = false;
             this.state.fetchedNeeds = true;
             this.props.actions.fetchNeeds(nextProps.shelter._id);
+        }
+
+        //up to date gets shelter model
+        if (nextProps.collectionOfShelters && nextProps.shelter) {
+            if (nextProps.collectionOfShelters.get(nextProps.shelter._id)) {
+                this.state.shelterModel = nextProps.collectionOfShelters.get(
+                    nextProps.shelter._id
+                );
+
+                const shelter = this.state.shelterModel &&
+                    this.state.shelterModel.attributes
+                    ? this.state.shelterModel.attributes
+                    : null;
+                this.state.shelterName = shelter ? shelter.nameOfItem : null;
+                this.state.shelterId = shelter ? shelter._id : null;
+                this.state.shelterDescription = shelter
+                    ? shelter.description
+                    : null;
+                this.state.shelterPlace = shelter ? shelter.place : null;
+            }
+        }
+
+        if (nextProps.statusOfUpdateItem) {
+            if (
+                nextProps.statusOfUpdateItem.success &&
+                !this.props.statusOfUpdateItem.success
+            ) {
+                this.handleMessage(true, "updateItem");
+            }
+
+            if (nextProps.statusOfUpdateItem.error) {
+                this.handleMessage(false, "updateItem");
+            }
         }
     }
 
@@ -181,11 +222,31 @@ export default class NeedsPollLayout extends Component {
         }
 
         if (type === "errorRemovingNeed") {
-            this.state.errorRemovingNeed;
+            this.state.errorRemovingNeed = true;
             this.state.errorRemovingNeed = setTimeout(() => {
                 this.props.actions.resetStatus("removingNeed");
                 this.setState({ errorRemovingNeed: false });
             }, 5000);
+        }
+
+        if (type === "updateItem") {
+            if (success) {
+                this.state.successUpdatingItem = true;
+                this.state.successUpdatingItem = setTimeout(() => {
+                    this.props.actions.resetStatus("updatingItem");
+                    this.setState({ successUpdatingItem: false });
+                }, 5000);
+            }
+        }
+
+        if (type === "updateItem") {
+            if (!success) {
+                this.state.errorUpdatingItem = true;
+                this.state.errorUpdatingItem = setTimeout(() => {
+                    this.props.actions.resetStatus("updatingItem");
+                    this.setState({ errorUpdatingItem: false });
+                }, 5000);
+            }
         }
     }
 
@@ -259,22 +320,48 @@ export default class NeedsPollLayout extends Component {
             var model = this.props.collectionOfNeeds.get(idOfEditedNeed);
         }
 
-        return !this.state.noShelter && this.props.shelter
+        return !this.state.noShelter &&
+            this.props.shelter &&
+            this.state.shelterModel
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
                       <Grid.Column width={16}>
 
-                          <Segment size="huge" textAlign="center">
-
+                          <Segment size="large" textAlign="center">
+                              {this.props.user
+                                  ? <Button
+                                        floated="left"
+                                        onClick={() => {
+                                            this.setState({
+                                                editingShelter: true
+                                            });
+                                        }}
+                                        size="small"
+                                    >
+                                        edit
+                                    </Button>
+                                  : null}
+                              {this.props.user
+                                  ? <Button
+                                        floated="right"
+                                        icon="remove"
+                                        size="small"
+                                    />
+                                  : null}
                               <Header size="huge">
-                                  {this.props.shelter.nameOfItem}
+                                  {this.state.shelterName}
 
                               </Header>
 
                               <Header.Subheader>
-                                  {this.props.shelter.place.name}
+                                  {this.state.shelterPlace
+                                      ? this.state.shelterPlace.name
+                                      : null}
                                   <Divider />
-                                  {this.props.shelter.place.formatted_address}
+                                  {this.state.shelterPlace
+                                      ? this.state.shelterPlace
+                                            .formatted_address
+                                      : null}
                               </Header.Subheader>
                               <Segment attached="top">
                                   <Button
@@ -307,13 +394,13 @@ export default class NeedsPollLayout extends Component {
 
                                   {this.state.description
                                       ? <Container fluid text textAlign="left">
-                                            {this.props.shelter.description}
+                                            {this.state.shelterDescription}
                                         </Container>
                                       : null}
                               </Segment>
                           </Segment>
 
-                          <Segment attached="bottom">
+                          <Segment>
                               {this.props.user
                                   ? <Segment compact loading={asyncNeeds}>
                                         <NeedForm
@@ -369,8 +456,148 @@ export default class NeedsPollLayout extends Component {
                                       : this.renderNeeds()}
 
                                   <Modal
-                                      open={this.props.editingNeed}
+                                      open={this.state.editingShelter}
                                       size="huge"
+                                  >
+                                      <Segment basic>
+                                          <Button
+                                              type="button"
+                                              floated="right"
+                                              icon="remove"
+                                              onClick={() => {
+                                                  this.setState({
+                                                      editingShelter: false
+                                                  });
+                                              }}
+                                          />
+                                      </Segment>
+                                      <Modal.Content>
+
+                                          <Grid columns={2} as={Segment} basic>
+                                              <Grid.Column width={9}>
+                                                  <EditItem
+                                                      itemModel={
+                                                          this.state
+                                                              .shelterModel
+                                                      }
+                                                      itemsCollection={
+                                                          this.props
+                                                              .collectionOfShelters
+                                                      }
+                                                      idOfEditedItem={
+                                                          this.props.shelter._id
+                                                      }
+                                                      updateItem={this.props.actions.updateItem.bind(
+                                                          this
+                                                      )}
+                                                  />
+                                              </Grid.Column>
+                                              <Grid.Column width={7}>
+                                                  <Segment
+                                                      basic
+                                                      size="huge"
+                                                      textAlign="center"
+                                                  >
+
+                                                      <Header>
+                                                          {
+                                                              this.state
+                                                                  .shelterName
+                                                          }
+
+                                                      </Header>
+
+                                                      <Header.Subheader>
+                                                          {this.state
+                                                              .shelterPlace
+                                                              ? this.state
+                                                                    .shelterPlace
+                                                                    .name
+                                                              : null}
+                                                          <Divider />
+                                                          {this.state
+                                                              .shelterPlace
+                                                              ? this.state
+                                                                    .shelterPlace
+                                                                    .formatted_address
+                                                              : null}
+                                                      </Header.Subheader>
+                                                      <Segment attached="top">
+                                                          <Button
+                                                              type="button"
+                                                              onClick={e => {
+                                                                  e.preventDefault();
+                                                                  if (
+                                                                      this.state
+                                                                          .description ===
+                                                                      false
+                                                                  ) {
+                                                                      this.setState(
+                                                                          {
+                                                                              description: true
+                                                                          }
+                                                                      );
+                                                                  } else {
+                                                                      this.setState(
+                                                                          {
+                                                                              description: false
+                                                                          }
+                                                                      );
+                                                                  }
+                                                              }}
+                                                              basic
+                                                              size="tiny"
+                                                              icon={
+                                                                  this.state
+                                                                      .description
+                                                                      ? "minus"
+                                                                      : "add"
+                                                              }
+                                                          /> description
+                                                      </Segment>
+
+                                                      <Segment
+                                                          attached="bottom"
+                                                          size="small"
+                                                      >
+
+                                                          {this.state
+                                                              .description
+                                                              ? <Container
+                                                                    fluid
+                                                                    text
+                                                                    textAlign="left"
+                                                                >
+                                                                    {
+                                                                        this
+                                                                            .state
+                                                                            .shelterDescription
+                                                                    }
+                                                                </Container>
+                                                              : null}
+                                                      </Segment>
+                                                  </Segment>
+                                                  {this.state
+                                                      .successUpdatingItem
+                                                      ? <Message positive>
+                                                            updated successfully
+                                                        </Message>
+                                                      : null}
+                                                  {this.state.errorUpdatingItem
+                                                      ? <Message negative>
+                                                            something went wrong
+                                                        </Message>
+                                                      : null}
+                                              </Grid.Column>
+
+                                          </Grid>
+
+                                      </Modal.Content>
+                                  </Modal>
+
+                                  <Modal
+                                      open={this.props.editingNeed}
+                                      size="large"
                                   >
                                       <Segment>
                                           <Button
