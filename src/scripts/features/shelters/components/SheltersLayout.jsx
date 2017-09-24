@@ -20,6 +20,7 @@ import EditItem from "./EditItem.jsx";
 import Item from "./Item.jsx";
 import NewItemForm from "./NewItemForm.jsx";
 import MapView from "./MapView.jsx";
+import Navbar from "../../navbar/components/NavbarView.jsx";
 
 export default class SheltersLayout extends Component {
     constructor(props) {
@@ -37,7 +38,8 @@ export default class SheltersLayout extends Component {
             userIsEditingItem: false,
             userIsCreatingItem: false,
             loggedIn: false,
-            instructions: false
+            instructions: false,
+            options: false
         };
     }
     componentWillMount() {
@@ -278,17 +280,47 @@ export default class SheltersLayout extends Component {
                 style={{ overflow: "hidden", width: "90vw", height: "90vh" }}
             >
 
-                <Modal.Content>
+                {this.state.options
+                    ? <Modal.Header horizontal size="mini" compact>
+                          <Segment.Group horizontal>
+                              <Segment>
+                                  <Button
+                                      floated="left"
+                                      clearing
+                                      onClick={() => {
+                                          this.setState({ options: false });
+                                      }}
+                                  >
+                                      hide
+                                  </Button>
+                              </Segment>
+                              <Divider />
+                              <Segment floating="right" compact size="mini">
+                                  <Button
+    
+                                      size="mini"
+                                      icon="add"
+                                      positive
+                                      onClick={() => {
+                                          this.setState({ instructions: true });
+                                      }}
+                                  >
+                                      instructions
+                                  </Button>
+                              </Segment>
+                              <Divider />
+                              <Navbar as={Segment} size="mini" compact />
 
-                    <Segment floating="left" compact size="mini">
-                        <Button
-                            size="mini"
-                            icon="add"
-                            onClick={() => {
-                                this.setState({ instructions: true });
-                            }}
-                        /> {" "} instructions
-                    </Segment>
+                          </Segment.Group>
+                      </Modal.Header>
+                    : <Button
+                          onClick={() => {
+                              this.setState({ options: true });
+                          }}
+                      >
+                          show options
+                      </Button>}
+                <Modal.Content>
 
                     <MapView {...this.props} />
 
