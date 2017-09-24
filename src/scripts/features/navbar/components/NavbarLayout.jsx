@@ -1,18 +1,25 @@
-import React, { Component, PropTypes } from "react"
-import { Menu, Segment, Grid, Sidebar, Header, Button } from "semantic-ui-react"
-
+import React, { Component, PropTypes } from "react";
+import {
+	Menu,
+	Segment,
+	Grid,
+	Sidebar,
+	Header,
+	Button,
+	Dimmer
+} from "semantic-ui-react";
 
 export default class NavbarLayout extends Component {
 	render() {
-		
-		var currentUrl = window.location.pathname
+		var currentUrl = window.location.pathname;
 		const {
 			sidebarVisible,
 			authenticated,
 			action_onClickLink,
 			action_sidebarVis,
 			routes
-		} = this.props
+		} = this.props;
+
 		return (
 			<Grid columns={1} container centered divided>
 				<Grid.Row centered only="computer" padded>
@@ -101,9 +108,11 @@ export default class NavbarLayout extends Component {
 
 					<Grid.Column only="tablet mobile">
 
-						<Button onClick={action_sidebarVis.bind(this)}>
-							Menu
-						</Button>
+						{sidebarVisible
+							? null
+							: <Button onClick={action_sidebarVis.bind(this)}>
+									{" "}Menu{" "}
+								</Button>}
 
 						<Sidebar
 							as={Menu}
@@ -116,13 +125,39 @@ export default class NavbarLayout extends Component {
 							stackable
 							inverted={false}
 						>
+
 							<Menu.Menu>
+								<Menu.Item as={Segment} compact basic>
+									<Segment basic>
+										<Button
+											basic
+											size="tiny"
+											floated="right"
+											icon="remove"
+											onClick={action_sidebarVis.bind(
+												this
+											)}
+										/>
+									</Segment>
+								</Menu.Item>
 								<Menu.Item
 									header
 									id={routes.homePath} //the url
-									name="home"
+									name="shelter"
 									active={currentUrl.includes(
 										routes.homePath
+									)}
+									onClick={action_onClickLink.bind(this)}
+								/>
+							</Menu.Menu>
+
+							<Menu.Menu>
+								<Menu.Item
+									header
+									id={routes.sheltersMapPath} //the url
+									name="interactive map"
+									active={currentUrl.includes(
+										routes.sheltersMapPath
 									)}
 									onClick={action_onClickLink.bind(this)}
 								/>
@@ -179,6 +214,6 @@ export default class NavbarLayout extends Component {
 
 				</Grid.Row>
 			</Grid>
-		)
+		);
 	}
 }

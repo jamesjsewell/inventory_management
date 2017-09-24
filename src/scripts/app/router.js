@@ -1,8 +1,8 @@
-import React, { Component } from "react"
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom"
-import { connect } from "react-redux"
-import { withRouter } from "react-router"
-import createHistory from "history/createBrowserHistory"
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { connect } from "react-redux";
+import { withRouter } from "react-router";
+import createHistory from "history/createBrowserHistory";
 // import Navbar from "./pages/navBarComponent.js"
 // import Register from "./authComponents/registerComponent.js"
 // import Login from "./authComponents/loginComponent.js"
@@ -32,25 +32,25 @@ import {
     Container,
     Icon,
     Divider
-} from "semantic-ui-react"
+} from "semantic-ui-react";
 
-import HomeView from "../features/home/components/HomeView.jsx"
-import Navbar from "../features/navbar/components/NavbarView.jsx"
+import HomeView from "../features/home/components/HomeView.jsx";
+import Navbar from "../features/navbar/components/NavbarView.jsx";
 import UserSessionView
-    from "../features/userSession/components/UserSessionView.jsx"
+    from "../features/userSession/components/UserSessionView.jsx";
 import ResetPasswordView
-    from "../features/userSession/components/ResetPasswordView.jsx"
+    from "../features/userSession/components/ResetPasswordView.jsx";
 import EditProfileView
-    from "../features/userProfile/components/EditProfileView.jsx"
-import NeedsPollView from "../features/needsPoll/components/NeedsPollView.jsx"
-import SheltersView from "../features/shelters/components/SheltersView.jsx"
-import Authentication from "../util/userAuthentication/components/Authentication.jsx"
-import SearchBarView from "../components/maps/components/SearchBarView.jsx"
-
+    from "../features/userProfile/components/EditProfileView.jsx";
+import NeedsPollView from "../features/needsPoll/components/NeedsPollView.jsx";
+import SheltersView from "../features/shelters/components/SheltersView.jsx";
+import Authentication
+    from "../util/userAuthentication/components/Authentication.jsx";
+import SearchBarView from "../components/maps/components/SearchBarView.jsx";
 
 class Blank extends Component {
     render() {
-        return <div />
+        return <div />;
     }
 }
 
@@ -97,7 +97,10 @@ class RouterConfig extends Component {
 
                     </Dimmer>
 
-                    <Navbar />
+                    
+                        <Navbar />
+            
+
                     <Authentication />
 
                     <Switch>
@@ -113,9 +116,15 @@ class RouterConfig extends Component {
                                 this.props.user ? EditProfileView : Blank
                             }
                         />
-                       
-                        <Route path="/interactive_map" component={SheltersView} />
-                        <Route path="/shelter/:openedShelter" component={NeedsPollView} />
+
+                        <Route
+                            path="/interactive_map"
+                            component={SheltersView}
+                        />
+                        <Route
+                            path="/shelter/:openedShelter"
+                            component={NeedsPollView}
+                        />
                         <Route path="/shelter" component={NeedsPollView} />
                         <Route path="/login" component={UserSessionView} />
                         <Route path="/register" component={Blank} />
@@ -127,7 +136,7 @@ class RouterConfig extends Component {
                 </Container>
 
             </Router>
-        )
+        );
     }
 }
 
@@ -138,10 +147,10 @@ class RouterConfig extends Component {
 function mapStateToProps(state) {
     return {
         user: state.auth.userSession.user
-    }
+    };
 }
 
 // {
 //     setActiveNavLink, hideSidebar, dataIsLoading
 // }
-export default withRouter(connect(mapStateToProps)(RouterConfig))
+export default withRouter(connect(mapStateToProps)(RouterConfig));
