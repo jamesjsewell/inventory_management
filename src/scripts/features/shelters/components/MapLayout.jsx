@@ -135,6 +135,7 @@ export default class MapLayout extends Component {
                               this
                           )}
                           user={this.props.user}
+                          history={this.props.history}
                       />
                     : null
             );
@@ -286,36 +287,69 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                       >
 
-                          <Segment compact size="mini">
+                          {props.user
+                              ? <Segment compact size="mini">
 
-                              <Header compact>
+                                    <Header compact>
 
-                                  create a shelter for
-                                  {" "}
-                                  {props.places[0].name}
-                              </Header>
+                                        create a shelter for
+                                        {" "}
+                                        {props.places[0].name}
+                                    </Header>
 
-                              <Segment basic size="mini" compact>
-                                  <Header.Subheader>
-                                      {props.places[0].formatted_address}
+                                    <Segment basic size="mini" compact>
+                                        <Header.Subheader>
+                                            {props.places[0].formatted_address}
 
-                                  </Header.Subheader>
-                                  <Divider />
-                                  <Button
-                                      positive
-                                      size="mini"
-                                      onClick={() => {
-                                          props.addThisNewShelter(
-                                              props.places[0],
-                                              props.user ? props.user._id : null
-                                          );
-                                      }}
-                                  >
-                                      create
-                                  </Button>
-                              </Segment>
+                                        </Header.Subheader>
+                                        <Divider />
+                                        <Button
+                                            positive
+                                            size="mini"
+                                            onClick={() => {
+                                                props.addThisNewShelter(
+                                                    props.places[0],
+                                                    props.user
+                                                        ? props.user._id
+                                                        : null
+                                                );
+                                            }}
+                                        >
+                                            create
+                                        </Button>
+                                    </Segment>
 
-                          </Segment>
+                                </Segment>
+                              : <Segment compact size="mini">
+
+                                    <Header compact>
+
+                                        assign a shelter to
+                                        {" "}
+                                        {props.places[0].name}
+
+                                    </Header>
+
+                                    <Segment basic size="mini" compact>
+                                        <Header.Subheader>
+                                            {props.places[0].formatted_address}
+
+                                        </Header.Subheader>
+                                        <Divider />
+
+                                        you must {" "} <Button
+                                            basic
+                                            positive
+                                            size="mini"
+                                            onClick={() => {props.history.push("/login")}}
+                                        >
+                                            login
+                                        </Button>
+                                        {" "}
+                                        to assign shelters
+                                    </Segment>
+
+                                </Segment>}
 
                       </OverlayView>
                   </Marker>
