@@ -269,7 +269,7 @@ export default class SheltersLayout extends Component {
                 );
             }
         }
-
+        
         return (
             <Grid container columns="equal" stackable>
                 <Grid.Row>
@@ -279,38 +279,90 @@ export default class SheltersLayout extends Component {
 
                             <MapView {...this.props} />
 
-                            <Modal open={this.state.userIsCreatingItem}>
+                            <Modal
+                                open={this.state.userIsCreatingItem}
+                                size="large"
+                            >
 
-                                <Segment loading={asyncItems}>
-                                    <NewItemForm
-                                        userId={this.state.userId}
-                                        resetStatus={this.props.actions.resetStatus.bind(
-                                            this
-                                        )}
-                                        errorAddingItem={
-                                            this.props.statusOfCreateItem.error
-                                        }
-                                        successAddingItem={
-                                            this.props.statusOfCreateItem
-                                                .success
-                                        }
-                                        doThisOnSubmit={userInput => {
-                                            if (userInput) {
-                                                this.props.actions.createItem(
-                                                    userInput,
-                                                    this.state.userId,
-                                                    this.props
-                                                        .collectionOfItems,
-                                                    this.props.newShelterPlace
+                                <Segment basic>
+                                    <Segment
+                                        basic
+                                        size="tiny"
+                                        clearing
+                                        floating="right"
+                                        textAlign="right"
+                                    >
+                                        <Button
+                                            size="mini"
+                                            icon="remove"
+                                            onClick={() => {
+                                                this.props.actions.resetStatus(
+                                                    "addingItem"
                                                 );
+                                                this.setState({
+                                                    userIsCreatingItem: false
+                                                });
+                                            }}
+                                        />
+                                    </Segment>
+
+                                    <Segment>
+                                        <Header>
+                                            {this.props.newShelterPlace
+                                                ? this.props.newShelterPlace
+                                                      .name
+                                                : null}
+                                        </Header>
+
+                                        <Header.Subheader>
+                                            {this.props.newShelterPlace
+                                                ? this.props.newShelterPlace
+                                                      .formatted_address
+                                                : null}
+                                        </Header.Subheader>
+
+                                    </Segment>
+
+                                    <Segment size="large" loading={asyncItems}>
+                                        <NewItemForm
+                                            userId={this.state.userId}
+                                            resetStatus={this.props.actions.resetStatus.bind(
+                                                this
+                                            )}
+                                            errorAddingItem={
+                                                this.props.statusOfCreateItem
+                                                    .error
                                             }
-                                        }}
-                                    />
-                                    {this.state.successAddingItem
-                                        ? <Message positive>
-                                              added item!
-                                          </Message>
-                                        : null}
+                                            successAddingItem={
+                                                this.props.statusOfCreateItem
+                                                    .success
+                                            }
+                                            doThisOnSubmit={userInput => {
+                                                if (userInput) {
+                                                    this.props.actions.createItem(
+                                                        userInput,
+                                                        this.state.userId,
+                                                        this.props
+                                                            .collectionOfItems,
+                                                        this.props
+                                                            .newShelterPlace
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                        {this.state.successAddingItem
+                                            ? <Message positive>
+                                                  added item!
+                                              </Message>
+                                            : null}
+
+                                        {this.state.errorAddingItem
+                                            ? <Message negative>
+                                                  something went wrong
+                                              </Message>
+                                            : null}
+
+                                    </Segment>
 
                                 </Segment>
 

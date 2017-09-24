@@ -107,13 +107,14 @@ class NewItemForm extends Component {
                 size="large"
                 padded
                 widths="equal"
+                size="large"
             >
 
                 {this.renderAlert()}
 
-                <Segment.Group horizontal>
+                <Segment.Group horizontal size="large">
 
-                    <Segment>
+                    <Segment size="large">
                         <Field
                             placeholder="enter name of location"
                             name="nameOfItem"
@@ -128,7 +129,7 @@ class NewItemForm extends Component {
                     : null}
                     </Segment>
 
-                    <Segment>
+                    <Segment size="large">
 
                         <textarea
                             as={Segment}
