@@ -36,7 +36,8 @@ export default class SheltersLayout extends Component {
             itemRemovalPromptOpen: false,
             userIsEditingItem: false,
             userIsCreatingItem: false,
-            loggedIn: false
+            loggedIn: false,
+            instructions: false
         };
     }
     componentWillMount() {
@@ -269,265 +270,132 @@ export default class SheltersLayout extends Component {
                 );
             }
         }
-        
+
         return (
-            <Grid container columns="equal" stackable>
-                <Grid.Row>
-                    <Grid.Column width={16}>
+            <Modal
+                open
+                size="fullscreen"
+                style={{ overflow: "hidden", width: "90vw", height: "90vh" }}
+            >
+
+                <Modal.Content>
+
+                    <Segment floating="left" compact size="mini">
+                        <Button
+                            size="mini"
+                            icon="add"
+                            onClick={() => {
+                                this.setState({ instructions: true });
+                            }}
+                        /> {" "} instructions
+                    </Segment>
+
+                    <MapView {...this.props} />
+
+                    <Modal open={this.state.userIsCreatingItem} size="large">
 
                         <Segment basic>
-
-                            <MapView {...this.props} />
-
-                            <Modal
-                                open={this.state.userIsCreatingItem}
-                                size="large"
+                            <Segment
+                                basic
+                                size="tiny"
+                                clearing
+                                floating="right"
+                                textAlign="right"
                             >
+                                <Button
+                                    size="mini"
+                                    icon="remove"
+                                    onClick={() => {
+                                        this.props.actions.resetStatus(
+                                            "addingItem"
+                                        );
+                                        this.setState({
+                                            userIsCreatingItem: false
+                                        });
+                                    }}
+                                />
+                            </Segment>
 
-                                <Segment basic>
-                                    <Segment
-                                        basic
-                                        size="tiny"
-                                        clearing
-                                        floating="right"
-                                        textAlign="right"
-                                    >
-                                        <Button
-                                            size="mini"
-                                            icon="remove"
-                                            onClick={() => {
-                                                this.props.actions.resetStatus(
-                                                    "addingItem"
-                                                );
-                                                this.setState({
-                                                    userIsCreatingItem: false
-                                                });
-                                            }}
-                                        />
-                                    </Segment>
+                            <Segment>
+                                <Header>
+                                    {this.props.newShelterPlace
+                                        ? this.props.newShelterPlace.name
+                                        : null}
+                                </Header>
 
-                                    <Segment>
-                                        <Header>
-                                            {this.props.newShelterPlace
-                                                ? this.props.newShelterPlace
-                                                      .name
-                                                : null}
-                                        </Header>
+                                <Header.Subheader>
+                                    {this.props.newShelterPlace
+                                        ? this.props.newShelterPlace
+                                              .formatted_address
+                                        : null}
+                                </Header.Subheader>
 
-                                        <Header.Subheader>
-                                            {this.props.newShelterPlace
-                                                ? this.props.newShelterPlace
-                                                      .formatted_address
-                                                : null}
-                                        </Header.Subheader>
+                            </Segment>
 
-                                    </Segment>
-
-                                    <Segment size="large" loading={asyncItems}>
-                                        <NewItemForm
-                                            userId={this.state.userId}
-                                            resetStatus={this.props.actions.resetStatus.bind(
-                                                this
-                                            )}
-                                            errorAddingItem={
-                                                this.props.statusOfCreateItem
-                                                    .error
-                                            }
-                                            successAddingItem={
-                                                this.props.statusOfCreateItem
-                                                    .success
-                                            }
-                                            doThisOnSubmit={userInput => {
-                                                if (userInput) {
-                                                    this.props.actions.createItem(
-                                                        userInput,
-                                                        this.state.userId,
-                                                        this.props
-                                                            .collectionOfItems,
-                                                        this.props
-                                                            .newShelterPlace
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                        {this.state.successAddingItem
-                                            ? <Message positive>
-                                                  added item!
-                                              </Message>
-                                            : null}
-
-                                        {this.state.errorAddingItem
-                                            ? <Message negative>
-                                                  something went wrong
-                                              </Message>
-                                            : null}
-
-                                    </Segment>
-
-                                </Segment>
-
-                            </Modal>
-
-                            <Segment basic loading={asyncItems}>
-
-                                <Modal
-                                    open={this.state.userIsEditingItem}
-                                    size="huge"
-                                >
-                                    <Segment>
-                                        <Button
-                                            type="button"
-                                            floated="right"
-                                            icon="remove"
-                                            onClick={() => {
-                                                this.props.actions.editItem(
-                                                    "",
-                                                    true
-                                                );
-                                            }}
-                                        />
-                                    </Segment>
-                                    <Modal.Content>
-
-                                        <Grid columns={2} as={Segment} basic>
-                                            <Grid.Column width={9}>
-                                                <EditItem
-                                                    collectionOfItems={
-                                                        collectionOfItems
-                                                    }
-                                                    idOfEditedItem={
-                                                        this.props
-                                                            .statusOfEditItem
-                                                            .idOfItem
-                                                    }
-                                                    updateItem={this.props.actions.updateItem.bind(
-                                                        this
-                                                    )}
-                                                />
-                                            </Grid.Column>
-                                            <Grid.Column width={7}>
-                                                <Item
-                                                    isPreview={true}
-                                                    description={
-                                                        this.state
-                                                            .userIsEditingItem &&
-                                                            model
-                                                            ? model.get(
-                                                                  "description"
-                                                              )
-                                                            : null
-                                                    }
-                                                    nameOfItem={
-                                                        this.state
-                                                            .userIsEditingItem &&
-                                                            model
-                                                            ? model.get(
-                                                                  "nameOfItem"
-                                                              )
-                                                            : null
-                                                    }
-                                                    idOfItem={
-                                                        this.props
-                                                            .statusOfEditItem
-                                                            .idOfItem
-                                                    }
-                                                    collectionOfItems={
-                                                        this.props
-                                                            .collectionOfItems
-                                                    }
-                                                />
-                                                {this.state.successUpdatingItem
-                                                    ? <Message positive>
-                                                          updated successfully
-                                                      </Message>
-                                                    : null}
-                                                {this.state.errorUpdatingItem
-                                                    ? <Message negative>
-                                                          something went wrong
-                                                      </Message>
-                                                    : null}
-                                            </Grid.Column>
-
-                                        </Grid>
-
-                                    </Modal.Content>
-                                </Modal>
-
-                                <Modal open={this.state.itemRemovalPromptOpen}>
-                                    <Button
-                                        icon="close"
-                                        basic
-                                        floated="right"
-                                        onClick={() => {
-                                            this.props.actions.resetStatus(
-                                                "removingItem"
+                            <Segment size="large" loading={asyncItems}>
+                                <NewItemForm
+                                    userId={this.state.userId}
+                                    resetStatus={this.props.actions.resetStatus.bind(
+                                        this
+                                    )}
+                                    errorAddingItem={
+                                        this.props.statusOfCreateItem.error
+                                    }
+                                    successAddingItem={
+                                        this.props.statusOfCreateItem.success
+                                    }
+                                    doThisOnSubmit={userInput => {
+                                        if (userInput) {
+                                            this.props.actions.createItem(
+                                                userInput,
+                                                this.state.userId,
+                                                this.props.collectionOfItems,
+                                                this.props.newShelterPlace
                                             );
-                                        }}
-                                    />
+                                        }
+                                    }}
+                                />
+                                {this.state.successAddingItem
+                                    ? <Message positive>
+                                          added item!
+                                      </Message>
+                                    : null}
 
-                                    <Modal.Header>
-                                        are you sure you want to delete this item?
-                                    </Modal.Header>
-                                    <Modal.Content>
-
-                                        <Button
-                                            onClick={() => {
-                                                this.props.actions.resetStatus(
-                                                    "removingItem"
-                                                );
-                                            }}
-                                            positive
-                                        >
-                                            no
-                                        </Button>
-
-                                        <Button
-                                            onClick={() => {
-                                                this.props.actions.removeItem(
-                                                    statusOfRemoveItemPrompt.idOfItem,
-                                                    collectionOfItems,
-                                                    false
-                                                );
-                                            }}
-                                            negative
-                                        >
-                                            yes
-                                        </Button>
-
-                                        {this.props.statusOfRemoveItem.error
-                                            ? <Message negative>
-                                                  something went wrong
-                                              </Message>
-                                            : null}
-
-                                    </Modal.Content>
-
-                                </Modal>
+                                {this.state.errorAddingItem
+                                    ? <Message negative>
+                                          something went wrong
+                                      </Message>
+                                    : null}
 
                             </Segment>
 
                         </Segment>
 
-                    </Grid.Column>
+                    </Modal>
+                </Modal.Content>
+                <Modal size="large" open={this.state.instructions} basic>
 
-                    <Grid.Column />
+                    <Button
+                        basic
+                        inverted
+                        floated="right"
+                        size="mini"
+                        icon="remove"
+                        onClick={() => {
+                            this.setState({ instructions: false });
+                        }}
+                    />
 
-                </Grid.Row>
+                    <Modal.Content size="massive">
 
-                <Grid.Row>
+                        <Container as={Segment} basic size="massive" text>
+                            This is a custom version of google maps. It allows you to search for a place in the world and add a "shelter" there, or view the shelter that has already been assigned to the place. Search and navigate the map just as you would in Google Maps. Zoom and street view features can be found at the bottom right corner of the map.
+                        </Container>
 
-                    <Grid.Column>
-                        <Header
-                            attached="top"
-                            size="large"
-                            textAlign="center"
-                        />
-                        <Segment attached />
+                    </Modal.Content>
 
-                    </Grid.Column>
-
-                </Grid.Row>
-            </Grid>
+                </Modal>
+            </Modal>
         );
     }
 }

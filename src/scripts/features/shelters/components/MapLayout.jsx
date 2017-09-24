@@ -152,16 +152,16 @@ export default class MapLayout extends Component {
                 containerElement={
                     <div
                         style={{
-                            height: `100%`,
+                            height: `75vh`,
                             width: `100%`,
-                            overflow: `hidden`
+                            
                         }}
                     />
                 }
                 mapElement={
                     <div
                         style={{
-                            height: `50rem`,
+                            height: `75vh`,
                             width: `100%`,
                             overflow: `hidden`
                         }}
