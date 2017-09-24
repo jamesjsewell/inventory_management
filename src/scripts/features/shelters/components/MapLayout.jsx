@@ -136,6 +136,8 @@ export default class MapLayout extends Component {
                           )}
                           user={this.props.user}
                           history={this.props.history}
+                          shelterCookie={this.props.shelterCookie}
+                          homeLink={this.props.homeLink}
                       />
                     : null
             );
@@ -195,6 +197,28 @@ class Amarker extends Component {
         this.state = { thisMarker: "closed" };
     }
 
+    handleOpenShelter() {
+        if (this.props.user) {
+            if (this.props.user.currentShelter) {
+                if (this.props.user.currentShelter === this.props.shelter._id) {
+                    this.props.history.push(this.props.homeLink);
+                    return;
+                }
+            }
+        }
+        if (this.props.shelterCookie) {
+            if (this.props.shelterCookie === this.props.shelter._id) {
+                this.props.history.push(this.props.homeLink);
+                return;
+            }
+        }
+
+        this.props.openShelter(
+            this.props.shelter._id,
+            this.props.user ? this.props.user._id : undefined
+        );
+    }
+
     render() {
         const { place, shelter, position } = this.props;
 
@@ -235,12 +259,8 @@ class Amarker extends Component {
                                       size="mini"
                                       onClick={e => {
                                           e.preventDefault();
-                                          this.props.openShelter(
-                                              shelter._id,
-                                              this.props.user
-                                                  ? this.props.user._id
-                                                  : undefined
-                                          );
+
+                                          this.handleOpenShelter();
                                       }}
                                   >
                                       enter
@@ -341,7 +361,9 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                             basic
                                             positive
                                             size="mini"
-                                            onClick={() => {props.history.push("/login")}}
+                                            onClick={() => {
+                                                props.history.push("/login");
+                                            }}
                                         >
                                             login
                                         </Button>
