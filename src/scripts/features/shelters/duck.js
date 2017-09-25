@@ -362,6 +362,7 @@ export function resetStatus(statusOf, data) {
 				}
 			});
 		}
+
 	};
 }
 

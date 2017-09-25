@@ -55,6 +55,14 @@ export default class SheltersLayout extends Component {
             this.handleUserAction("creating", nextProps.newShelterPlace);
         }
 
+        if (
+            this.props.statusOfCreateShelter.inProgress === true &&
+            !nextProps.statusOfCreateShelter.inProgress
+        ) {
+            this.state.userIsCreatingItem = false;
+        }
+
+
         if (!this.props.newShelterId && nextProps.newShelterId) {
             this.handleUserAction("doneCreating", nextProps.newShelterId);
         }
@@ -297,7 +305,6 @@ export default class SheltersLayout extends Component {
                               <Divider />
                               <Segment floating="right" compact size="mini">
                                   <Button
-    
                                       size="mini"
                                       icon="add"
                                       positive
@@ -339,7 +346,7 @@ export default class SheltersLayout extends Component {
                                     icon="remove"
                                     onClick={() => {
                                         this.props.actions.resetStatus(
-                                            "addingItem"
+                                            "creating"
                                         );
                                         this.setState({
                                             userIsCreatingItem: false

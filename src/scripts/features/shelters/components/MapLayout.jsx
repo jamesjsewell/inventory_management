@@ -73,16 +73,24 @@ export default class MapLayout extends Component {
                 },
                 (place, status) => {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
-                        
                         if (this._searchBox) {
-
-                            this.setState({ clickedPlace: place });
+                            this.setState({
+                                clickedPlace: place,
+                                center: place.geometry.location
+                            });
                         }
-                        
                     }
                 }
             );
         }
+    }
+
+    handleClickedButton(location) {
+        this.setState({ center: location });
+    }
+
+    handleClosedPlace() {
+        this.setState({ clickedPlace: null });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -132,6 +140,7 @@ export default class MapLayout extends Component {
 
             this.setState({
                 center: mapCenter,
+                clickedPlace: null,
                 markers
             });
 
@@ -163,6 +172,7 @@ export default class MapLayout extends Component {
                           history={this.props.history}
                           shelterCookie={this.props.shelterCookie}
                           homeLink={this.props.homeLink}
+                          clickedButton={this.handleClickedButton.bind(this)}
                       />
                     : null
             );
@@ -211,7 +221,10 @@ export default class MapLayout extends Component {
                     this
                 )}
                 searchPlace={this.handleClickedPlace.bind(this)}
-                clickedPlace={this.state.clickedPlace? this.state.clickedPlace : null}
+                clickedPlace={
+                    this.state.clickedPlace ? this.state.clickedPlace : null
+                }
+                closePlace={this.handleClosedPlace.bind(this)}
             />
         );
     }
@@ -298,6 +311,9 @@ class Amarker extends Component {
                               size="mini"
                               positive
                               onClick={() => {
+                                  this.props.clickedButton(
+                                      place.geometry.location
+                                  );
                                   this.setState({ thisMarker: "open" });
                               }}
                               icon="add"
@@ -330,16 +346,25 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                 inputPlaceholder={"Search"}
                 inputStyle={INPUT_STYLE}
             />
-            {props.clickedPlace ? <Marker position={props.clickedPlace.geometry.location} >
+            {props.clickedPlace
+                ? <Marker position={props.clickedPlace.geometry.location}>
 
-                <OverlayView
+                      <OverlayView
                           position={props.clickedPlace.geometry.location}
                           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                       >
 
                           {props.user
                               ? <Segment compact size="mini">
-
+                                    <Button
+                                        size="mini"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            props.closePlace();
+                                        }}
+                                        floated="right"
+                                        icon="remove"
+                                    />
                                     <Header compact>
 
                                         create a shelter for
@@ -349,15 +374,18 @@ const SearchBoxExampleGoogleMap = withScriptjs(
 
                                     <Segment basic size="mini" compact>
                                         <Header.Subheader>
-                                            {props.clickedPlace.formatted_address}
+                                            {
+                                                props.clickedPlace
+                                                    .formatted_address
+                                            }
 
                                         </Header.Subheader>
                                         <Divider />
                                         <Button
                                             positive
                                             size="mini"
-                                            onClick={(e) => {
-                                                e.preventDefault()
+                                            onClick={e => {
+                                                e.preventDefault();
                                                 props.addThisNewShelter(
                                                     props.clickedPlace,
                                                     props.user
@@ -372,7 +400,15 @@ const SearchBoxExampleGoogleMap = withScriptjs(
 
                                 </Segment>
                               : <Segment compact size="mini">
-
+                                    <Button
+                                        size="mini"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            props.closePlace();
+                                        }}
+                                        floated="right"
+                                        icon="remove"
+                                    />
                                     <Header compact>
 
                                         assign a shelter to
@@ -383,7 +419,10 @@ const SearchBoxExampleGoogleMap = withScriptjs(
 
                                     <Segment basic size="mini" compact>
                                         <Header.Subheader>
-                                            {props.clickedPlace.formatted_address}
+                                            {
+                                                props.clickedPlace
+                                                    .formatted_address
+                                            }
 
                                         </Header.Subheader>
                                         <Divider />
@@ -392,8 +431,8 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                             basic
                                             positive
                                             size="mini"
-                                            onClick={(e) => {
-                                                e.preventDefault()
+                                            onClick={e => {
+                                                e.preventDefault();
                                                 props.history.push("/login");
                                             }}
                                         >
@@ -407,9 +446,10 @@ const SearchBoxExampleGoogleMap = withScriptjs(
 
                       </OverlayView>
 
-                      </Marker> :null  }
+                  </Marker>
+                : null}
 
-            {props.markers[0] && !props.itemExists
+            {props.markers[0] && !props.itemExists && !props.clickedPlace
                 ? <Marker position={props.markers[0].position}>
                       <OverlayView
                           position={props.markers[0].position}
@@ -435,8 +475,8 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                         <Button
                                             positive
                                             size="mini"
-                                            onClick={(e) => {
-                                                e.preventDefault()
+                                            onClick={e => {
+                                                e.preventDefault();
                                                 props.addThisNewShelter(
                                                     props.places[0],
                                                     props.user
@@ -471,8 +511,8 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                             basic
                                             positive
                                             size="mini"
-                                            onClick={(e) => {
-                                                e.preventDefault()
+                                            onClick={e => {
+                                                e.preventDefault();
                                                 props.history.push("/login");
                                             }}
                                         >
