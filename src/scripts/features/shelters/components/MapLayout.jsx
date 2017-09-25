@@ -57,7 +57,8 @@ export default class MapLayout extends Component {
             markers: [],
             itemExists: null,
             entered: false,
-            clickedPlace: null
+            clickedPlace: null,
+            searchResult: null
         };
     }
 
@@ -91,6 +92,10 @@ export default class MapLayout extends Component {
 
     handleClosedPlace() {
         this.setState({ clickedPlace: null });
+    }
+
+    handleClosedSearchResult(){
+        this.setState({ searchResult: null})
     }
 
     componentWillReceiveProps(nextProps) {
@@ -141,6 +146,7 @@ export default class MapLayout extends Component {
             this.setState({
                 center: mapCenter,
                 clickedPlace: null,
+                searchResult: true,
                 markers
             });
 
@@ -225,6 +231,8 @@ export default class MapLayout extends Component {
                     this.state.clickedPlace ? this.state.clickedPlace : null
                 }
                 closePlace={this.handleClosedPlace.bind(this)}
+                searchResult={this.state.searchResult}
+                closeSearchResult={this.handleClosedSearchResult.bind(this)}
             />
         );
     }
@@ -449,7 +457,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                   </Marker>
                 : null}
 
-            {props.markers[0] && !props.itemExists && !props.clickedPlace
+            {props.markers[0] && !props.itemExists && !props.clickedPlace && props.searchResult
                 ? <Marker position={props.markers[0].position}>
                       <OverlayView
                           position={props.markers[0].position}
@@ -458,6 +466,16 @@ const SearchBoxExampleGoogleMap = withScriptjs(
 
                           {props.user
                               ? <Segment compact size="mini">
+
+                              <Button
+                                        size="mini"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            props.closeSearchResult();
+                                        }}
+                                        floated="right"
+                                        icon="remove"
+                                    />
 
                                     <Header compact>
 
