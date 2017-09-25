@@ -56,8 +56,33 @@ export default class MapLayout extends Component {
             },
             markers: [],
             itemExists: null,
-            entered: false
+            entered: false,
+            clickedPlace: null
         };
+    }
+
+    handleClickedPlace(placeId) {
+        if (this._map && placeId) {
+            var service = new google.maps.places.PlacesService(
+                this._map.context.__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
+            );
+
+            service.getDetails(
+                {
+                    placeId: placeId
+                },
+                (place, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        
+                        if (this._searchBox) {
+
+                            this.setState({ clickedPlace: place });
+                        }
+                        
+                    }
+                }
+            );
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -153,8 +178,7 @@ export default class MapLayout extends Component {
                     <div
                         style={{
                             height: `75vh`,
-                            width: `100%`,
-                            
+                            width: `100%`
                         }}
                     />
                 }
@@ -186,6 +210,8 @@ export default class MapLayout extends Component {
                 addThisNewShelter={this.props.actions.addThisNewShelter.bind(
                     this
                 )}
+                searchPlace={this.handleClickedPlace.bind(this)}
+                clickedPlace={this.state.clickedPlace? this.state.clickedPlace : null}
             />
         );
     }
@@ -289,6 +315,11 @@ const SearchBoxExampleGoogleMap = withScriptjs(
             defaultZoom={15}
             center={props.center}
             onBoundsChanged={props.onBoundsChanged}
+            onClick={e => {
+                if (e.placeId) {
+                    props.searchPlace(e.placeId);
+                }
+            }}
         >
 
             <SearchBox
@@ -299,6 +330,84 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                 inputPlaceholder={"Search"}
                 inputStyle={INPUT_STYLE}
             />
+            {props.clickedPlace ? <Marker position={props.clickedPlace.geometry.location} >
+
+                <OverlayView
+                          position={props.clickedPlace.geometry.location}
+                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                      >
+
+                          {props.user
+                              ? <Segment compact size="mini">
+
+                                    <Header compact>
+
+                                        create a shelter for
+                                        {" "}
+                                        {props.clickedPlace.name}
+                                    </Header>
+
+                                    <Segment basic size="mini" compact>
+                                        <Header.Subheader>
+                                            {props.clickedPlace.formatted_address}
+
+                                        </Header.Subheader>
+                                        <Divider />
+                                        <Button
+                                            positive
+                                            size="mini"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                props.addThisNewShelter(
+                                                    props.clickedPlace,
+                                                    props.user
+                                                        ? props.user._id
+                                                        : null
+                                                );
+                                            }}
+                                        >
+                                            create
+                                        </Button>
+                                    </Segment>
+
+                                </Segment>
+                              : <Segment compact size="mini">
+
+                                    <Header compact>
+
+                                        assign a shelter to
+                                        {" "}
+                                        {props.clickedPlace.name}
+
+                                    </Header>
+
+                                    <Segment basic size="mini" compact>
+                                        <Header.Subheader>
+                                            {props.clickedPlace.formatted_address}
+
+                                        </Header.Subheader>
+                                        <Divider />
+
+                                        you must {" "} <Button
+                                            basic
+                                            positive
+                                            size="mini"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                props.history.push("/login");
+                                            }}
+                                        >
+                                            login
+                                        </Button>
+                                        {" "}
+                                        to assign shelters
+                                    </Segment>
+
+                                </Segment>}
+
+                      </OverlayView>
+
+                      </Marker> :null  }
 
             {props.markers[0] && !props.itemExists
                 ? <Marker position={props.markers[0].position}>
@@ -326,7 +435,8 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                         <Button
                                             positive
                                             size="mini"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.preventDefault()
                                                 props.addThisNewShelter(
                                                     props.places[0],
                                                     props.user
@@ -361,7 +471,8 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                             basic
                                             positive
                                             size="mini"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.preventDefault()
                                                 props.history.push("/login");
                                             }}
                                         >
