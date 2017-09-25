@@ -263,8 +263,7 @@ export default class NeedsPollLayout extends Component {
 
         if (type === "removeItem") {
             if (success) {
-                
-                this.props.history.replace(`../${this.props.sheltersMapPath}`)
+                this.props.history.replace(`../${this.props.sheltersMapPath}`);
             } else {
                 this.state.errorRemovingItem = true;
                 this.state.errorRemovingItem = setTimeout(() => {
@@ -839,6 +838,24 @@ export default class NeedsPollLayout extends Component {
 
                   </Grid.Row>
               </Grid>
-            : <div>click here to view shelters</div>;
+            : <Segment>
+                  <Segment basic loading />
+                  <Container as={Segment} size="huge" text>
+                      Loading the most recent shelter that you have entered. If this takes more than a few seconds, you may not have entered a shelter. Use the map to find or create a shelter.
+
+                  </Container>
+                  <Segment>
+                      <Button
+                          onClick={() => {
+                              this.props.history.push(
+                                  this.props.sheltersMapPath
+                              );
+                          }}
+                          positive
+                      >
+                          open map
+                      </Button>
+                  </Segment>
+              </Segment>;
     }
 }
