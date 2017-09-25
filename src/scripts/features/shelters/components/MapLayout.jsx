@@ -94,8 +94,8 @@ export default class MapLayout extends Component {
         this.setState({ clickedPlace: null });
     }
 
-    handleClosedSearchResult(){
-        this.setState({ searchResult: null})
+    handleClosedSearchResult() {
+        this.setState({ searchResult: null });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -457,7 +457,10 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                   </Marker>
                 : null}
 
-            {props.markers[0] && !props.itemExists && !props.clickedPlace && props.searchResult
+            {props.markers[0] &&
+                !props.itemExists &&
+                !props.clickedPlace &&
+                props.searchResult
                 ? <Marker position={props.markers[0].position}>
                       <OverlayView
                           position={props.markers[0].position}
@@ -467,7 +470,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                           {props.user
                               ? <Segment compact size="mini">
 
-                              <Button
+                                    <Button
                                         size="mini"
                                         onClick={e => {
                                             e.preventDefault();
