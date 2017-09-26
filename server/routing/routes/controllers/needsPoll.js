@@ -5,8 +5,8 @@ exports.postNeed = function(req, res, next) {
 		postedBy = req.body.postedBy,
 		degreeOfNeed = req.body.degreeOfNeed,
 		numberOfPeople = req.body.numberOfPeople,
-		description = req.body.description;
-	shelter = req.body.shelter;
+		description = req.body.description,
+		shelter = req.body.shelter;
 
 	const need = new Need({
 		nameOfNeed,
@@ -33,7 +33,7 @@ exports.getNeeds = function(req, res, next) {
 
 	Need.find(queryObj, function(err, results) {
 		if (err) return res.json({ error: "internal server error" });
-		
+
 		res.json(results);
 	});
 };
@@ -68,8 +68,8 @@ exports.deleteNeed = function(req, res, next) {
 
 exports.validateNewNeed = function(req, res, next) {
 	var nameOfNeed = req.body.values.nameOfNeed;
-	var shelter = req.body.values.shelter
-	console.log(shelter)
+	var shelter = req.body.values.shelter;
+	console.log(shelter);
 
 	Need.findOne({ nameOfNeed, shelter }, (err, existingNeed) => {
 		if (err) {
