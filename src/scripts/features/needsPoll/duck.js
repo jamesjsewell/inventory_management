@@ -14,7 +14,7 @@ import {
 } from "../../util/index.js";
 
 import { updateItem, removeItem, fetchItems } from "../shelters/duck.js";
-export { updateItem, removeItem, fetchItems};
+export { updateItem, removeItem, fetchItems };
 
 import { CollectionOfNeeds, NeedModel } from "../../models/needsPoll/need.js";
 import { CollectionOfItems, ItemModel } from "../../models/shelters/shelter.js";
@@ -27,7 +27,8 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 	UPDATE_NEED = "update_need",
 	EDIT_NEED = "edit_need",
 	FETCH_USER = "fetch_user",
-	FETCH_SHELTERS = "fetch_shelters";
+	FETCH_SHELTERS = "fetch_shelters",
+	FILTER_NEEDS = "filter_needs"
 
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
@@ -124,7 +125,7 @@ export function fetchShelter(shelterId) {
 
 			function fetchedShelter(collection, response, options) {
 				var shelter = response[0];
-				var shelterModel = collection.get(shelterId)
+				var shelterModel = collection.get(shelterId);
 
 				dispatch({
 					type: FETCH_SHELTERS,
@@ -317,6 +318,24 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 	};
 }
 
+export function findNeeds(value, collectionOfNeeds) {
+	return function(dispatch) {
+		if (value && collectionOfNeeds) {
+			var filtered = _.filter(collectionOfNeeds.models, function(model) {
+				() => {
+					if (model.attributes.name.includes(value)) {
+						return;
+					}
+					if(model.attributes.description.includes(value)){
+						return
+					}
+				};
+			});
+		}
+		console.log(filtered)
+	};
+}
+
 export function resetStatus(type) {
 	return function(dispatch) {
 		if (type === "addingNeed") {
@@ -405,13 +424,13 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			if (action.payload.status === "success") {
 				extendObj.shelter = action.payload.shelter;
 				extendObj.statusOfFetchShelters = action.payload.status;
-				if(action.payload.shelterModel){
-					extendObj.shelterModel = action.payload.shelterModel
+				if (action.payload.shelterModel) {
+					extendObj.shelterModel = action.payload.shelterModel;
 				}
 			}
 
 			if (action.payload.status === "clear") {
-				extendObj.shelterDidReset = true
+				extendObj.shelterDidReset = true;
 				extendObj.shelter = undefined;
 				extendObj.statusOfFetchShelters = "inactive";
 			}
@@ -530,6 +549,14 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			}
 
 			return _.extend({}, state, extendObj);
+
+		case FILTER_NEEDS:
+			var extendObj = {};
+			if (action.payload.filteredNeeds) {
+				extendObj.filteredArrayOfNeeds = action.payload.filteredNeeds;
+			}
+
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -571,7 +598,8 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	shelterModel = state => state.needsPoll.shelterModel,
 	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem,
 	statusOfRemoveItem = state => state.shelters.statusOfRemoveItem,
-	sheltersMapPath = state => state.nav.navLink.routes.sheltersMapPath
+	sheltersMapPath = state => state.nav.navLink.routes.sheltersMapPath,
+	filteredArrayOfNeeds = state => state.needsPoll.filteredArrayOfNeeds;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -606,5 +634,6 @@ export const selector = createStructuredSelector({
 	shelterModel,
 	statusOfUpdateItem,
 	statusOfRemoveItem,
-	sheltersMapPath
+	sheltersMapPath,
+	filteredArrayOfNeeds
 });

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Cookies from "universal-cookie";
+import _ from "underscore";
 
 import {
     Button,
@@ -14,7 +15,8 @@ import {
     Progress,
     Label,
     Divider,
-    Modal
+    Modal,
+    Search
 } from "semantic-ui-react";
 
 import NeedForm from "./NeedForm.jsx";
@@ -55,7 +57,11 @@ export default class NeedsPollLayout extends Component {
             successUpdatingItem: null,
             itemRemovalPrompt: false,
             errorRemovingItem: false,
-            successRemovingItem: false
+            successRemovingItem: false,
+            filterNeeds: false,
+            searchValue: "",
+            searchResults: null,
+            chosenResult: null
         };
 
         this.props.actions.fetchItems();
@@ -274,29 +280,89 @@ export default class NeedsPollLayout extends Component {
         }
     }
 
-    renderNeeds() {
-        var arrayOfNeedElements = [];
+    handleResultSelect(e, result) {
+        this.setState({ searchValue: result.title });
+
+        if (result.title) {
+            var found = _.find(this.props.arrayOfNeeds, need => {
+                if (need.attributes.nameOfNeed === result.title) {
+                    return need;
+                }
+            });
+
+            this.setState({ chosenResult: found });
+
+            return;
+        }
+
+        if (result.description) {
+            var found = _.find(this.props.arrayOfNeeds, need => {
+                if (need.attributes.description === result.description) {
+                    return need;
+                }
+            });
+
+            this.setState({ chosenResult: found });
+
+            return;
+        }
+    }
+
+    handleSearchChange(e, value) {
+        e.preventDefault();
+
+        this.setState({ searchValue: value });
 
         if (this.props.arrayOfNeeds) {
-            for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
-                arrayOfNeedElements.push(
+            var filtered = _.filter(this.props.arrayOfNeeds, function(need) {
+                if (need.attributes.nameOfNeed.includes(e.target.value)) {
+                    return need.attributes;
+                }
+                if (need.attributes.description.includes(e.target.value)) {
+                    return need.attributes;
+                }
+            });
+            console.log(filtered);
+
+            for (var i = 0; i < filtered.length; i++) {
+                filtered[i] = {
+                    title: filtered[i].attributes.nameOfNeed,
+                    description: filtered[i].attributes.description
+                };
+            }
+            if (filtered.length > 0) {
+                this.setState({ searchResults: filtered });
+            }
+        }
+
+        if(!value){
+            this.setState({chosenResult: null})
+        }
+
+
+    }
+
+    renderNeeds(filter) {
+        if (filter) {
+            if (this.state.chosenResult) {
+                return (
                     <Need
                         isPreview={this.props.user ? false : true}
                         updateNeed={this.props.actions.updateNeed.bind(this)}
                         removeNeed={this.props.actions.removeNeed.bind(this)}
                         nameOfNeed={
-                            this.props.arrayOfNeeds[i].attributes.nameOfNeed
+                            this.state.chosenResult.attributes.nameOfNeed
                         }
                         degreeOfNeed={
-                            this.props.arrayOfNeeds[i].attributes.degreeOfNeed
+                            this.state.chosenResult.attributes.degreeOfNeed
                         }
                         numberOfPeople={
-                            this.props.arrayOfNeeds[i].attributes.numberOfPeople
+                            this.state.chosenResult.attributes.numberOfPeople
                         }
                         description={
-                            this.props.arrayOfNeeds[i].attributes.description
+                            this.state.chosenResult.attributes.description
                         }
-                        idOfNeed={this.props.arrayOfNeeds[i].attributes._id}
+                        idOfNeed={this.state.chosenResult.attributes._id}
                         idOfUpdatedNeed={this.props.idOfUpdatedNeed}
                         collectionOfNeeds={this.props.collectionOfNeeds}
                         editNeed={this.props.actions.editNeed.bind(this)}
@@ -306,15 +372,60 @@ export default class NeedsPollLayout extends Component {
                         errorRemovingNeed={this.props.errorRemovingNeed}
                     />
                 );
-
-                if (i != this.props.arrayOfNeeds.length - 1) {
-                    arrayOfNeedElements.push(<Divider />);
-                }
+            } else {
+                return null;
             }
-
-            return arrayOfNeedElements;
         } else {
-            return null;
+            var arrayOfNeedElements = [];
+
+            if (this.props.arrayOfNeeds) {
+                for (var i = 0; i < this.props.arrayOfNeeds.length; i++) {
+                    arrayOfNeedElements.push(
+                        <Need
+                            isPreview={this.props.user ? false : true}
+                            updateNeed={this.props.actions.updateNeed.bind(
+                                this
+                            )}
+                            removeNeed={this.props.actions.removeNeed.bind(
+                                this
+                            )}
+                            nameOfNeed={
+                                this.props.arrayOfNeeds[i].attributes.nameOfNeed
+                            }
+                            degreeOfNeed={
+                                this.props.arrayOfNeeds[i].attributes
+                                    .degreeOfNeed
+                            }
+                            numberOfPeople={
+                                this.props.arrayOfNeeds[i].attributes
+                                    .numberOfPeople
+                            }
+                            description={
+                                this.props.arrayOfNeeds[i].attributes
+                                    .description
+                            }
+                            idOfNeed={this.props.arrayOfNeeds[i].attributes._id}
+                            idOfUpdatedNeed={this.props.idOfUpdatedNeed}
+                            collectionOfNeeds={this.props.collectionOfNeeds}
+                            editNeed={this.props.actions.editNeed.bind(this)}
+                            errorUpdatingNeed={this.props.errorUpdatingNeed}
+                            updatedNeed={this.props.updatedNeed}
+                            resetStatus={this.props.actions.resetStatus.bind(
+                                this
+                            )}
+                            errorRemovingNeed={this.props.errorRemovingNeed}
+                        />
+                    );
+
+                    if (i != this.props.arrayOfNeeds.length - 1) {
+                        arrayOfNeedElements.push(<Divider />);
+                    }
+                }
+
+                return arrayOfNeedElements;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -462,7 +573,26 @@ export default class NeedsPollLayout extends Component {
                                                   added need!
                                               </Message>
                                             : null}
-
+                                        <Divider />
+                                        <Segment>
+                                            <Header>
+                                                search existing needs
+                                            </Header>
+                                            <Search
+                                                loading={""}
+                                                onResultSelect={this.handleResultSelect.bind(
+                                                    this
+                                                )}
+                                                onSearchChange={this.handleSearchChange.bind(
+                                                    this
+                                                )}
+                                                value={this.state.searchValue}
+                                                results={
+                                                    this.state.searchResults
+                                                }
+                                                {...this.props}
+                                            />
+                                        </Segment>
                                     </Segment>
                                   : null}
                               <Segment secondary as={Grid} columns={3} streched>
@@ -476,12 +606,23 @@ export default class NeedsPollLayout extends Component {
                                       plenty
                                   </Grid.Column>
                               </Segment>
-                              <Segment basic loading={asyncNeeds}>
 
-                                  {this.state.errorLoadingNeeds
-                                      ? <Message negative>
-                                            internal server error
-                                        </Message>
+                              <Segment basic loading={asyncNeeds}>
+                                  {this.state.chosenResult
+                                      ? <Button
+                                            onClick={e => {
+                                                e.preventDefault();
+                                                this.setState({
+                                                    chosenResult: null
+                                                });
+                                            }}
+                                        >
+                                            show all needs
+                                        </Button>
+                                      : null}
+
+                                  {this.state.chosenResult
+                                      ? this.renderNeeds(true)
                                       : this.renderNeeds()}
 
                                   <Modal
