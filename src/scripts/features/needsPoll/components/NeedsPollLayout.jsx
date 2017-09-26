@@ -322,7 +322,7 @@ export default class NeedsPollLayout extends Component {
                     return need.attributes;
                 }
             });
-            console.log(filtered);
+            
 
             for (var i = 0; i < filtered.length; i++) {
                 filtered[i] = {
@@ -335,11 +335,9 @@ export default class NeedsPollLayout extends Component {
             }
         }
 
-        if(!value){
-            this.setState({chosenResult: null})
+        if (!value) {
+            this.setState({ chosenResult: null });
         }
-
-
     }
 
     renderNeeds(filter) {
@@ -594,7 +592,23 @@ export default class NeedsPollLayout extends Component {
                                             />
                                         </Segment>
                                     </Segment>
-                                  : null}
+                                  : <Segment>
+                                        <Header>
+                                            search existing needs
+                                        </Header>
+                                        <Search
+                                            loading={""}
+                                            onResultSelect={this.handleResultSelect.bind(
+                                                this
+                                            )}
+                                            onSearchChange={this.handleSearchChange.bind(
+                                                this
+                                            )}
+                                            value={this.state.searchValue}
+                                            results={this.state.searchResults}
+                                            {...this.props}
+                                        />
+                                    </Segment>}
                               <Segment secondary as={Grid} columns={3} streched>
                                   <Grid.Column textAlign="left">
                                       not enough
