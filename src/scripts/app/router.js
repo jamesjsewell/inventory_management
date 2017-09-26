@@ -127,9 +127,9 @@ class RouterConfig extends Component {
                         />
                         <Route path="/shelter" component={NeedsPollView} />
                         <Route path="/login" component={UserSessionView} />
-                        <Route path="/register" component={Blank} />
-                        <Route exact path="/" component={HomeView} />
-                        <Route path="*" component={HomeView} />
+                        <Route path="/register" component={UserSessionView} />
+                        <Route exact path="/" component={NeedsPollView} />
+                        <Route path="*" component={NeedsPollView} />
 
                     </Switch>
 
