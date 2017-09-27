@@ -271,23 +271,20 @@ class Amarker extends Component {
 
         return (
             <Marker position={position}>
-                <OverlayView
-                    position={position}
-                    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                >
 
-                    {this.state.thisMarker === "open"
-                        ? <Segment compact size="mini">
-                              <Button
-                                  size="mini"
-                                  floated="right"
-                                  onClick={() => {
-                                      this.setState({
-                                          thisMarker: "closed"
-                                      });
-                                  }}
-                                  icon="minus"
-                              />
+                {this.state.thisMarker === "open"
+                    ? <InfoWindow
+                          onCloseClick={() => {
+                              this.setState({
+                                  thisMarker: "closed"
+                              });
+                          }}
+                          position={position}
+                          mapPaneName={OverlayView.FLOAT_PANE}
+                          zIndex={20}
+                      >
+                          <div>
+
                               <Header compact>
 
                                   {shelter.nameOfItem}
@@ -314,8 +311,13 @@ class Amarker extends Component {
                                   </Button>
                               </Segment>
 
-                          </Segment>
-                        : <Button
+                          </div>
+                      </InfoWindow>
+                    : <OverlayView
+                          position={position}
+                          mapPaneName={OverlayView.FLOAT_PANE}
+                      >
+                          <Button
                               size="mini"
                               positive
                               onClick={() => {
@@ -325,8 +327,9 @@ class Amarker extends Component {
                                   this.setState({ thisMarker: "open" });
                               }}
                               icon="add"
-                          />}
-                </OverlayView>
+                          />
+                      </OverlayView>}
+
             </Marker>
         );
     }
@@ -341,6 +344,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
             onBoundsChanged={props.onBoundsChanged}
             onClick={e => {
                 if (e.placeId) {
+                    //console.log(e)
                     props.searchPlace(e.placeId);
                 }
             }}
@@ -357,22 +361,17 @@ const SearchBoxExampleGoogleMap = withScriptjs(
             {props.clickedPlace
                 ? <Marker position={props.clickedPlace.geometry.location}>
 
-                      <OverlayView
+                      <InfoWindow
+                          onCloseClick={() => {
+                              props.closePlace();
+                          }}
                           position={props.clickedPlace.geometry.location}
-                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                          mapPaneName={OverlayView.FLOAT_PANE}
                       >
 
                           {props.user
-                              ? <Segment compact size="mini">
-                                    <Button
-                                        size="mini"
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            props.closePlace();
-                                        }}
-                                        floated="right"
-                                        icon="remove"
-                                    />
+                              ? <div compact size="mini">
+
                                     <Header compact>
 
                                         create a shelter for
@@ -406,17 +405,9 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                         </Button>
                                     </Segment>
 
-                                </Segment>
-                              : <Segment compact size="mini">
-                                    <Button
-                                        size="mini"
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            props.closePlace();
-                                        }}
-                                        floated="right"
-                                        icon="remove"
-                                    />
+                                </div>
+                              : <div compact size="mini">
+
                                     <Header compact>
 
                                         assign a shelter to
@@ -450,9 +441,9 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                         to assign shelters
                                     </Segment>
 
-                                </Segment>}
+                                </div>}
 
-                      </OverlayView>
+                      </InfoWindow>
 
                   </Marker>
                 : null}
@@ -462,23 +453,17 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                 !props.clickedPlace &&
                 props.searchResult
                 ? <Marker position={props.markers[0].position}>
-                      <OverlayView
+
+                      <InfoWindow
+                          onCloseClick={() => {
+                              props.closeSearchResult();
+                          }}
                           position={props.markers[0].position}
-                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                          mapPaneName={OverlayView.FLOAT_PANE}
                       >
 
                           {props.user
-                              ? <Segment compact size="mini">
-
-                                    <Button
-                                        size="mini"
-                                        onClick={e => {
-                                            e.preventDefault();
-                                            props.closeSearchResult();
-                                        }}
-                                        floated="right"
-                                        icon="remove"
-                                    />
+                              ? <div compact size="mini">
 
                                     <Header compact>
 
@@ -510,8 +495,8 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                         </Button>
                                     </Segment>
 
-                                </Segment>
-                              : <Segment compact size="mini">
+                                </div>
+                              : <div compact size="mini">
 
                                     <Header compact>
 
@@ -543,149 +528,12 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                                         to assign shelters
                                     </Segment>
 
-                                </Segment>}
+                                </div>}
 
-                      </OverlayView>
+                      </InfoWindow>
                   </Marker>
                 : null}
             {props.renderedPlaces ? props.renderedPlaces : null}
         </GoogleMap>
     ))
 );
-
-// //<Segment basic>
-// <Button
-// onClick={() => {
-// props.actions.addThisNewShelter(
-// props.places[0],
-// props.user._id
-// );
-// }}
-// >
-// add shelter
-// </Button>
-// </Segment>{" "}
-
-// {props.arrayOfItems.length > ? props.arrayOfItems.map((claimedPlace, index) => (
-
-//                 <Marker
-//                     onClick={() => {
-//                         console.log("clicked");
-//                     }}
-//                     position={claimedPlace[0].attributes.nameOfItem}
-//                     key={index}
-//                 >
-
-//                     <InfoWindow>
-//                         <Segment basic compact size="massive">
-//                             <Header>
-//                                 {" "}
-//                                 add a shelter to
-//                                 {" "}
-//                                 {claimedPlace.attributes.place.nameOfItem
-//                                     ? claimedPlace.attributes.place.nameOfItem
-//                                     : "this location"}
-//                                 {" "}
-//                             </Header>
-//                             {" "}
-//                             {claimedPlace.attributes.place.formatted_address}
-//                             {" "}
-
-//                         </Segment>
-//                     </InfoWindow>
-//                 </Marker>
-//             )) : null }
-
-// <Marker position={position}>
-//                 {this.state.thisMarker === "open"
-//                     ? <OverlayView
-//                           position={position}
-//                           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-//                       >
-
-//                           {!this.props.itemExists
-//                               ? <Segment compact size="mini">
-//                                     <Button
-//                                         size="mini"
-//                                         floated="right"
-//                                         onClick={() => {
-//                                             this.setState({
-//                                                 thisMarker: "closed"
-//                                             });
-//                                         }}
-//                                         icon="remove"
-//                                     />
-//                                     <Header compact>
-
-//                                         add a shelter here
-//                                     </Header>
-
-//                                     <Segment basic size="mini" compact>
-//                                         <Header.Subheader>
-//                                             {place.formatted_address}
-
-//                                         </Header.Subheader>
-//                                         <Divider />
-//                                         <Button
-//                                             icon="add"
-//                                             positive
-//                                             size="mini"
-//                                             onClick={() => {
-//                                                 console.log("clicked");
-//                                             }}
-//                                         >
-//                                             create{" "}
-//                                         </Button>
-//                                     </Segment>
-
-//                                 </Segment>
-//                               : <Segment compact size="mini">
-//                                     <Button
-//                                         size="mini"
-//                                         floated="right"
-//                                         onClick={() => {
-//                                             this.setState({
-//                                                 thisMarker: "closed"
-//                                             });
-//                                         }}
-//                                         icon="remove"
-//                                     />
-//                                     <Header compact>
-
-//                                         {shelter.nameOfItem}
-//                                     </Header>
-
-//                                     <Segment basic size="mini" compact>
-//                                         <Header.Subheader>
-//                                             {place.formatted_address}
-
-//                                         </Header.Subheader>
-//                                         <Divider />
-//                                         <Button
-//                                             positive
-//                                             size="mini"
-//                                             onClick={() => {
-//                                                 console.log("clicked");
-//                                             }}
-//                                         >
-//                                             enter
-//                                         </Button>
-//                                     </Segment>
-
-//                                 </Segment>}
-
-//                       </OverlayView>
-//                     : <OverlayView
-//                           position={position}
-//                           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-//                       >
-//                           <Button
-//                               size="mini"
-//                               positive
-//                               onClick={() => {
-//                                   this.setState({ thisMarker: "open" });
-//                               }}
-//                               icon="add"
-//                           />
-//                       </OverlayView>}
-//             </Marker>
