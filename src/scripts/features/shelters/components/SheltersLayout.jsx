@@ -290,19 +290,16 @@ export default class SheltersLayout extends Component {
 
                 <Modal.Content>
                     <Navbar as={Menu} size="mini" compact attached />
-
-                    <MapView attached as={Segment} {...this.props} />
-
-                    <Button
-                        size="mini"
-                        icon="add"
-                        positive
+                    <Label
+                        corner
+                        size="huge"
+                        icon="question"
                         onClick={() => {
                             this.setState({ instructions: true });
                         }}
-                    >
-                        instructions
-                    </Button>
+                    />
+
+                    <MapView attached as={Segment} {...this.props} />
 
                     <Modal open={this.state.userIsCreatingItem} size="large">
 
