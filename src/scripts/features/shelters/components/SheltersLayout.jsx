@@ -328,7 +328,7 @@ export default class SheltersLayout extends Component {
                           show options
                       </Button>}
                 <Modal.Content>
-
+                   
                     <MapView {...this.props} />
 
                     <Modal open={this.state.userIsCreatingItem} size="large">

@@ -27,6 +27,7 @@ import {
     Loader
 } from "semantic-ui-react";
 import _ from "underscore";
+import { CLIENT_ROOT_URL } from "../../../util/index.js";
 
 //   /* global google */
 // import React, { Component } from "react";
@@ -199,7 +200,6 @@ export default class MapLayout extends Component {
                 );
 
                 if (found && found.attributes) {
-
                     if (found.attributes.place) {
                         this.createInfoWindow(
                             "existing",
@@ -360,10 +360,20 @@ class Amarker extends Component {
     }
 
     render() {
+        console.log(
+            `${window.location.protocol + "//" + window.location.host}/images/refugeeicon.png`
+        );
         const { place, markerShelter, position } = this.props;
 
         return (
             <Marker
+               
+                icon={{
+                    url: `${window.location.protocol + "//" + window.location.host}/images/refugeeIcon.png`,
+                    size: new google.maps.Size(128, 128),
+                    center: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(64, 64)
+                }}
                 position={position}
                 onClick={() => {
                     this.props.createInfoWindow(
