@@ -29,7 +29,6 @@ import {
 import _ from "underscore";
 import { CLIENT_ROOT_URL } from "../../../util/index.js";
 
-
 import { default as React, Component } from "react";
 const INPUT_STYLE = {
     boxSizing: `border-box`,
@@ -357,7 +356,6 @@ class Amarker extends Component {
     }
 
     render() {
-        
         const { place, markerShelter, position } = this.props;
 
         return (
@@ -402,13 +400,13 @@ class ExistingShelterInfoWindow extends Component {
             >
                 <div>
 
-                    <Header compact>
+                    <Header compact size="mini">
 
                         {existingShelter.nameOfItem}
                     </Header>
 
-                    <Segment basic size="mini" compact>
-                        <Header.Subheader>
+                    <Divider />
+                        <Header.Subheader size="mini">
                             {place.name}
                             <Divider />
                             {place.formatted_address}
@@ -426,7 +424,7 @@ class ExistingShelterInfoWindow extends Component {
                         >
                             enter
                         </Button>
-                    </Segment>
+                
 
                 </div>
             </InfoWindow>
@@ -455,38 +453,37 @@ class POIinfoWindow extends Component {
                 {user
                     ? <div compact size="mini">
 
-                          <Header compact>
+                          <Header compact size="mini">
 
                               create a shelter for
                               {" "}
                               {clickedPlace.name}
                           </Header>
 
-                          <Segment basic size="mini" compact>
-                              <Header.Subheader>
-                                  {clickedPlace.formatted_address}
+                          <Divider />
+                          <Header.Subheader size="mini">
+                              {clickedPlace.formatted_address}
 
-                              </Header.Subheader>
-                              <Divider />
-                              <Button
-                                  positive
-                                  size="mini"
-                                  onClick={e => {
-                                      e.preventDefault();
-                                      addThisNewShelter(
-                                          clickedPlace,
-                                          user ? user._id : null
-                                      );
-                                  }}
-                              >
-                                  create
-                              </Button>
-                          </Segment>
+                          </Header.Subheader>
+                          <Divider />
+                          <Button
+                              positive
+                              size="mini"
+                              onClick={e => {
+                                  e.preventDefault();
+                                  addThisNewShelter(
+                                      clickedPlace,
+                                      user ? user._id : null
+                                  );
+                              }}
+                          >
+                              create
+                          </Button>
 
                       </div>
                     : <div compact size="mini">
 
-                          <Header compact>
+                          <Header compact size="mini">
 
                               assign a shelter to
                               {" "}
@@ -494,27 +491,26 @@ class POIinfoWindow extends Component {
 
                           </Header>
 
-                          <Segment basic size="mini" compact>
-                              <Header.Subheader>
-                                  {clickedPlace.formatted_address}
+                          <Divider />
+                          <Header.Subheader size="mini">
+                              {clickedPlace.formatted_address}
 
-                              </Header.Subheader>
-                              <Divider />
+                          </Header.Subheader>
+                          <Divider />
 
-                              you must {" "} <Button
-                                  basic
-                                  positive
-                                  size="mini"
-                                  onClick={e => {
-                                      e.preventDefault();
-                                      history.push("/login");
-                                  }}
-                              >
-                                  login
-                              </Button>
-                              {" "}
-                              to assign shelters
-                          </Segment>
+                          you must {" "} <Button
+                              basic
+                              positive
+                              size="mini"
+                              onClick={e => {
+                                  e.preventDefault();
+                                  history.push("/login");
+                              }}
+                          >
+                              login
+                          </Button>
+                          {" "}
+                          to assign shelters
 
                       </div>}
 
@@ -545,15 +541,15 @@ class SearchedInfoWindow extends Component {
                 {user
                     ? <div compact size="mini">
 
-                          <Header compact>
+                          <Header compact size="mini">
 
                               create a shelter for
                               {" "}
                               {place.name}
                           </Header>
 
-                          <Segment basic size="mini" compact>
-                              <Header.Subheader>
+                          <Divider />
+                              <Header.Subheader size="mini">
                                   {place.formatted_address}
 
                               </Header.Subheader>
@@ -571,12 +567,12 @@ class SearchedInfoWindow extends Component {
                               >
                                   create
                               </Button>
-                          </Segment>
+                        
 
                       </div>
                     : <div compact size="mini">
 
-                          <Header compact>
+                          <Header compact size="mini">
 
                               assign a shelter to
                               {" "}
@@ -584,8 +580,8 @@ class SearchedInfoWindow extends Component {
 
                           </Header>
 
-                          <Segment basic size="mini" compact>
-                              <Header.Subheader>
+                          <Divider />
+                              <Header.Subheader size="mini">
                                   {place.formatted_address}
 
                               </Header.Subheader>
@@ -604,7 +600,7 @@ class SearchedInfoWindow extends Component {
                               </Button>
                               {" "}
                               to assign shelters
-                          </Segment>
+                          
 
                       </div>}
 
