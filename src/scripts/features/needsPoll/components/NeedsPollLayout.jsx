@@ -657,8 +657,8 @@ export default class NeedsPollLayout extends Component {
                                       </Segment>
                                       <Modal.Content>
 
-                                          <Grid columns={2} as={Segment} basic>
-                                              <Grid.Column width={9}>
+                                          <Grid columns={2} as={Segment} stackable basic>
+                                              <Grid.Column width={6}>
                                                   <EditItem
                                                       itemModel={
                                                           this.state
@@ -676,7 +676,7 @@ export default class NeedsPollLayout extends Component {
                                                       )}
                                                   />
                                               </Grid.Column>
-                                              <Grid.Column width={7}>
+                                              <Grid.Column width={10}>
                                                   <Segment
                                                       basic
                                                       size="huge"
@@ -798,8 +798,8 @@ export default class NeedsPollLayout extends Component {
                                       </Segment>
                                       <Modal.Content>
 
-                                          <Grid columns={2} as={Segment} basic>
-                                              <Grid.Column width={9}>
+                                          <Grid columns={2} as={Segment} stackable basic>
+                                              <Grid.Column width={7}>
                                                   <EditNeed
                                                       needsCollection={
                                                           collectionOfNeeds
@@ -813,7 +813,7 @@ export default class NeedsPollLayout extends Component {
                                                       )}
                                                   />
                                               </Grid.Column>
-                                              <Grid.Column width={7}>
+                                              <Grid.Column width={9}>
                                                   <Need
                                                       isPreview={true}
                                                       description={
