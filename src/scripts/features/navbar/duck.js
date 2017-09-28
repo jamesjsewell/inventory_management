@@ -37,7 +37,8 @@ const init_nav = {
 		sheltersMapPath: "interactive_map",
 		loginPath: "login",
 		logoutPath: "logout",
-		profilePath: "profile"
+		profilePath: "profile",
+		aboutPath: "about"
 	}
 }
 

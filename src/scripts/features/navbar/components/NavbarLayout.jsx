@@ -76,6 +76,18 @@ export default class NavbarLayout extends Component {
 									</Menu.Menu>
 								: null}
 
+							<Menu.Menu>
+								<Menu.Item
+									header
+									id={routes.aboutPath} //the url
+									name="about"
+									active={currentUrl.includes(
+										routes.aboutPath
+									)}
+									onClick={action_onClickLink.bind(this)}
+								/>
+							</Menu.Menu>
+
 							<Menu.Menu position="right">
 								<Menu.Item
 									header
@@ -186,6 +198,18 @@ export default class NavbarLayout extends Component {
 										/>
 									</Menu.Menu>
 								: null}
+
+							<Menu.Menu>
+								<Menu.Item
+									header
+									id={routes.aboutPath} //the url
+									name="about"
+									active={currentUrl.includes(
+										routes.aboutPath
+									)}
+									onClick={action_onClickLink.bind(this)}
+								/>
+							</Menu.Menu>
 
 							<Menu.Menu position="right">
 								<Menu.Item

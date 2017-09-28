@@ -47,6 +47,7 @@ import SheltersView from "../features/shelters/components/SheltersView.jsx";
 import Authentication
     from "../util/userAuthentication/components/Authentication.jsx";
 import SearchBarView from "../components/maps/components/SearchBarView.jsx";
+import AboutView from "../features/about/components/AboutView.jsx"
 
 class Blank extends Component {
     render() {
@@ -104,6 +105,7 @@ class RouterConfig extends Component {
                     <Authentication />
 
                     <Switch>
+                        <Route path="/about" component={AboutView} />
                         <Route
                             location={location}
                             key={location.key}
