@@ -292,7 +292,7 @@ export default class SheltersLayout extends Component {
                     <Navbar as={Menu} size="mini" compact attached />
                     <Label
                         corner
-                        size="huge"
+                        size="medium"
                         icon="question"
                         onClick={() => {
                             this.setState({ instructions: true });
