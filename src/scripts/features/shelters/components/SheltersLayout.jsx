@@ -13,7 +13,8 @@ import {
     Progress,
     Label,
     Divider,
-    Modal
+    Modal,
+    Menu
 } from "semantic-ui-react";
 
 import EditItem from "./EditItem.jsx";
@@ -61,7 +62,6 @@ export default class SheltersLayout extends Component {
         ) {
             this.state.userIsCreatingItem = false;
         }
-
 
         if (!this.props.newShelterId && nextProps.newShelterId) {
             this.handleUserAction("doneCreating", nextProps.newShelterId);
@@ -288,48 +288,21 @@ export default class SheltersLayout extends Component {
                 style={{ overflow: "hidden", width: "90vw", height: "90vh" }}
             >
 
-                {this.state.options
-                    ? <Modal.Header horizontal size="mini" compact>
-                          <Segment.Group horizontal>
-                              <Segment>
-                                  <Button
-                                      floated="left"
-                                      clearing
-                                      onClick={() => {
-                                          this.setState({ options: false });
-                                      }}
-                                  >
-                                      hide
-                                  </Button>
-                              </Segment>
-                              <Divider />
-                              <Segment floating="right" compact size="mini">
-                                  <Button
-                                      size="mini"
-                                      icon="add"
-                                      positive
-                                      onClick={() => {
-                                          this.setState({ instructions: true });
-                                      }}
-                                  >
-                                      instructions
-                                  </Button>
-                              </Segment>
-                              <Divider />
-                              <Navbar as={Segment} size="mini" compact />
-
-                          </Segment.Group>
-                      </Modal.Header>
-                    : <Button
-                          onClick={() => {
-                              this.setState({ options: true });
-                          }}
-                      >
-                          show options
-                      </Button>}
                 <Modal.Content>
-                   
-                    <MapView {...this.props} />
+                    <Navbar as={Menu} size="mini" compact attached />
+
+                    <MapView attached as={Segment} {...this.props} />
+
+                    <Button
+                        size="mini"
+                        icon="add"
+                        positive
+                        onClick={() => {
+                            this.setState({ instructions: true });
+                        }}
+                    >
+                        instructions
+                    </Button>
 
                     <Modal open={this.state.userIsCreatingItem} size="large">
 
