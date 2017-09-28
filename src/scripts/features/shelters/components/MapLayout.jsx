@@ -296,7 +296,10 @@ export default class MapLayout extends Component {
         }
 
         if (createdInfoWindow) {
-            this.setState({ currentInfoWindow: createdInfoWindow });
+            this.setState({
+                currentInfoWindow: createdInfoWindow,
+                center: place.geometry.location
+            });
         }
     }
 
@@ -367,12 +370,11 @@ class Amarker extends Component {
 
         return (
             <Marker
-               
                 icon={{
                     url: `${window.location.protocol + "//" + window.location.host}/images/refugeeIcon.png`,
-                    size: new google.maps.Size(128, 128),
+                    size: new google.maps.Size(90, 90),
                     center: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(64, 64)
+                    anchor: new google.maps.Point(45, 45)
                 }}
                 position={position}
                 onClick={() => {
@@ -690,6 +692,7 @@ class SearchedInfoWindow extends Component {
 const SearchBoxExampleGoogleMap = withScriptjs(
     withGoogleMap(props => (
         <GoogleMap
+        clickableIcons={false}
             ref={props.onMapMounted}
             defaultZoom={15}
             center={props.center}
@@ -713,10 +716,6 @@ const SearchBoxExampleGoogleMap = withScriptjs(
             />
 
             {props.currentInfoWindow ? props.currentInfoWindow : null}
-
-            {props.clickedPlace
-                ? <Marker position={props.clickedPlace.geometry.location} />
-                : null}
 
             {props.renderedPlaces ? props.renderedPlaces : null}
         </GoogleMap>
