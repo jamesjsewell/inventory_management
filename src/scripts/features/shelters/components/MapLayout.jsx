@@ -26,6 +26,7 @@ import {
     Modal,
     Loader
 } from "semantic-ui-react";
+import _ from "underscore";
 
 //   /* global google */
 // import React, { Component } from "react";
@@ -98,7 +99,11 @@ export default class MapLayout extends Component {
     }
 
     handleClosedSearchResult() {
-        this.setState({ searchResult: null });
+        this.setState({
+            searchResult: null,
+            clickedPlace: null,
+            currentInfoWindow: null
+        });
     }
 
     handleOpenShelter(shelter) {
@@ -177,12 +182,41 @@ export default class MapLayout extends Component {
                 markers
             });
 
-            places[0] && places[0].id
-                ? this.props.actions.checkForExistingItem(
-                      this.props.collectionOfItems,
-                      places[0].id
-                  )
-                : null;
+            if (places[0] && places[0].id && this.props.collectionOfItems) {
+                var lookfor = places[0].id;
+                var found = _.find(
+                    this.props.collectionOfItems
+                        ? this.props.collectionOfItems.models
+                        : null,
+                    item => {
+                        if (
+                            item.attributes.place &&
+                            item.attributes.place.id === lookfor
+                        ) {
+                            return true;
+                        }
+                    }
+                );
+
+                if (found && found.attributes) {
+
+                    if (found.attributes.place) {
+                        this.createInfoWindow(
+                            "existing",
+                            found,
+                            found.attributes.place,
+                            found.attributes.place.geometry.location
+                        );
+                    }
+                } else {
+                    this.createInfoWindow(
+                        "searched",
+                        null,
+                        places[0],
+                        places[0].geometry.location
+                    );
+                }
+            }
         }
     }
 
@@ -308,6 +342,7 @@ export default class MapLayout extends Component {
                 searchClickedPlace={this.handleClickedPlace.bind(this)}
                 searchResult={this.state.searchResult}
                 currentInfoWindow={this.state.currentInfoWindow}
+                createInfoWindow={this.createInfoWindow.bind(this)}
             />
         );
     }
@@ -345,11 +380,17 @@ class Amarker extends Component {
 
 class ExistingShelterInfoWindow extends Component {
     render() {
-        const { place, position, existingShelter, openShelter, closeWindow } = this.props;
+        const {
+            place,
+            position,
+            existingShelter,
+            openShelter,
+            closeWindow
+        } = this.props;
         return (
             <InfoWindow
                 onCloseClick={() => {
-                    closeWindow()
+                    closeWindow();
                 }}
                 position={position}
                 mapPaneName={OverlayView.FLOAT_PANE}
@@ -667,12 +708,6 @@ const SearchBoxExampleGoogleMap = withScriptjs(
                 ? <Marker position={props.clickedPlace.geometry.location} />
                 : null}
 
-            {props.markers[0] &&
-                !props.itemExists &&
-                !props.clickedPlace &&
-                props.searchResult
-                ? <Marker position={props.markers[0].position} />
-                : null}
             {props.renderedPlaces ? props.renderedPlaces : null}
         </GoogleMap>
     ))

@@ -29,7 +29,6 @@ const NEW_ITEM = "new_item",
 	UPDATE_ITEM = "update_item",
 	EDIT_ITEM = "edit_item",
 	NEW_SHELTER_PLACE = "new_user_place",
-	ITEM_EXISTS = "item_exists",
 	USER_ENTERED_SHELTER = "user_entered_shelter";
 
 export { getAPIkey };
@@ -526,33 +525,7 @@ export function openShelter(shelterId, userId) {
 	};
 }
 
-export function checkForExistingItem(collection, id) {
-	return function(dispatch) {
-		if (collection && collection.models) {
-			var lookfor = id;
-			var found = _.find(collection.models, item => {
-				if (
-					item.attributes.place &&
-					item.attributes.place.id === lookfor
-				) {
-					return true;
-				}
-			});
 
-			if (found) {
-				dispatch({
-					type: ITEM_EXISTS,
-					payload: true
-				});
-			} else {
-				dispatch({
-					type: ITEM_EXISTS,
-					payload: false
-				});
-			}
-		}
-	};
-}
 
 // reducers
 const init_needs_poll = {
@@ -656,11 +629,6 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 
 			return _.extend({}, state, extendObj);
 
-		case ITEM_EXISTS:
-			extendObj.itemExists = action.payload;
-
-			return _.extend({}, state, extendObj);
-
 		case USER_ENTERED_SHELTER:
 			extendObj.currentShelterId = action.payload;
 			extendObj.didEnterShelter = true;
@@ -684,7 +652,6 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	statusOfCreateShelter = state => state.shelters.statusOfCreateShelter,
 	newShelterPlace = state => state.shelters.newShelterPlace,
 	newShelterId = state => state.shelters.newShelterId,
-	itemExists = state => state.shelters.itemExists,
 	currentShelterId = state => state.shelters.currentShelterId,
 	didEnterShelter = state => state.shelters.didEnterShelter,
 	homeLink = state => state.nav.navLink.routes.homePath,
@@ -700,7 +667,6 @@ export const selector = createStructuredSelector({
 	statusOfRemoveItem,
 	statusOfRemoveItemPrompt,
 	statusOfEditItem,
-	itemExists,
 	user,
 	statusOfCreateShelter,
 	currentShelterId,
