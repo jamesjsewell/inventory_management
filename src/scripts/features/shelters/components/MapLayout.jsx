@@ -72,12 +72,15 @@ export default class MapLayout extends Component {
                 this._map.context.__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
             );
 
+            this.props.actions.spinner(true);
+
             service.getDetails(
                 {
                     placeId: placeId
                 },
                 (place, status) => {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        this.props.actions.spinner(false);
                         this.createInfoWindow(
                             "clickedPOI",
                             null,
@@ -347,6 +350,7 @@ export default class MapLayout extends Component {
                 searchResult={this.state.searchResult}
                 currentInfoWindow={this.state.currentInfoWindow}
                 createInfoWindow={this.createInfoWindow.bind(this)}
+                spinner={this.props.actions.spinner.bind(this)}
             />
         );
     }

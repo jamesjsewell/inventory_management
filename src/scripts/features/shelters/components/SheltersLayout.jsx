@@ -14,7 +14,9 @@ import {
     Label,
     Divider,
     Modal,
-    Menu
+    Menu,
+    Dimmer,
+    Loader
 } from "semantic-ui-react";
 
 import EditItem from "./EditItem.jsx";
@@ -40,7 +42,8 @@ export default class SheltersLayout extends Component {
             userIsCreatingItem: false,
             loggedIn: false,
             instructions: false,
-            options: false
+            options: false,
+            showSpinner: false
         };
     }
     componentWillMount() {
@@ -49,6 +52,11 @@ export default class SheltersLayout extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
+        if (nextProps.showSpinner) {
+            this.state.showSpinner = true;
+        } else {
+            this.state.showSpinner = false;
+        }
         if (
             nextProps.statusOfCreateShelter.inProgress === true &&
             !this.state.userIsCreatingItem
@@ -288,100 +296,107 @@ export default class SheltersLayout extends Component {
                 style={{ overflow: "hidden", width: "90vw", height: "90vh" }}
             >
 
-                <Modal.Content>
-                    <Navbar as={Menu} size="mini" compact attached />
-                    <Label
-                        corner
-                        size="medium"
-                        icon="question"
-                        onClick={() => {
-                            this.setState({ instructions: true });
-                        }}
-                    />
+                <Navbar as={Menu} size="mini" compact attached />
+                <Label
+                    corner
+                    size="medium"
+                    icon="question"
+                    onClick={() => {
+                        this.setState({ instructions: true });
+                    }}
+                />
+
+                <Dimmer.Dimmable
+                    as={Segment}
+                    attached
+                    basic
+                    dimmed={this.state.showSpinner}
+                    blurring={true}
+                >
+                    <Loader inverted disabled={!this.state.showSpinner} />
 
                     <MapView attached as={Segment} {...this.props} />
+                </Dimmer.Dimmable>
 
-                    <Modal open={this.state.userIsCreatingItem} size="large">
+                <Modal open={this.state.userIsCreatingItem} size="large">
 
-                        <Segment basic>
-                            <Segment
-                                basic
-                                size="tiny"
-                                clearing
-                                floating="right"
-                                textAlign="right"
-                            >
-                                <Button
-                                    size="mini"
-                                    icon="remove"
-                                    onClick={() => {
-                                        this.props.actions.resetStatus(
-                                            "creating"
-                                        );
-                                        this.setState({
-                                            userIsCreatingItem: false
-                                        });
-                                    }}
-                                />
-                            </Segment>
+                    <Segment basic>
+                        <Segment
+                            basic
+                            size="tiny"
+                            clearing
+                            floating="right"
+                            textAlign="right"
+                        >
+                            <Button
+                                size="mini"
+                                icon="remove"
+                                onClick={() => {
+                                    this.props.actions.resetStatus("creating");
+                                    this.setState({
+                                        userIsCreatingItem: false
+                                    });
+                                }}
+                            />
+                        </Segment>
 
-                            <Segment>
-                                <Header>
-                                    {this.props.newShelterPlace
-                                        ? this.props.newShelterPlace.name
-                                        : null}
-                                </Header>
-
-                                <Header.Subheader>
-                                    {this.props.newShelterPlace
-                                        ? this.props.newShelterPlace
-                                              .formatted_address
-                                        : null}
-                                </Header.Subheader>
-
-                            </Segment>
-
-                            <Segment size="large" loading={asyncItems}>
-                                <NewItemForm
-                                    userId={this.state.userId}
-                                    resetStatus={this.props.actions.resetStatus.bind(
-                                        this
-                                    )}
-                                    errorAddingItem={
-                                        this.props.statusOfCreateItem.error
-                                    }
-                                    successAddingItem={
-                                        this.props.statusOfCreateItem.success
-                                    }
-                                    doThisOnSubmit={userInput => {
-                                        if (userInput) {
-                                            this.props.actions.createItem(
-                                                userInput,
-                                                this.state.userId,
-                                                this.props.collectionOfItems,
-                                                this.props.newShelterPlace
-                                            );
-                                        }
-                                    }}
-                                />
-                                {this.state.successAddingItem
-                                    ? <Message positive>
-                                          added item!
-                                      </Message>
+                        <Segment>
+                            <Header>
+                                {this.props.newShelterPlace
+                                    ? this.props.newShelterPlace.name
                                     : null}
+                            </Header>
 
-                                {this.state.errorAddingItem
-                                    ? <Message negative>
-                                          something went wrong
-                                      </Message>
+                            <Header.Subheader>
+                                {this.props.newShelterPlace
+                                    ? this.props.newShelterPlace
+                                          .formatted_address
                                     : null}
-
-                            </Segment>
+                            </Header.Subheader>
 
                         </Segment>
 
-                    </Modal>
-                </Modal.Content>
+                        <Segment size="large" loading={asyncItems}>
+                            <NewItemForm
+                                userId={this.state.userId}
+                                resetStatus={this.props.actions.resetStatus.bind(
+                                    this
+                                )}
+                                errorAddingItem={
+                                    this.props.statusOfCreateItem.error
+                                }
+                                successAddingItem={
+                                    this.props.statusOfCreateItem.success
+                                }
+                                doThisOnSubmit={userInput => {
+                                    if (userInput) {
+                                        this.props.actions.createItem(
+                                            userInput,
+                                            this.state.userId,
+                                            this.props.collectionOfItems,
+                                            this.props.newShelterPlace
+                                        );
+                                    }
+                                }}
+                            />
+                            {this.state.successAddingItem
+                                ? <Message positive>
+                                      added item!
+                                  </Message>
+                                : null}
+
+                            {this.state.errorAddingItem
+                                ? <Message negative>
+                                      something went wrong
+                                  </Message>
+                                : null}
+
+                        </Segment>
+
+                    </Segment>
+
+                </Modal>
+
                 <Modal size="large" open={this.state.instructions} basic>
 
                     <Button

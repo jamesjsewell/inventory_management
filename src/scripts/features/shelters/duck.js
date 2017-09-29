@@ -29,12 +29,24 @@ const NEW_ITEM = "new_item",
 	UPDATE_ITEM = "update_item",
 	EDIT_ITEM = "edit_item",
 	NEW_SHELTER_PLACE = "new_user_place",
-	USER_ENTERED_SHELTER = "user_entered_shelter";
+	USER_ENTERED_SHELTER = "user_entered_shelter",
+	SHOW_SPINNER = "show_spinner";
 
 export { getAPIkey };
 
+export function spinner(show) {
+	return function(dispatch) {
+		if (show) {
+			dispatch({ type: SHOW_SPINNER, payload: true });
+		} else {
+			dispatch({ type: SHOW_SPINNER, payload: false });
+		}
+	};
+}
+
 export function createItem(values, postedById, itemCollection, place) {
 	return function(dispatch) {
+		dispatch({ type: SHOW_SPINNER, payload: true });
 		dispatch({
 			type: NEW_ITEM,
 			payload: {
@@ -59,6 +71,7 @@ export function createItem(values, postedById, itemCollection, place) {
 		);
 
 		function successCallback(response) {
+			dispatch({ type: SHOW_SPINNER, payload: false });
 			dispatch({
 				type: NEW_ITEM,
 				payload: {
@@ -76,6 +89,7 @@ export function createItem(values, postedById, itemCollection, place) {
 		}
 
 		function errorCallback(response) {
+			dispatch({ type: SHOW_SPINNER, payload: false });
 			dispatch({
 				type: NEW_ITEM,
 				payload: {
@@ -276,7 +290,6 @@ export function removeItem(idOfItem, itemCollection, prompt) {
 		}
 
 		function onError(response) {
-			
 			dispatch({
 				type: REMOVE_ITEM,
 				payload: {
@@ -361,7 +374,6 @@ export function resetStatus(statusOf, data) {
 				}
 			});
 		}
-
 	};
 }
 
@@ -493,6 +505,8 @@ export function openShelter(shelterId, userId) {
 		// 	console.log("error");
 		// }
 
+		dispatch({ type: SHOW_SPINNER, payload: true });
+
 		if (userId) {
 			axios
 				.put(
@@ -501,20 +515,22 @@ export function openShelter(shelterId, userId) {
 					{ headers: { Authorization: cookies.get("token") } }
 				)
 				.then(response => {
-					console.log(response);
 					if (response.data) {
+						dispatch({ type: SHOW_SPINNER, payload: false });
 						dispatch({ type: AUTH_USER, payload: response.data });
 					}
 				})
 				.catch(error => {
+					dispatch({ type: SHOW_SPINNER, payload: false });
 					// dispatch({
 					// 	type: LOGIN_ERROR,
 					// 	payload: "invalid email or password"
 					// });
 				});
 		} else {
-			cookies.set('currentShelter', shelterId, { path: '/' })
-			
+			dispatch({ type: SHOW_SPINNER, payload: false });
+			cookies.set("currentShelter", shelterId, { path: "/" });
+
 			dispatch({
 				type: ADD_SHELTER_COOKIE,
 				payload: cookies.get("currentShelter")
@@ -524,8 +540,6 @@ export function openShelter(shelterId, userId) {
 		//;
 	};
 }
-
-
 
 // reducers
 const init_needs_poll = {
@@ -575,7 +589,8 @@ const init_needs_poll = {
 	},
 	currentShelterId: null,
 	didEnterShelter: false,
-	fullUser: null
+	fullUser: null,
+	showSpinner: false
 };
 
 export default function sheltersReducer(state = init_needs_poll, action) {
@@ -634,6 +649,14 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 			extendObj.didEnterShelter = true;
 
 			return _.extend({}, state, extendObj);
+
+		case SHOW_SPINNER:
+			if (action.payload === true) {
+				extendObj.showSpinner = true;
+			} else {
+				extendObj.showSpinner = false;
+			}
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -655,7 +678,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	currentShelterId = state => state.shelters.currentShelterId,
 	didEnterShelter = state => state.shelters.didEnterShelter,
 	homeLink = state => state.nav.navLink.routes.homePath,
-	shelterCookie = state => state.auth.userSession.shelterCookie;
+	shelterCookie = state => state.auth.userSession.shelterCookie,
+	showSpinner = state => state.shelters.showSpinner;
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -674,5 +698,6 @@ export const selector = createStructuredSelector({
 	didEnterShelter,
 	newShelterId,
 	homeLink,
-	shelterCookie
+	shelterCookie,
+	showSpinner
 });
