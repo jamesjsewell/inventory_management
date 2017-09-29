@@ -34,7 +34,7 @@ const INPUT_STYLE = {
     boxSizing: `border-box`,
     MozBoxSizing: `border-box`,
     border: `1px solid transparent`,
-    width: `11rem`,
+    width: `20%`,
     height: `2rem`,
     marginTop: `.5rem`,
     padding: `0 .1rem`,
@@ -287,7 +287,9 @@ export default class MapLayout extends Component {
                         this._searchBox ? this._searchBox.getPlaces()[0] : null
                     }
                     closeSearchResult={this.handleClosedSearchResult.bind(this)}
-                    addThisNewShelter={this.props.actions.addThisNewShelter()}
+                    addThisNewShelter={this.props.actions.addThisNewShelter.bind(
+                        this
+                    )}
                     {...this.props}
                 />
             );
@@ -406,25 +408,24 @@ class ExistingShelterInfoWindow extends Component {
                     </Header>
 
                     <Divider />
-                        <Header.Subheader size="mini">
-                            {place.name}
-                            <Divider />
-                            {place.formatted_address}
-
-                        </Header.Subheader>
+                    <Header.Subheader size="mini">
+                        {place.name}
                         <Divider />
-                        <Button
-                            positive
-                            size="mini"
-                            onClick={e => {
-                                e.preventDefault();
+                        {place.formatted_address}
 
-                                openShelter(existingShelter);
-                            }}
-                        >
-                            enter
-                        </Button>
-                
+                    </Header.Subheader>
+                    <Divider />
+                    <Button
+                        positive
+                        size="mini"
+                        onClick={e => {
+                            e.preventDefault();
+
+                            openShelter(existingShelter);
+                        }}
+                    >
+                        enter
+                    </Button>
 
                 </div>
             </InfoWindow>
@@ -549,25 +550,24 @@ class SearchedInfoWindow extends Component {
                           </Header>
 
                           <Divider />
-                              <Header.Subheader size="mini">
-                                  {place.formatted_address}
+                          <Header.Subheader size="mini">
+                              {place.formatted_address}
 
-                              </Header.Subheader>
-                              <Divider />
-                              <Button
-                                  positive
-                                  size="mini"
-                                  onClick={e => {
-                                      e.preventDefault();
-                                      addThisNewShelter(
-                                          place,
-                                          user ? user._id : null
-                                      );
-                                  }}
-                              >
-                                  create
-                              </Button>
-                        
+                          </Header.Subheader>
+                          <Divider />
+                          <Button
+                              positive
+                              size="mini"
+                              onClick={e => {
+                                  e.preventDefault();
+                                  addThisNewShelter(
+                                      place,
+                                      user ? user._id : null
+                                  );
+                              }}
+                          >
+                              create
+                          </Button>
 
                       </div>
                     : <div compact size="mini">
@@ -581,26 +581,25 @@ class SearchedInfoWindow extends Component {
                           </Header>
 
                           <Divider />
-                              <Header.Subheader size="mini">
-                                  {place.formatted_address}
+                          <Header.Subheader size="mini">
+                              {place.formatted_address}
 
-                              </Header.Subheader>
-                              <Divider />
+                          </Header.Subheader>
+                          <Divider />
 
-                              you must {" "} <Button
-                                  basic
-                                  positive
-                                  size="mini"
-                                  onClick={e => {
-                                      e.preventDefault();
-                                      history.push("/login");
-                                  }}
-                              >
-                                  login
-                              </Button>
-                              {" "}
-                              to assign shelters
-                          
+                          you must {" "} <Button
+                              basic
+                              positive
+                              size="mini"
+                              onClick={e => {
+                                  e.preventDefault();
+                                  history.push("/login");
+                              }}
+                          >
+                              login
+                          </Button>
+                          {" "}
+                          to assign shelters
 
                       </div>}
 
