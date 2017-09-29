@@ -614,13 +614,17 @@ const SearchBoxExampleGoogleMap = withScriptjs(
         <GoogleMap
             options={{
                 mapTypeControlOptions: {
-                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                    position: google.maps.ControlPosition.TOP_LEFT
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.BOTTOM_LEFT,
+                    mapTypeIds: [
+                        google.maps.MapTypeId.ROADMAP,
+                        google.maps.MapTypeId.SATELLITE
+                    ]
                 },
                 disableDefaultUI: false,
                 scaleControl: true
             }}
-            streetView={google.maps.ControlPosition.BOTTOM_LEFT}
+            streetView={google.maps.ControlPosition.BOTTOM_RIGHT}
             clickableIcons={false}
             ref={props.onMapMounted}
             defaultZoom={15}
