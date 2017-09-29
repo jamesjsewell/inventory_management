@@ -30,7 +30,8 @@ const NEW_ITEM = "new_item",
 	EDIT_ITEM = "edit_item",
 	NEW_SHELTER_PLACE = "new_user_place",
 	USER_ENTERED_SHELTER = "user_entered_shelter",
-	SHOW_SPINNER = "show_spinner";
+	SHOW_SPINNER = "show_spinner",
+	CHOSE_SHELTER = "chose_shelter";
 
 export { getAPIkey };
 
@@ -518,10 +519,12 @@ export function openShelter(shelterId, userId) {
 					if (response.data) {
 						dispatch({ type: SHOW_SPINNER, payload: false });
 						dispatch({ type: AUTH_USER, payload: response.data });
+						dispatch({ type: CHOSE_SHELTER, payload: true });
 					}
 				})
 				.catch(error => {
 					dispatch({ type: SHOW_SPINNER, payload: false });
+					dispatch({ type: CHOSE_SHELTER, payload: false });
 					// dispatch({
 					// 	type: LOGIN_ERROR,
 					// 	payload: "invalid email or password"
@@ -535,6 +538,8 @@ export function openShelter(shelterId, userId) {
 				type: ADD_SHELTER_COOKIE,
 				payload: cookies.get("currentShelter")
 			});
+
+			dispatch({ type: CHOSE_SHELTER, payload: true });
 		}
 
 		//;
@@ -590,7 +595,8 @@ const init_needs_poll = {
 	currentShelterId: null,
 	didEnterShelter: false,
 	fullUser: null,
-	showSpinner: false
+	showSpinner: false,
+	choseShelter: false
 };
 
 export default function sheltersReducer(state = init_needs_poll, action) {
@@ -650,6 +656,10 @@ export default function sheltersReducer(state = init_needs_poll, action) {
 
 			return _.extend({}, state, extendObj);
 
+		case CHOSE_SHELTER:
+			extendObj.choseShelter = action.payload
+			return _.extend({}, state, extendObj)
+
 		case SHOW_SPINNER:
 			if (action.payload === true) {
 				extendObj.showSpinner = true;
@@ -679,7 +689,8 @@ const collectionOfItems = state => state.shelters.collectionOfItems,
 	didEnterShelter = state => state.shelters.didEnterShelter,
 	homeLink = state => state.nav.navLink.routes.homePath,
 	shelterCookie = state => state.auth.userSession.shelterCookie,
-	showSpinner = state => state.shelters.showSpinner;
+	showSpinner = state => state.shelters.showSpinner,
+	choseShelter = state => state.shelters.choseShelter
 
 export const selector = createStructuredSelector({
 	googleMapsApiKey,
@@ -699,5 +710,6 @@ export const selector = createStructuredSelector({
 	newShelterId,
 	homeLink,
 	shelterCookie,
-	showSpinner
+	showSpinner,
+	choseShelter
 });

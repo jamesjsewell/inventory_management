@@ -52,6 +52,16 @@ export default class SheltersLayout extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
+
+        if(!this.props.choseShelter && nextProps.choseShelter){
+            if(nextProps.user){
+                this.props.history.push(`${this.props.homeLink}/${nextProps.user.currentShelter}`)
+            }
+            else{
+                this.props.history.push(this.props.homeLink)
+            }
+        }
+
         if (nextProps.showSpinner) {
             this.state.showSpinner = true;
         } else {
