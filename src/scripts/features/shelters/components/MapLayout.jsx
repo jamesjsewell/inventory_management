@@ -34,16 +34,16 @@ const INPUT_STYLE = {
     boxSizing: `border-box`,
     MozBoxSizing: `border-box`,
     border: `1px solid transparent`,
-    width: `11rem`,
     height: `2rem`,
-    marginTop: `.5rem`,
-    marginLeft: `.5rem`,
+    marginTop: `1rem`,
+    marginLeft: `1rem`,
     padding: `0 .1rem`,
     borderRadius: `1px`,
     boxShadow: `0 .2rem .4rem rgba(0, 0, 0, 0.3)`,
     fontSize: `1rem`,
     outline: `none`,
-    textOverflow: `ellipses`
+    textOverflow: `ellipses`,
+    zIndex: `99`
 };
 
 var clickedMarker = "";
@@ -615,8 +615,10 @@ const SearchBoxExampleGoogleMap = withScriptjs(
             options={{
                 mapTypeControlOptions: {
                     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                    position: google.maps.ControlPosition.RIGHT_TOP
-                }
+                    position: google.maps.ControlPosition.TOP_LEFT
+                },
+                disableDefaultUI: false,
+                scaleControl: true
             }}
             streetView={google.maps.ControlPosition.BOTTOM_LEFT}
             clickableIcons={false}
@@ -635,7 +637,7 @@ const SearchBoxExampleGoogleMap = withScriptjs(
             <SearchBox
                 ref={props.onSearchBoxMounted}
                 bounds={props.bounds}
-                controlPosition={google.maps.ControlPosition.TOP_LEFT}
+                controlPosition={google.maps.ControlPosition.TOP_CENTER}
                 onPlacesChanged={props.onPlacesChanged}
                 inputPlaceholder={"Search"}
                 inputStyle={INPUT_STYLE}
