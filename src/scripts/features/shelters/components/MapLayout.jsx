@@ -34,9 +34,10 @@ const INPUT_STYLE = {
     boxSizing: `border-box`,
     MozBoxSizing: `border-box`,
     border: `1px solid transparent`,
-    width: `20%`,
+    width: `11rem`,
     height: `2rem`,
     marginTop: `.5rem`,
+    marginLeft: `.5rem`,
     padding: `0 .1rem`,
     borderRadius: `1px`,
     boxShadow: `0 .2rem .4rem rgba(0, 0, 0, 0.3)`,
@@ -611,6 +612,13 @@ class SearchedInfoWindow extends Component {
 const SearchBoxExampleGoogleMap = withScriptjs(
     withGoogleMap(props => (
         <GoogleMap
+            options={{
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.BOTTOM_LEFT
+                }
+            }}
+            streetView={google.maps.ControlPosition.BOTTOM_LEFT}
             clickableIcons={false}
             ref={props.onMapMounted}
             defaultZoom={15}
