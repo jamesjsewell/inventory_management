@@ -166,42 +166,47 @@ export default class Need extends Component {
                       </Segment>
                     : null}
                 {!this.props.isPreview
-                    ? <Segment attached="bottom">
+                    ? 
 
-                          <Button
-                              onClick={() => {
-                                  updateNeed(
-                                      idOfNeed,
-                                      collectionOfNeeds,
-                                      "has",
-                                      this.props.numberOfPeople
-                                  );
-                              }}
-                              size="large"
-                              positive
-                          >
-                              I have this{" "}
-                          </Button>
+                          <Button.Group widths={1}>
+                              <Button
+                                  onClick={() => {
+                                      updateNeed(
+                                          idOfNeed,
+                                          collectionOfNeeds,
+                                          "has",
+                                          this.props.numberOfPeople
+                                      );
+                                  }}
+                                  size="medium"
+                                  positive
+                              >
+                                  I have this{" "}
+                              </Button>
 
-                          {degreeOfNeed > 0
-                              ? <Button
-                                    size="large"
-                                    icon="plus"
-                                    onClick={() => {
-                                        updateNeed(
-                                            idOfNeed,
-                                            collectionOfNeeds,
-                                            "needs",
-                                            this.props.numberOfPeople
-                                        );
-                                    }}
-                                    negative
-                                >
-                                    I need this
-                                </Button>
-                              : null}
+                              {degreeOfNeed > 0 ? <Button.Or /> : null}
 
-                      </Segment>
+                              {degreeOfNeed > 0
+                                  ? <Button
+                                        size="medium"
+                                        icon="plus"
+                                        onClick={() => {
+                                            updateNeed(
+                                                idOfNeed,
+                                                collectionOfNeeds,
+                                                "needs",
+                                                this.props.numberOfPeople
+                                            );
+                                        }}
+                                        negative
+                                    >
+                                        I need this
+                                    </Button>
+                                  : null}
+
+                          </Button.Group>
+
+                      
                     : null}
 
                 {this.state.errorUpdatingNeed
