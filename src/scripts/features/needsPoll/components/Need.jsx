@@ -203,9 +203,7 @@ export default class Need extends Component {
 
                       </Segment>
                     : null}
-                {this.state.updatedNeed
-                    ? <Message positive>updated successfully</Message>
-                    : null}
+
                 {this.state.errorUpdatingNeed
                     ? <Message negative>
                           something went wrong, could not update
