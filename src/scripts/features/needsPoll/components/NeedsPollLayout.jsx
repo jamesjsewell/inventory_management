@@ -323,10 +323,10 @@ export default class NeedsPollLayout extends Component {
 
         if (this.props.arrayOfNeeds) {
             var filtered = _.filter(this.props.arrayOfNeeds, function(need) {
-                if (need.attributes.nameOfNeed.includes(e.target.value)) {
+                if (need.attributes.nameOfNeed.toLowerCase().includes(e.target.value.toLowerCase())) {
                     return need.attributes;
                 }
-                if (need.attributes.description.includes(e.target.value)) {
+                if (need.attributes.description.toLowerCase().includes(e.target.value.toLowerCase())) {
                     return need.attributes;
                 }
             });
