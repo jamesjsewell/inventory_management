@@ -28,7 +28,8 @@ const ADD_SUBMITTED_NEED = "add_submitted_need",
 	EDIT_NEED = "edit_need",
 	FETCH_USER = "fetch_user",
 	FETCH_SHELTERS = "fetch_shelters",
-	FILTER_NEEDS = "filter_needs"
+	FILTER_NEEDS = "filter_needs",
+	SHOW_SPINNER = "show_spinner";
 
 export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 	return function(dispatch) {
@@ -39,6 +40,8 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 					status: "active"
 				}
 			});
+
+			dispatch({ type: SHOW_SPINNER, payload: { show: true } });
 
 			needsCollection.create(
 				{
@@ -86,7 +89,7 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 			// 			}
 			// 		});
 			// 	});
-			console.log(response);
+			dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 			dispatch({
 				type: ADD_SUBMITTED_NEED,
 				payload: {
@@ -104,6 +107,8 @@ export function submitNewNeed(values, postedById, needsCollection, shelterId) {
 					status: "error"
 				}
 			});
+
+			dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 		}
 	};
 }
@@ -123,7 +128,10 @@ export function fetchShelter(shelterId) {
 				error: didNotFetchShelter
 			});
 
+			dispatch({ type: SHOW_SPINNER, payload: { show: true } });
+
 			function fetchedShelter(collection, response, options) {
+				dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 				var shelter = response[0];
 				var shelterModel = collection.get(shelterId);
 
@@ -138,7 +146,7 @@ export function fetchShelter(shelterId) {
 			}
 
 			function didNotFetchShelter(collection, response, options) {
-				console.log(response);
+				dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 				dispatch({
 					type: FETCH_SHELTERS,
 					payload: {
@@ -167,6 +175,8 @@ export function fetchNeeds(shelterId, notLoggedIn) {
 				error: didNotFetchNeeds
 			});
 
+			dispatch({ type: SHOW_SPINNER, payload: { show: true } });
+
 			function fetchedNeeds(collection, response, options) {
 				var status = "inactive";
 				console.log("done");
@@ -180,6 +190,7 @@ export function fetchNeeds(shelterId, notLoggedIn) {
 							status: status
 						}
 					});
+					dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 				} else {
 					dispatch({
 						type: FETCH_NEEDS,
@@ -189,17 +200,18 @@ export function fetchNeeds(shelterId, notLoggedIn) {
 							status: status
 						}
 					});
+					dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 				}
 			}
 
 			function didNotFetchNeeds(collection, response, options) {
-				console.log(response);
 				dispatch({
 					type: FETCH_NEEDS,
 					payload: {
 						status: "error"
 					}
 				});
+				dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 			}
 		}
 	};
@@ -240,6 +252,8 @@ export function updateNeed(
 			updatedInfo.description = userInput.description;
 		}
 
+		dispatch({ type: SHOW_SPINNER, payload: { show: true } });
+
 		model.set(updatedInfo);
 
 		model
@@ -258,8 +272,11 @@ export function updateNeed(
 						idOfUpdatedNeed: idOfNeed
 					}
 				});
+
+				dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 			})
 			.fail(function(err) {
+				dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 				dispatch({
 					type: UPDATE_NEED,
 					payload: {
@@ -281,6 +298,8 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 				}
 			});
 
+			dispatch({ type: SHOW_SPINNER, payload: { show: true } });
+
 			var model = needsCollection.get(idOfNeed);
 
 			model.destroy({
@@ -293,6 +312,8 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 							status: "success"
 						}
 					});
+
+					dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 				},
 				error: onError,
 				wait: true
@@ -308,6 +329,7 @@ export function removeNeed(idOfNeed, needsCollection, prompt) {
 		}
 
 		function onError(response) {
+			dispatch({ type: SHOW_SPINNER, payload: { show: false } });
 			dispatch({
 				type: REMOVE_NEED,
 				payload: {
@@ -326,13 +348,13 @@ export function findNeeds(value, collectionOfNeeds) {
 					if (model.attributes.name.includes(value)) {
 						return;
 					}
-					if(model.attributes.description.includes(value)){
-						return
+					if (model.attributes.description.includes(value)) {
+						return;
 					}
 				};
 			});
 		}
-		console.log(filtered)
+		console.log(filtered);
 	};
 }
 
@@ -413,7 +435,8 @@ const init_needs_poll = {
 	idOfUpdatedNeed: null,
 	visitorShelterId: null,
 	userInfo: null,
-	fullUser: null
+	fullUser: null,
+	showSpinner: false	
 };
 
 export default function needsPollReducer(state = init_needs_poll, action) {
@@ -557,6 +580,17 @@ export default function needsPollReducer(state = init_needs_poll, action) {
 			}
 
 			return _.extend({}, state, extendObj);
+
+		case SHOW_SPINNER:
+			var extendObj = {};
+
+			if (action.payload.show === true) {
+				extendObj.showSpinner = true;
+			} else {
+				extendObj.showSpinner = false;
+			}
+
+			return _.extend({}, state, extendObj);
 	}
 
 	return state;
@@ -599,7 +633,8 @@ const statusOfFetchShelters = state => state.needsPoll.statusOfFetchShelters,
 	statusOfUpdateItem = state => state.shelters.statusOfUpdateItem,
 	statusOfRemoveItem = state => state.shelters.statusOfRemoveItem,
 	sheltersMapPath = state => state.nav.navLink.routes.sheltersMapPath,
-	filteredArrayOfNeeds = state => state.needsPoll.filteredArrayOfNeeds;
+	filteredArrayOfNeeds = state => state.needsPoll.filteredArrayOfNeeds,
+	showSpinner = state => state.needsPoll.showSpinner;
 
 export const selector = createStructuredSelector({
 	collectionOfNeeds,
@@ -635,5 +670,6 @@ export const selector = createStructuredSelector({
 	statusOfUpdateItem,
 	statusOfRemoveItem,
 	sheltersMapPath,
-	filteredArrayOfNeeds
+	filteredArrayOfNeeds,
+	showSpinner
 });

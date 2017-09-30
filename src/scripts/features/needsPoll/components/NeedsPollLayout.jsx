@@ -16,7 +16,9 @@ import {
     Label,
     Divider,
     Modal,
-    Search
+    Search,
+    Dimmer,
+    Loader
 } from "semantic-ui-react";
 
 import NeedForm from "./NeedForm.jsx";
@@ -61,7 +63,8 @@ export default class NeedsPollLayout extends Component {
             filterNeeds: false,
             searchValue: "",
             searchResults: null,
-            chosenResult: null
+            chosenResult: null,
+            showSpinner: false
         };
 
         this.props.actions.fetchItems();
@@ -89,6 +92,11 @@ export default class NeedsPollLayout extends Component {
     componentDidMount() {}
 
     componentWillReceiveProps(nextProps) {
+        if (nextProps.showSpinner === true) {
+            this.state.showSpinner = true;
+        } else {
+            this.state.showSpinner = false;
+        }
         if (nextProps.editingNeed) {
             this.state.editingNeed = true;
         }
@@ -322,7 +330,6 @@ export default class NeedsPollLayout extends Component {
                     return need.attributes;
                 }
             });
-            
 
             for (var i = 0; i < filtered.length; i++) {
                 filtered[i] = {
@@ -458,9 +465,14 @@ export default class NeedsPollLayout extends Component {
             this.state.shelterModel
             ? <Grid container columns="equal" stackable>
                   <Grid.Row>
+                      
                       <Grid.Column width={16}>
 
-                          <Segment size="large" textAlign="center">
+                          <Segment
+                              loading={this.state.showSpinner}
+                              size="large"
+                              textAlign="center"
+                          >
                               {this.props.user
                                   ? <Button
                                         floated="left"
@@ -538,7 +550,7 @@ export default class NeedsPollLayout extends Component {
                               </Segment>
                           </Segment>
 
-                          <Segment>
+                          <Segment loading={this.state.showSpinner}>
                               {this.props.user
                                   ? <Segment compact loading={asyncNeeds}>
                                         <NeedForm
@@ -657,7 +669,12 @@ export default class NeedsPollLayout extends Component {
                                       </Segment>
                                       <Modal.Content>
 
-                                          <Grid columns={2} as={Segment} stackable basic>
+                                          <Grid
+                                              columns={2}
+                                              as={Segment}
+                                              stackable
+                                              basic
+                                          >
                                               <Grid.Column width={6}>
                                                   <EditItem
                                                       itemModel={
@@ -783,6 +800,9 @@ export default class NeedsPollLayout extends Component {
                                       open={this.props.editingNeed}
                                       size="large"
                                   >
+                                      <Dimmer active={this.state.showSpinner}>
+                                          <Loader />
+                                      </Dimmer>
                                       <Segment>
                                           <Button
                                               type="button"
@@ -798,7 +818,12 @@ export default class NeedsPollLayout extends Component {
                                       </Segment>
                                       <Modal.Content>
 
-                                          <Grid columns={2} as={Segment} stackable basic>
+                                          <Grid
+                                              columns={2}
+                                              as={Segment}
+                                              stackable
+                                              basic
+                                          >
                                               <Grid.Column width={7}>
                                                   <EditNeed
                                                       needsCollection={
