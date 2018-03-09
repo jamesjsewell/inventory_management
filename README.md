@@ -6,20 +6,20 @@ This project is built around the MERN stack ( Mongodb, Express, React, Node )
 ### technology used ###
 
 #### front-end ####
-*React and ReactRouter for building and routing views
-*Redux for handling the state of views
-*Backbonejs for CRUD operations on models/collections
-*SemanticUI for React to make the styling process faster
-*Filestack for handling user profile images 
-*Google Maps API for visualizing the location of user added "shelters"
+* React and ReactRouter for building and routing views
+* Redux for handling the state of views
+* Backbonejs for CRUD operations on models/collections
+* SemanticUI for React to make the styling process faster
+* Filestack for handling user profile images 
+* Google Maps API for visualizing the location of user added "shelters"
 
 #### backend ####
-*Mongodb as the database
-*Mongoose to interface with Mongodb
-*Node/Express as a server
-*Passport to handle user authentication
-*Nodemailer to handle password reset functionality 
-*Heroku to host the node server/mongodb database setup and also the front-end
+* Mongodb as the database
+* Mongoose to interface with Mongodb
+* Node/Express as a server
+* Passport to handle user authentication
+* Nodemailer to handle password reset functionality 
+* Heroku to host the node server/mongodb database setup and also the front-end
 
 ******************************************
 
