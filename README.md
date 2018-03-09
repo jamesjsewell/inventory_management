@@ -1,9 +1,29 @@
-This is a working prototype and is a work in progress, if you would like to work on this project, you must have api keys to the services that
-this project makes use of. Read below to see what those services are. If you would like a list of links to each service, please let me know. I will add links to them here when I take the time to do so. 
 
+technical overview: 
 
-notes: 
-I will sooner than later create some documentation for how to use this project for your own purposes. For now one thing I will add is that if you already know how to use this project for the most part or wish to explore it, I do have a few tips below. 
+This project is built around the MERN stack ( Mongodb, Express, React, Node )
+
+technology used: 
+
+front-end:
+React and ReactRouter for building and routing views
+Redux for modifiying the state of views
+Backbonejs for CRUD operations on models/collections
+SemanticUI for React to make the styling process faster
+Filestack for handling user profile images 
+Google Maps API for visualizing the location of user added "shelters"
+
+backend:
+Mongodb as the database
+Mongoose to interface with Mongodb
+Node/Express as a server
+Passport to handle user authentication
+Nodemailer to handle password reset functionality 
+Heroku to host the node server/mongodb database setup and also the front-end
+
+******************************************
+
+This is a working prototype and is a work in progress, if you would like to work on this project, you must have api keys to the services that this project makes use of. Read below to see what those services are. If you would like a list of links to each service, please let me know. I will add links to them here when I take the time to do so. 
 
 TO KEEP YOUR API KEYS SAFE:
 
