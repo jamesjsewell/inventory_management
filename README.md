@@ -7,7 +7,7 @@ technology used:
 
 front-end:
 React and ReactRouter for building and routing views
-Redux for modifiying the state of views
+Redux for handling the state of views
 Backbonejs for CRUD operations on models/collections
 SemanticUI for React to make the styling process faster
 Filestack for handling user profile images 
