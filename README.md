@@ -1,4 +1,5 @@
-
+ This project utilizes the google maps api to make it easy for users to plot new "shelters" on the map and find other user created shelters. You may create your own shelters on the map and enter shelters that have already been created. Each shelter contains a list of items that are added and removed. Each item within a shelter has a percentage bar that let's you know how in demand an item is at that shelter. If you create an account you will have the ability to edit shelters and the items in those shelters.
+ 
 ## technical overview ##
 
 This project is built around the MERN stack ( Mongodb, Express, React, Node )
