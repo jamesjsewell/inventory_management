@@ -24,7 +24,7 @@ This project is built around the MERN stack ( Mongodb, Express, React, Node )
 
 ******************************************
 
-This is a working prototype and is a work in progress, if you would like to work on this project, you must have api keys to the services that this project makes use of. Read below to see what those services are. If you would like a list of links to each service, please let me know. I will add links to them here when I take the time to do so. 
+This is a working prototype and is a work in progress, if you would like to work on this project, you must have api keys to the services that this project makes use of.
 
 TO KEEP YOUR API KEYS SAFE:
 
